@@ -1,0 +1,89 @@
+name: Movie render test
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_file:
+        description: "Scene plan file"
+        default: "scene_plan.json"
+      fps:
+        description: "Frames per second"
+        default: "12"
+      engine:
+        description: "Render engine"
+        type: choice
+        default: EEVEE
+        options:
+          - EEVEE
+          - CYCLES
+      sample_only:
+        description: "Only render 1 picture per shot and estimate the total time"
+        type: boolean
+        default: true
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 340
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: List uploaded model files
+        run: |
+          echo "Model files found in the repository:"
+          find . -type f \( -iname "*.glb" -o -iname "*.gltf" \) -not -path "./.git/*" | sort | head -200
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb ffmpeg xz-utils \
+            libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
+            libxfixes3 libgl1 libegl1 libgl1-mesa-dri
+
+      - name: Download Blender 3.6 LTS
+        run: |
+          mkdir -p "$HOME/blender"
+          curl -L -o blender.tar.xz https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
+          tar -xf blender.tar.xz -C "$HOME/blender" --strip-components=1
+          "$HOME/blender/blender" -b --version
+
+      - name: Render all shots
+        env:
+          PLAN_FILE: ${{ inputs.plan_file }}
+          VID_FPS: ${{ inputs.fps }}
+          VID_ENGINE: ${{ inputs.engine }}
+          SAMPLE_ONLY: ${{ inputs.sample_only }}
+        run: |
+          mkdir -p out
+          EXTRA=""
+          if [ "$SAMPLE_ONLY" = "true" ]; then EXTRA="--sample-only"; fi
+          xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
+            -P movie_render.py -- \
+            --assets . --plan "$PLAN_FILE" --fps "$VID_FPS" \
+            --engine "$VID_ENGINE" --out out $EXTRA
+
+      - name: Build MP4 (full render only)
+        if: ${{ inputs.sample_only == false }}
+        env:
+          VID_FPS: ${{ inputs.fps }}
+        run: |
+          ffmpeg -y -framerate "$VID_FPS" -i out/frame_%05d.png \
+            -c:v libx264 -pix_fmt yuv420p -crf 20 out/movie.mp4
+          rm -f out/frame_*.png
+
+      - name: Show result summary
+        if: always()
+        run: |
+          if [ -f out/summary.md ]; then cat out/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Save results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: movie-test-results
+          path: |
+            out/summary.md
+            out/timing.json
+            out/sample_*.png
+            out/movie.mp4
