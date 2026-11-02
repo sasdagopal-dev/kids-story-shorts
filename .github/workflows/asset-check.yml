@@ -1,0 +1,71 @@
+name: Asset check
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Get the code
+        uses: actions/checkout@v4
+
+      - name: Download asset packs from the Release (tag "assets")
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p asset_zips assets
+          gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips \
+            || echo "No release with the tag 'assets' found yet (that is fine)."
+          for z in asset_zips/*.zip; do
+            [ -f "$z" ] || continue
+            d="assets/$(basename "$z" .zip)"
+            mkdir -p "$d"
+            unzip -q -o "$z" -d "$d"
+            echo "Unpacked $z"
+          done
+
+      - name: List model files
+        run: |
+          echo "Model files found:"
+          find . -type f \( -iname "*.glb" -o -iname "*.gltf" \) -not -path "./.git/*" | sort | head -300
+          echo "Total:"
+          find . -type f \( -iname "*.glb" -o -iname "*.gltf" \) -not -path "./.git/*" | wc -l
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xz-utils unzip \
+            libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
+            libxfixes3 libgl1 libegl1 libgl1-mesa-dri
+
+      - name: Download Blender 3.6 LTS
+        run: |
+          mkdir -p "$HOME/blender"
+          curl -L -o blender.tar.xz https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
+          tar -xf blender.tar.xz -C "$HOME/blender" --strip-components=1
+          "$HOME/blender/blender" -b --version
+
+      - name: Check all assets
+        run: |
+          mkdir -p out
+          xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
+            -P asset_check.py -- --assets . --out out
+
+      - name: Show result summary
+        if: always()
+        run: |
+          if [ -f out/summary.md ]; then cat out/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Save results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: asset-check
+          path: |
+            out/summary.md
+            out/asset_catalog.json
+            out/lineup_*.png
+            out/thumb_*.png
