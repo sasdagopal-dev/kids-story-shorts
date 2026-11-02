@@ -217,12 +217,15 @@ def build_shot(shot, plan, opts, fps):
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
     bg = world.node_tree.nodes["Background"]
-    bg.inputs[0].default_value = (0.04, 0.07, 0.16, 1.0)
+    sky = shot.get("sky", [0.04, 0.07, 0.16])
+    bg.inputs[0].default_value = (sky[0], sky[1], sky[2], 1.0)
     bg.inputs[1].default_value = 1.0
     scene.world = world
+    light = shot.get("light", {})
+    lc = light.get("color", [0.75, 0.82, 1.0])
     sun_data = bpy.data.lights.new("Moon", 'SUN')
-    sun_data.energy = 3.0
-    sun_data.color = (0.75, 0.82, 1.0)
+    sun_data.energy = float(light.get("energy", 3.0))
+    sun_data.color = (lc[0], lc[1], lc[2])
     sun = bpy.data.objects.new("Moon", sun_data)
     scene.collection.objects.link(sun)
     sun.rotation_euler = (math.radians(55), math.radians(10), math.radians(35))
@@ -262,7 +265,7 @@ def build_shot(shot, plan, opts, fps):
     # ---- actors
     asset_facing = float(plan.get("asset_facing", 90))
     actors = {}
-    for a in shot["actors"]:
+    for a in shot.get("actors", []):
         who = a["name"]
         model_path = find_model(a["model"], opts["assets"])
         before_objs = set(o.name for o in bpy.data.objects)
@@ -360,7 +363,7 @@ def build_shot(shot, plan, opts, fps):
         if isinstance(look, str):
             if look == "all":
                 pts = list(points.values())
-                c = sum(pts, Vector((0, 0, 0))) / len(pts)
+                c = (sum(pts, Vector((0, 0, 0))) / len(pts)) if pts else Vector((0, 0, 0))
             elif look in points:
                 c = points[look].copy()
             else:
