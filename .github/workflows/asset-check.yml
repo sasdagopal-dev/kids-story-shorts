@@ -1,71 +1,140 @@
-name: Asset check
+name: Asset Check
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check:
+    name: Check 3D assets
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+
     steps:
       - name: Get the code
         uses: actions/checkout@v4
 
-      - name: Download asset packs from the Release (tag "assets")
-        continue-on-error: true
+      - name: "Download asset packs from the Release (tag: assets)"
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p asset_zips assets
-          gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips \
-            || echo "No release with the tag 'assets' found yet (that is fine)."
+
+          if gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips; then
+            echo "Asset-pack release downloaded."
+          else
+            echo "No downloadable release with the tag 'assets' was found. Continuing with assets already in the repository."
+          fi
+
+          shopt -s nullglob
           for z in asset_zips/*.zip; do
-            [ -f "$z" ] || continue
             d="assets/$(basename "$z" .zip)"
             mkdir -p "$d"
             unzip -q -o "$z" -d "$d"
-            echo "Unpacked $z"
+            echo "Unpacked: $z"
           done
 
-      - name: List model files
+      - name: List available 3D model files
+        shell: bash
         run: |
-          echo "Model files found:"
-          find . -type f \( -iname "*.glb" -o -iname "*.gltf" \) -not -path "./.git/*" | sort | head -300
-          echo "Total:"
-          find . -type f \( -iname "*.glb" -o -iname "*.gltf" \) -not -path "./.git/*" | wc -l
+          echo "Model files found (GLB, glTF and FBX):"
+          find . -type f \( -iname "*.glb" -o -iname "*.gltf" -o -iname "*.fbx" \) \
+            -not -path "./.git/*" -not -path "./out/*" | sort | head -300
+
+          echo "Total model files:"
+          find . -type f \( -iname "*.glb" -o -iname "*.gltf" -o -iname "*.fbx" \) \
+            -not -path "./.git/*" -not -path "./out/*" | wc -l
 
       - name: Install system packages
+        shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb xz-utils unzip \
+          sudo apt-get install -y \
+            xvfb xz-utils unzip ffmpeg fonts-dejavu-core \
             libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
             libxfixes3 libgl1 libegl1 libgl1-mesa-dri
 
-      - name: Download Blender 3.6 LTS
+      - name: Download Blender 3.6.5 LTS
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p "$HOME/blender"
-          curl -L -o blender.tar.xz https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
+          curl -fL --retry 3 --retry-delay 2 \
+            -o blender.tar.xz \
+            https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
           tar -xf blender.tar.xz -C "$HOME/blender" --strip-components=1
           "$HOME/blender/blender" -b --version
 
-      - name: Check all assets
+      - name: Check and render all assets
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p out
           xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
             -P asset_check.py -- --assets . --out out
 
+      - name: Create labelled preview sheets for each asset pack
+        if: always()
+        shell: bash
+        run: |
+          set -u
+          mkdir -p out/labelled
+          FONT=/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+          shopt -s nullglob
+          previews=(out/pv@@*@@*.png)
+
+          if [ "${#previews[@]}" -eq 0 ]; then
+            echo "No rendered preview images were found."
+            exit 0
+          fi
+
+          for f in "${previews[@]}"; do
+            base=$(basename "$f" .png)
+            rest=${base#pv@@}
+            pack=${rest%%@@*}
+            model=${rest#*@@}
+            mkdir -p "out/labelled/$pack"
+
+            ffmpeg -y -loglevel error -i "$f" \
+              -vf "scale=300:300:force_original_aspect_ratio=decrease,pad=300:300:(ow-iw)/2:(oh-ih)/2,drawtext=fontfile=$FONT:text='$model':fontcolor=white:fontsize=14:box=1:boxcolor=black@0.65:x=4:y=4" \
+              "out/labelled/$pack/$model.png" \
+              || echo "Could not label preview: $f"
+          done
+
+          for dir in out/labelled/*; do
+            [ -d "$dir" ] || continue
+            pack=$(basename "$dir")
+            images=("$dir"/*.png)
+            count=${#images[@]}
+            [ "$count" -gt 0 ] || continue
+
+            rows=$(( (count + 5) / 6 ))
+            ffmpeg -y -loglevel error -framerate 1 -pattern_type glob \
+              -i "$dir/*.png" \
+              -vf "tile=6x${rows}:padding=4:margin=4" \
+              -frames:v 1 "out/${pack}_sheet.png" \
+              || echo "Could not create preview sheet for pack: $pack"
+          done
+
       - name: Show result summary
         if: always()
+        shell: bash
         run: |
-          if [ -f out/summary.md ]; then cat out/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f out/summary.md ]; then
+            cat out/summary.md >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Asset-check summary was not created. Check the earlier workflow logs." >> "$GITHUB_STEP_SUMMARY"
+          fi
 
-      - name: Save results
+      - name: Save asset-check results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: asset-check
-          path: |
-            out/summary.md
-            out/asset_catalog.json
-            out/lineup_*.png
-            out/thumb_*.png
+          path: out/
+          if-no-files-found: warn
+          retention-days: 14
