@@ -100,6 +100,27 @@ def synth_gemini(text, voice_name, model, api_key, path, tries=4):
 
 
 # ---------------------------------------------------------------- main
+def fix_argv(argv):
+    """Turn '--rate -8%' into '--rate=-8%' (argparse would read '-8%' as a new option)."""
+    out, i = [], 0
+    while i < len(argv):
+        if argv[i] == "--rate" and i + 1 < len(argv):
+            out.append("--rate=" + argv[i + 1])
+            i += 2
+        else:
+            out.append(argv[i])
+            i += 1
+    return out
+
+
+def silent_estimate(shot, text, planned, pad):
+    """No voice file: guess how long the line would take to read (about 2.3 words per second)."""
+    est = len(text.split()) / 2.3
+    shot["audio_seconds"] = round(est, 2)
+    shot["seconds"] = round(max(planned, est + pad), 2)
+    return est
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", default="scene_plan_2min.json")
@@ -109,11 +130,15 @@ def main():
     ap.add_argument("--gender", default="male", choices=["male", "female"])
     ap.add_argument("--rate", default="-8%", help="speaking speed for edge, e.g. -8%% is a bit slower")
     ap.add_argument("--gemini-model", default=os.environ.get("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts"))
-    ap.add_argument("--pad", type=float, default=0.9, help="extra seconds added to each shot after its voice")
+    ap.add_argument("--pad", type=float, default=0.6, help="extra seconds added to each shot after its voice")
     ap.add_argument("--reuse-audio", action="store_true", help="use audio files that already exist")
+    ap.add_argument("--no-audio", action="store_true",
+                    help="make NO voice: shots get lengths from the text and the video has subtitles only")
+    ap.add_argument("--on-fail", default="abort", choices=["abort", "silent"],
+                    help="what to do when the voice cannot be made for a shot")
     ap.add_argument("--summary", default="tts_summary.md")
     ap.add_argument("--preview", default="narration_preview.mp3")
-    args = ap.parse_args()
+    args = ap.parse_args(fix_argv(sys.argv[1:]))
 
     with open(args.plan, "r", encoding="utf-8") as fh:
         plan = json.load(fh)
@@ -130,6 +155,11 @@ def main():
         text = (shot.get("narration_hi") or "").strip()
         if not text:
             rows.append((sid, shot.get("title", ""), "-", 0.0, planned, planned))
+            continue
+
+        if args.no_audio:
+            est = silent_estimate(shot, text, planned, args.pad)
+            rows.append((sid, shot.get("title", ""), "silent", est, planned, shot["seconds"]))
             continue
 
         base = os.path.join(args.out_dir, "shot_%02d" % sid)
@@ -157,6 +187,12 @@ def main():
                     errors.append("%s: %s" % (eng, e))
                     path = None
             if path is None:
+                if args.on_fail == "silent":
+                    print("WARNING: no voice for shot %d, continuing without it.\n  %s"
+                          % (sid, "\n  ".join(errors)), flush=True)
+                    est = silent_estimate(shot, text, planned, args.pad)
+                    rows.append((sid, shot.get("title", ""), "silent (voice failed)", est, planned, shot["seconds"]))
+                    continue
                 sys.exit("Could not make the voice for shot %d.\n  %s" % (sid, "\n  ".join(errors)))
 
         dur = probe_duration(path)
@@ -181,6 +217,9 @@ def main():
              "| Shot | Title | Engine | Voice (s) | Planned (s) | Final (s) |", "|---|---|---|---|---|---|"]
     for sid, title, eng, dur, planned, final in rows:
         lines.append("| %d | %s | %s | %.1f | %.1f | %.1f |" % (sid, title, eng, dur, planned, final))
+    if total > 175:
+        lines += ["", "**WARNING: the video is %.0f s. YouTube Shorts allow at most 180 s. "
+                  "Shorten some narration lines in the plan.**" % total]
     with open(args.summary, "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
     print("\n".join(lines), flush=True)
