@@ -17,9 +17,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: "Download asset packs from the Release (tag: assets)"
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-        shell: bash
         run: |
           set -euo pipefail
           mkdir -p asset_zips assets
@@ -27,7 +27,7 @@ jobs:
           if gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips; then
             echo "Asset-pack release downloaded."
           else
-            echo "No downloadable release with the tag 'assets' was found. Continuing with assets already in the repository."
+            echo "No downloadable release with tag 'assets' was found. Continuing with repository assets."
           fi
 
           shopt -s nullglob
@@ -41,17 +41,24 @@ jobs:
       - name: List available 3D model files
         shell: bash
         run: |
+          set -euo pipefail
           echo "Model files found (GLB, glTF and FBX):"
-          find . -type f \( -iname "*.glb" -o -iname "*.gltf" -o -iname "*.fbx" \) \
-            -not -path "./.git/*" -not -path "./out/*" | sort | head -300
 
+          # Do not pipe sort into head. head closes the pipe early and can
+          # make sort exit with SIGPIPE (exit code 2).
+          find . -type f \( -iname '*.glb' -o -iname '*.gltf' -o -iname '*.fbx' \) \
+            -not -path './.git/*' \
+            -not -path './out/*' \
+            -print | sort > /tmp/model-files.txt
+
+          sed -n '1,300p' /tmp/model-files.txt
           echo "Total model files:"
-          find . -type f \( -iname "*.glb" -o -iname "*.gltf" -o -iname "*.fbx" \) \
-            -not -path "./.git/*" -not -path "./out/*" | wc -l
+          wc -l < /tmp/model-files.txt
 
       - name: Install system packages
         shell: bash
         run: |
+          set -euo pipefail
           sudo apt-get update
           sudo apt-get install -y \
             xvfb xz-utils unzip ffmpeg fonts-dejavu-core \
@@ -99,8 +106,11 @@ jobs:
             model=${rest#*@@}
             mkdir -p "out/labelled/$pack"
 
+            # Use a text file so spaces and apostrophes in model names do not
+            # break FFmpeg's drawtext filter.
+            printf '%s' "$model" > /tmp/asset-model-label.txt
             ffmpeg -y -loglevel error -i "$f" \
-              -vf "scale=300:300:force_original_aspect_ratio=decrease,pad=300:300:(ow-iw)/2:(oh-ih)/2,drawtext=fontfile=$FONT:text='$model':fontcolor=white:fontsize=14:box=1:boxcolor=black@0.65:x=4:y=4" \
+              -vf "scale=300:300:force_original_aspect_ratio=decrease,pad=300:300:(ow-iw)/2:(oh-ih)/2,drawtext=fontfile=$FONT:textfile=/tmp/asset-model-label.txt:fontcolor=white:fontsize=14:box=1:boxcolor=black@0.65:x=4:y=4" \
               "out/labelled/$pack/$model.png" \
               || echo "Could not label preview: $f"
           done
