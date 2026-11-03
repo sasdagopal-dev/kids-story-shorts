@@ -1,18 +1,19 @@
 """
-Multi-shot movie renderer (Quaternius glTF animals) driven by a JSON scene plan.
+Multi-shot movie renderer v2 (Quaternius glTF animals + Stylized Nature props).
 
 Run (headless):
-  blender -b --python-exit-code 1 -P movie_render.py -- --plan scene_plan.json \
-      --fps 12 --engine EEVEE --sample-only --out out
+  blender -b --python-exit-code 1 -P movie_render.py -- --plan scene_plan_timed.json \
+      --fps 12 --engine EEVEE --out out [--sample-only]
 
-Options:
-  --plan FILE      scene plan JSON (default scene_plan.json)
-  --assets DIR     folder searched for .glb/.gltf files (default ".")
-  --fps N          frames per second (overrides the plan)
-  --engine NAME    EEVEE or CYCLES
-  --sample-only    render ONE middle frame per shot, then estimate the full time
-  --out DIR        output folder
-Frames are saved as out/frame_00001.png, out/frame_00002.png ... for all shots in order.
+Per shot the plan can set:
+  env      forest_day | forest_sunset | fire_red | winter_night   (sky, light, ground, props, snow)
+  river    false to remove the frozen river / water
+  rock     [x, y, top_z] a rock to stand on
+  actors   animals / characters (model, action, size, start, end, heading, tint)
+  camera   look_at, offset or pos/pos_end, lens, shake
+
+Every decoration (props, sky, snow) is protected: if something fails the shot still renders
+with simpler scenery and a note is written to the summary.
 """
 import bpy
 import sys
@@ -21,9 +22,49 @@ import time
 import math
 import json
 import random
-from mathutils import Vector
+import zlib
+from mathutils import Vector, Euler
 
 NOTES = []
+
+# ---------------------------------------------------------------- look presets
+ENV = {
+    "forest_day": {
+        "sky_top": (0.20, 0.50, 0.95), "sky_horizon": (0.80, 0.92, 1.0),
+        "key": ((1.0, 0.96, 0.88), 4.2, (52, 10, 35)), "fill": ((0.6, 0.75, 1.0), 0.9),
+        "ground": (0.30, 0.62, 0.20), "disc": ((1.0, 0.96, 0.75), 13.0, 3.0),
+        "river": (0.22, 0.52, 0.85, 0.25),
+        "trees": ["CommonTree_"], "bushes": ["Bush_Common"],
+        "flowers": ["Flower_", "Clover_"], "grass": ["Grass_Common", "Grass_Wispy"],
+        "extras": ["Mushroom_", "Pebble_Round"], "frost": None, "snow": 0,
+    },
+    "forest_sunset": {
+        "sky_top": (0.22, 0.26, 0.62), "sky_horizon": (1.0, 0.60, 0.26),
+        "key": ((1.0, 0.62, 0.34), 4.0, (74, 10, 60)), "fill": ((0.5, 0.5, 0.95), 0.8),
+        "ground": (0.34, 0.52, 0.18), "disc": ((1.0, 0.78, 0.38), 17.0, 4.0),
+        "river": (0.95, 0.55, 0.40, 0.2),
+        "trees": ["CommonTree_"], "bushes": ["Bush_Common"],
+        "flowers": ["Flower_", "Clover_"], "grass": ["Grass_Common", "Grass_Wispy"],
+        "extras": ["Mushroom_", "Pebble_Round"], "frost": None, "snow": 0,
+    },
+    "fire_red": {
+        "sky_top": (0.16, 0.03, 0.03), "sky_horizon": (1.0, 0.32, 0.06),
+        "key": ((1.0, 0.42, 0.18), 3.8, (70, 10, 50)), "fill": ((0.9, 0.22, 0.1), 0.9),
+        "ground": (0.17, 0.10, 0.07), "disc": ((1.0, 0.35, 0.10), 20.0, 5.0),
+        "river": None,
+        "trees": ["DeadTree_"], "bushes": [], "flowers": [],
+        "grass": ["Grass_Wispy"], "extras": ["Pebble_Square"], "frost": None, "snow": 0,
+    },
+    "winter_night": {
+        "sky_top": (0.01, 0.03, 0.12), "sky_horizon": (0.12, 0.22, 0.42),
+        "key": ((0.72, 0.82, 1.0), 3.4, (55, 10, 35)), "fill": ((0.4, 0.5, 1.0), 0.9),
+        "ground": (0.82, 0.88, 1.0), "disc": ((0.92, 0.96, 1.0), 11.0, 6.0),
+        "river": (0.50, 0.72, 0.92, 0.12),
+        "trees": ["DeadTree_", "CommonTree_"], "bushes": ["Bush_Common"], "flowers": [],
+        "grass": ["Grass_Wispy"], "extras": ["Pebble_Round"],
+        "frost": ((0.92, 0.96, 1.0), 0.7), "snow": 1,
+    },
+}
 
 
 # ---------------------------------------------------------------- arguments
@@ -52,7 +93,7 @@ def parse_args():
     return opts
 
 
-# ---------------------------------------------------------------- helpers
+# ---------------------------------------------------------------- small helpers
 def make_material(name, color, roughness=0.8):
     m = bpy.data.materials.new(name)
     m.use_nodes = True
@@ -62,9 +103,25 @@ def make_material(name, color, roughness=0.8):
     return m
 
 
+def emission_material(name, color, strength):
+    m = bpy.data.materials.new(name)
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = (color[0], color[1], color[2], 1.0)
+    em.inputs["Strength"].default_value = strength
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    try:
+        m.shadow_method = 'NONE'
+    except Exception:
+        pass
+    return m
+
+
 def add_cylinder(name, loc, radius, depth, mat):
-    bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=radius,
-                                        depth=depth, location=loc)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=radius, depth=depth, location=loc)
     o = bpy.context.active_object
     o.name = name
     o.data.materials.append(mat)
@@ -72,17 +129,15 @@ def add_cylinder(name, loc, radius, depth, mat):
 
 
 def add_cone(name, loc, radius, depth, mat):
-    bpy.ops.mesh.primitive_cone_add(vertices=12, radius1=radius, radius2=0,
-                                    depth=depth, location=loc)
+    bpy.ops.mesh.primitive_cone_add(vertices=12, radius1=radius, radius2=0, depth=depth, location=loc)
     o = bpy.context.active_object
     o.name = name
     o.data.materials.append(mat)
     return o
 
 
-def add_sphere(name, loc, scale, mat):
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12,
-                                         radius=1.0, location=loc)
+def add_sphere(name, loc, scale, mat, radius=1.0, segments=24, rings=12):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=segments, ring_count=rings, radius=radius, location=loc)
     o = bpy.context.active_object
     o.name = name
     o.scale = scale
@@ -91,25 +146,31 @@ def add_sphere(name, loc, scale, mat):
     return o
 
 
-def find_model(name, assets_dir):
-    found = []
+def list_models(assets_dir):
+    found = {}
     for root, dirs, files in os.walk(assets_dir):
-        dirs[:] = [d for d in dirs if not d.startswith(".")]
-        for f in files:
+        dirs[:] = [d for d in dirs if not d.startswith(".") and d != "out"]
+        for f in sorted(files):
             if f.lower().endswith((".glb", ".gltf")):
-                found.append(os.path.join(root, f))
+                stem = os.path.splitext(f)[0]
+                p = os.path.join(root, f)
+                if stem not in found or len(p) < len(found[stem]):
+                    found[stem] = p
+    return found
+
+
+def find_model(name, assets_dir):
+    found = list_models(assets_dir)
     want = name.lower()
-    exact = [p for p in found
-             if os.path.splitext(os.path.basename(p))[0].lower() == want]
-    part = [p for p in found if want in os.path.basename(p).lower()]
+    exact = [p for s, p in found.items() if s.lower() == want]
+    part = [p for s, p in found.items() if want in s.lower()]
     pick = exact or part
     if not pick:
-        lines = ["MODEL '%s' NOT FOUND in '%s'." % (name, assets_dir),
-                 "Model files that were found:"]
-        lines += ["  - " + p for p in sorted(found)] or ["  (none - upload the glTF files)"]
-        lines.append("Fix: change the \"model\" name in scene_plan.json to one of the names above.")
+        lines = ["MODEL '%s' NOT FOUND in '%s'." % (name, assets_dir), "Model files that were found:"]
+        lines += ["  - " + p for p in sorted(found.values())] or ["  (none - upload the glTF files)"]
+        lines.append("Fix: change the \"model\" name in the scene plan to one of the names above.")
         raise RuntimeError("\n".join(lines))
-    pick.sort(key=lambda p: (not p.lower().endswith(".glb"), len(p)))
+    pick.sort(key=len)
     return pick[0]
 
 
@@ -143,12 +204,12 @@ def pick_action(actions, keyword, who):
     if chosen is None:
         chosen = best("idle") or actions[0]
         NOTES.append("%s: animation '%s' not found, used '%s'. Available: %s"
-                     % (who, keyword, chosen.name,
-                        ", ".join(a.name for a in actions)))
+                     % (who, keyword, chosen.name, ", ".join(a.name for a in actions)))
     return chosen
 
 
 def tint_material(mat, tint):
+    """Multiply the colour of a material (for example make a wolf dark)."""
     mat.use_nodes = True
     nt = mat.node_tree
     bsdf = nt.nodes.get("Principled BSDF")
@@ -168,6 +229,27 @@ def tint_material(mat, tint):
         sock.default_value = (c[0] * tint[0], c[1] * tint[1], c[2] * tint[2], 1.0)
 
 
+def frost_material(mat, color, amount):
+    """Blend a material towards a colour (for example white frost on trees)."""
+    mat.use_nodes = True
+    nt = mat.node_tree
+    bsdf = nt.nodes.get("Principled BSDF")
+    if bsdf is None:
+        return
+    sock = bsdf.inputs["Base Color"]
+    if sock.is_linked:
+        src = sock.links[0].from_socket
+        mix = nt.nodes.new("ShaderNodeMixRGB")
+        mix.blend_type = 'MIX'
+        mix.inputs[0].default_value = amount
+        mix.inputs[2].default_value = (color[0], color[1], color[2], 1.0)
+        nt.links.new(src, mix.inputs[1])
+        nt.links.new(mix.outputs[0], sock)
+    else:
+        c = sock.default_value
+        sock.default_value = tuple(c[i] * (1 - amount) + color[i] * amount for i in range(3)) + (1.0,)
+
+
 def pos3(p):
     p = list(p)
     if len(p) == 2:
@@ -179,8 +261,271 @@ def lerp(a, b, u):
     return a + (b - a) * u
 
 
+# ---------------------------------------------------------------- sky, light, ground
+def add_sky(env, scene):
+    """Gradient sky dome plus a sun or moon disc (no shadows, pure emission)."""
+    bpy.ops.mesh.primitive_uv_sphere_add(radius=450, segments=32, ring_count=16, location=(0, 0, 0))
+    dome = bpy.context.active_object
+    dome.name = "SkyDome"
+    m = bpy.data.materials.new("SkyGradient")
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    em = nt.nodes.new("ShaderNodeEmission")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    mr = nt.nodes.new("ShaderNodeMapRange")
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    nt.links.new(tc.outputs["Object"], sep.inputs["Vector"])
+    nt.links.new(sep.outputs["Z"], mr.inputs["Value"])
+    mr.inputs["From Min"].default_value = 0.0
+    mr.inputs["From Max"].default_value = 260.0
+    mr.inputs["To Min"].default_value = 0.0
+    mr.inputs["To Max"].default_value = 1.0
+    mr.clamp = True
+    nt.links.new(mr.outputs["Result"], ramp.inputs["Fac"])
+    h, t = env["sky_horizon"], env["sky_top"]
+    ramp.color_ramp.elements[0].color = (h[0], h[1], h[2], 1.0)
+    ramp.color_ramp.elements[1].color = (t[0], t[1], t[2], 1.0)
+    nt.links.new(ramp.outputs["Color"], em.inputs["Color"])
+    em.inputs["Strength"].default_value = 1.0
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    try:
+        m.shadow_method = 'NONE'
+    except Exception:
+        pass
+    dome.data.materials.append(m)
+
+    # sun or moon disc in front of the camera
+    dcol, drad, dstr = env["disc"]
+    direction = Vector((-0.28, 1.0, 0.36)).normalized() * 400.0
+    add_sphere("SkyDisc", direction, (1, 1, 1), emission_material("Disc", dcol, dstr),
+               radius=drad, segments=24, rings=12)
+
+
+def add_lights(scene, env):
+    kcol, kenergy, krot = env["key"]
+    key_data = bpy.data.lights.new("Key", 'SUN')
+    key_data.energy = kenergy
+    key_data.color = kcol
+    key = bpy.data.objects.new("Key", key_data)
+    scene.collection.objects.link(key)
+    key.rotation_euler = Euler(tuple(math.radians(a) for a in krot), 'XYZ')
+
+    fcol, fenergy = env["fill"]
+    fill_data = bpy.data.lights.new("Fill", 'SUN')
+    fill_data.energy = fenergy
+    fill_data.color = fcol
+    try:
+        fill_data.use_shadow = False
+    except Exception:
+        pass
+    fill = bpy.data.objects.new("Fill", fill_data)
+    scene.collection.objects.link(fill)
+    fill.rotation_euler = Euler((math.radians(60), 0, math.radians(215)), 'XYZ')
+
+
+# ---------------------------------------------------------------- scenery props (Stylized Nature kit)
+def stems_for(models, prefixes):
+    out = []
+    for stem in sorted(models):
+        low = stem.lower()
+        if any(low.startswith(p.lower()) for p in prefixes):
+            out.append(stem)
+    return out
+
+
+def import_template(path):
+    before = set(o.name for o in bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=path)
+    new = [o for o in bpy.data.objects if o.name not in before]
+    bpy.context.view_layer.update()
+    meshes = [o for o in new if o.type == 'MESH']
+    if not meshes:
+        for o in new:
+            bpy.data.objects.remove(o, do_unlink=True)
+        return None
+    mn, mx = world_bounds(meshes)
+    return {"objs": new, "meshes": meshes, "zmin": mn.z, "height": max(mx.z - mn.z, 0.01)}
+
+
+def make_instance(scene, tpl, loc, rot_z, scale):
+    holder = bpy.data.objects.new("Prop", None)
+    scene.collection.objects.link(holder)
+    mapping = {}
+    for o in tpl["objs"]:
+        c = o.copy()
+        scene.collection.objects.link(c)
+        mapping[o.name] = c
+    for o in tpl["objs"]:
+        c = mapping[o.name]
+        if o.parent is not None and o.parent.name in mapping:
+            c.parent = mapping[o.parent.name]
+            c.matrix_parent_inverse = o.matrix_parent_inverse.copy()
+        else:
+            c.parent = holder
+    holder.location = (loc[0], loc[1], loc[2] - tpl["zmin"] * scale)
+    holder.rotation_euler = (0, 0, rot_z)
+    holder.scale = (scale, scale, scale)
+    return holder
+
+
+def pick_band(rng, bands):
+    total = sum(b[2] for b in bands)
+    r = rng.uniform(0, total)
+    for lo, hi, w in bands:
+        if r <= w:
+            return rng.uniform(lo, hi)
+        r -= w
+    return rng.uniform(bands[-1][0], bands[-1][1])
+
+
+def build_scenery(scene, env, models, region, rock, has_river, seed_name):
+    rng = random.Random(zlib.crc32(seed_name.encode("utf-8")))
+    xmin, xmax = region
+    width = xmax - xmin
+
+    if has_river:
+        tree_bands = [(14, 38, 1.0), (4.8, 6.4, 0.18)]
+        bush_bands = [(3.4, 6.6, 0.6), (14, 26, 0.4)]
+        low_bands = [(-5, 6.5, 0.8), (14, 22, 0.2)]
+    else:
+        tree_bands = [(4.5, 38, 1.0)]
+        bush_bands = [(3.4, 12, 0.6), (12, 26, 0.4)]
+        low_bands = [(-5, 12, 0.7), (12, 24, 0.3)]
+
+    groups = [
+        # key, objects per metre, cap, variants to import, bands, scale range
+        ("trees", 0.9, 70, 4, tree_bands, (0.85, 1.30)),
+        ("bushes", 0.6, 40, 2, bush_bands, (0.80, 1.30)),
+        ("flowers", 0.8, 40, 3, low_bands, (0.90, 1.30)),
+        ("grass", 2.5, 110, 3, low_bands, (0.90, 1.40)),
+        ("extras", 0.5, 25, 3, low_bands, (0.80, 1.40)),
+    ]
+
+    # import each variant once
+    templates = {}
+    for key, _d, _c, nvar, _b, _s in groups:
+        stems = stems_for(models, env.get(key, []))
+        if not stems:
+            continue
+        chosen = rng.sample(stems, min(nvar, len(stems)))
+        tpls = []
+        for stem in chosen:
+            try:
+                tpl = import_template(models[stem])
+                if tpl is not None:
+                    tpls.append(tpl)
+            except Exception as ex:
+                NOTES.append("scenery model %s could not be loaded: %s" % (stem, ex))
+        if tpls:
+            templates[key] = tpls
+
+    if "trees" not in templates:
+        raise RuntimeError("no tree models found (looked for %s)" % env.get("trees"))
+
+    # one common scale so the whole kit keeps its relative sizes (trees about 7.5 units tall)
+    kit = 7.5 / templates["trees"][0]["height"]
+    kit = min(max(kit, 0.15), 8.0)
+
+    frost = env.get("frost")
+    if frost:
+        for key in ("trees", "bushes"):
+            for tpl in templates.get(key, []):
+                for o in tpl["meshes"]:
+                    for slot in o.material_slots:
+                        if slot.material:
+                            slot.material = slot.material.copy()
+                            frost_material(slot.material, frost[0], frost[1])
+
+    count = 0
+    for key, per_m, cap, _n, bands, srange in groups:
+        tpls = templates.get(key)
+        if not tpls:
+            continue
+        n = min(cap, int(width * per_m))
+        for _ in range(n):
+            x = rng.uniform(xmin, xmax)
+            y = pick_band(rng, bands)
+            if rock and abs(x - rock[0]) < 3.2 and abs(y - rock[1]) < 2.8:
+                continue
+            tpl = rng.choice(tpls)
+            make_instance(scene, tpl, (x, y, 0.0), rng.uniform(0, 6.283), kit * rng.uniform(*srange))
+            count += 1
+
+    # remove the template originals (the copies keep the shared mesh data)
+    for tpls in templates.values():
+        for tpl in tpls:
+            for o in tpl["objs"]:
+                try:
+                    bpy.data.objects.remove(o, do_unlink=True)
+                except Exception:
+                    pass
+    print("Scenery: %d props placed (kit scale %.2f)" % (count, kit), flush=True)
+
+
+def build_simple_forest(env, region):
+    """Fallback forest made of cones, used only when the nature kit cannot be loaded."""
+    m_trunk = make_material("Trunk", (0.22, 0.14, 0.09))
+    m_pine = make_material("Pine", (0.10, 0.40, 0.20))
+    rng = random.Random(7)
+    x = region[0]
+    t = 0
+    while x <= region[1]:
+        for row_y in (15, 21, 28):
+            sc = rng.uniform(0.8, 1.4)
+            tx, ty = x + rng.uniform(-2, 2), row_y + rng.uniform(-1.5, 1.5)
+            add_cylinder("Trunk%d" % t, (tx, ty, 0.75 * sc), 0.25 * sc, 1.5 * sc, m_trunk)
+            add_cone("PineA%d" % t, (tx, ty, 3.1 * sc), 1.8 * sc, 3.2 * sc, m_pine)
+            add_cone("PineB%d" % t, (tx, ty, 5.0 * sc), 1.3 * sc, 2.6 * sc, m_pine)
+            t += 1
+        x += 7
+
+
+def add_snow(scene, region, n_frames, fps, seed_name, count):
+    rng = random.Random(zlib.crc32(("snow" + seed_name).encode("utf-8")))
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=0.045, location=(0, -60, -60))
+    tpl = bpy.context.active_object
+    tpl.name = "SnowTpl"
+    tpl.data.materials.append(emission_material("Flake", (1, 1, 1), 4.0))
+    secs = n_frames / float(fps)
+    fall = 1.1 * secs
+    for _ in range(count):
+        o = tpl.copy()
+        scene.collection.objects.link(o)
+        x = rng.uniform(region[0], region[1])
+        y = rng.uniform(-6.5, 9.0)
+        z0 = rng.uniform(0.2, 9.0)
+        o.location = (x, y, z0)
+        o.keyframe_insert(data_path="location", frame=1)
+        o.location = (x + rng.uniform(-1.0, 1.0), y, z0 - fall)
+        o.keyframe_insert(data_path="location", frame=n_frames)
+        if o.animation_data and o.animation_data.action:
+            for fc in o.animation_data.action.fcurves:
+                for kp in fc.keyframe_points:
+                    kp.interpolation = 'LINEAR'
+    bpy.data.objects.remove(tpl, do_unlink=True)
+
+
 # ---------------------------------------------------------------- one shot
-def build_shot(shot, plan, opts, fps):
+def shot_region(shot):
+    xs = []
+    for a in shot.get("actors", []):
+        xs.append(float(a["start"][0]))
+        xs.append(float(a.get("end", a["start"])[0]))
+    cam = shot.get("camera", {})
+    for key in ("pos", "pos_end"):
+        if cam.get(key):
+            xs.append(float(cam[key][0]))
+    if isinstance(cam.get("look_at"), list):
+        xs.append(float(cam["look_at"][0]))
+    if not xs:
+        xs = [0.0]
+    return (min(xs) - 13.0, max(xs) + 13.0)
+
+
+def build_shot(shot, plan, opts, fps, models):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     try:
         bpy.ops.preferences.addon_enable(module="io_scene_gltf2")
@@ -206,61 +551,62 @@ def build_shot(shot, plan, opts, fps):
     else:
         scene.render.engine = 'BLENDER_EEVEE'
         scene.eevee.taa_render_samples = 16
-        for attr, val in (("use_gtao", False), ("use_ssr", False),
-                          ("use_soft_shadows", True)):
+        for attr, val in (("use_gtao", False), ("use_ssr", False), ("use_soft_shadows", True)):
             try:
                 setattr(scene.eevee, attr, val)
             except Exception:
                 pass
 
-    # ---- winter night: dark blue sky, cold moonlight
+    # ---- look of this shot
+    env_name = shot.get("env", "winter_night")
+    env = dict(ENV.get(env_name, ENV["winter_night"]))
+    if shot.get("sky"):                       # old plans: a single sky colour
+        env["sky_top"] = env["sky_horizon"] = tuple(shot["sky"])
+    has_river = bool(env.get("river")) and shot.get("river", True)
+    region = shot_region(shot)
+
     world = bpy.data.worlds.new("World")
     world.use_nodes = True
     bg = world.node_tree.nodes["Background"]
-    sky = shot.get("sky", [0.04, 0.07, 0.16])
-    bg.inputs[0].default_value = (sky[0], sky[1], sky[2], 1.0)
+    h = env["sky_horizon"]
+    bg.inputs[0].default_value = (h[0], h[1], h[2], 1.0)
     bg.inputs[1].default_value = 1.0
     scene.world = world
-    light = shot.get("light", {})
-    lc = light.get("color", [0.75, 0.82, 1.0])
-    sun_data = bpy.data.lights.new("Moon", 'SUN')
-    sun_data.energy = float(light.get("energy", 3.0))
-    sun_data.color = (lc[0], lc[1], lc[2])
-    sun = bpy.data.objects.new("Moon", sun_data)
-    scene.collection.objects.link(sun)
-    sun.rotation_euler = (math.radians(55), math.radians(10), math.radians(35))
 
-    m_snow = make_material("Snow", (0.80, 0.86, 1.0), 0.9)
-    m_ice = make_material("Ice", (0.45, 0.68, 0.88), 0.15)
-    m_trunk = make_material("Trunk", (0.22, 0.14, 0.09))
-    m_pine = make_material("Pine", (0.05, 0.22, 0.15))
-    m_rock = make_material("Rock", (0.35, 0.36, 0.40), 0.9)
+    try:
+        add_sky(env, scene)
+    except Exception as ex:
+        NOTES.append("Shot %s: sky gradient failed (%s), flat sky used." % (shot["id"], ex))
+    add_lights(scene, env)
 
+    gcol = env["ground"]
     bpy.ops.mesh.primitive_plane_add(size=400, location=(0, 0, 0))
-    bpy.context.active_object.data.materials.append(m_snow)
+    bpy.context.active_object.data.materials.append(make_material("Ground", gcol, 0.95))
 
-    # frozen river behind the action
-    bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 10, 0.03))
-    river = bpy.context.active_object
-    river.scale = (300, 6, 1)
-    river.data.materials.append(m_ice)
+    if has_river:
+        rcol = env["river"]
+        bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 10, 0.03))
+        river = bpy.context.active_object
+        river.scale = (300, 6, 1)
+        river.data.materials.append(make_material("Water", rcol[:3], rcol[3]))
 
-    # forest behind the river
-    rng = random.Random(7)
-    t = 0
-    for row_y in (15, 19, 24, 30):
-        for x in range(-56, 57, 7):
-            sc = rng.uniform(0.8, 1.4)
-            tx = x + rng.uniform(-2, 2)
-            ty = row_y + rng.uniform(-1.5, 1.5)
-            add_cylinder("Trunk%d" % t, (tx, ty, 0.75 * sc), 0.25 * sc, 1.5 * sc, m_trunk)
-            add_cone("PineA%d" % t, (tx, ty, 3.1 * sc), 1.8 * sc, 3.2 * sc, m_pine)
-            add_cone("PineB%d" % t, (tx, ty, 5.0 * sc), 1.3 * sc, 2.6 * sc, m_pine)
-            t += 1
+    rock = shot.get("rock")
+    if rock:
+        rx, ry, rtop = rock
+        add_sphere("Rock", (rx, ry, 0), (2.2, 1.8, rtop), make_material("Rock", (0.38, 0.38, 0.42), 0.9))
 
-    if shot.get("rock"):
-        rx, ry, rtop = shot["rock"]
-        add_sphere("Rock", (rx, ry, 0), (2.2, 1.8, rtop), m_rock)
+    try:
+        build_scenery(scene, env, models, region, rock, has_river, env_name)
+    except Exception as ex:
+        NOTES.append("Shot %s (%s): nature props failed (%s) - simple forest used." % (shot["id"], env_name, ex))
+        print("WARNING scenery:", ex, flush=True)
+        build_simple_forest(env, region)
+
+    if env.get("snow"):
+        try:
+            add_snow(scene, region, n, fps, env_name, min(420, int((region[1] - region[0]) * 8)))
+        except Exception as ex:
+            NOTES.append("Shot %s: snowfall failed (%s)." % (shot["id"], ex))
 
     # ---- actors
     asset_facing = float(plan.get("asset_facing", 90))
@@ -307,8 +653,7 @@ def build_shot(shot, plan, opts, fps):
             for fc in action.fcurves:
                 fc.modifiers.new('CYCLES')
         print("Shot %s | %s = %s | action: %s"
-              % (shot["id"], who, os.path.basename(model_path),
-                 action.name if action else "none"), flush=True)
+              % (shot["id"], who, os.path.basename(model_path), action.name if action else "none"), flush=True)
 
         bpy.ops.object.empty_add(type='PLAIN_AXES', location=(0, 0, 0))
         root = bpy.context.active_object
@@ -326,8 +671,7 @@ def build_shot(shot, plan, opts, fps):
             d = end - start
             heading = math.degrees(math.atan2(d.y, d.x)) if (d.x ** 2 + d.y ** 2) > 1e-4 else 0.0
         root.rotation_euler = (0, 0, math.radians(heading + asset_facing))
-        actors[who] = {"root": root, "start": start, "end": end,
-                       "zoff": -floor * s}
+        actors[who] = {"root": root, "start": start, "end": end, "zoff": -floor * s}
 
     # ---- camera
     cam_spec = shot.get("camera", {})
@@ -349,6 +693,7 @@ def build_shot(shot, plan, opts, fps):
     offset = cam_spec.get("offset")
     pos_a = pos3(cam_spec["pos"]) if cam_spec.get("pos") else None
     pos_b = pos3(cam_spec["pos_end"]) if cam_spec.get("pos_end") else pos_a
+    shake = float(cam_spec.get("shake", 0.0))
 
     for f in range(1, n + 1):
         u = (f - 1) / float(n - 1)
@@ -367,8 +712,7 @@ def build_shot(shot, plan, opts, fps):
             elif look in points:
                 c = points[look].copy()
             else:
-                raise RuntimeError("Shot %s: look_at '%s' is not an actor in this shot."
-                                   % (shot["id"], look))
+                raise RuntimeError("Shot %s: look_at '%s' is not an actor in this shot." % (shot["id"], look))
             c.z += 0.8
         else:
             c = pos3(look)
@@ -381,6 +725,9 @@ def build_shot(shot, plan, opts, fps):
             cp = lerp(pos_a, pos_b, u)
         else:
             cp = c + Vector((0, -9, 2))
+        if shake > 0:
+            cp = cp + Vector((shake * (math.sin(f * 1.9) + math.sin(f * 3.1 + 1.0)) * 0.5, 0,
+                              shake * (math.sin(f * 2.3 + 2.0) + math.sin(f * 3.7)) * 0.5))
         cam.location = cp
         cam.keyframe_insert(data_path="location", frame=f)
 
@@ -395,6 +742,8 @@ def main():
     fps = opts["fps"] or int(plan.get("fps", 12))
     out = os.path.abspath(opts["out"])
     os.makedirs(out, exist_ok=True)
+    models = list_models(opts["assets"])
+    print("Models found in the repository: %d" % len(models), flush=True)
 
     shots = plan["shots"]
     total_frames = sum(max(2, int(round(float(s["seconds"]) * fps))) for s in shots)
@@ -403,16 +752,12 @@ def main():
           % (plan.get("title", "movie"), len(shots), fps, total_frames, opts["engine"]))
     print("=" * 60, flush=True)
 
-    times = []
-    shot_rows = []
+    times, shot_rows = [], []
     global_index = 0
     run_start = time.time()
     for shot in shots:
-        scene, n = build_shot(shot, plan, opts, fps)
-        if opts["sample_only"]:
-            frames = [n // 2]
-        else:
-            frames = list(range(1, n + 1))
+        scene, n = build_shot(shot, plan, opts, fps, models)
+        frames = [n // 2] if opts["sample_only"] else list(range(1, n + 1))
         shot_start = time.time()
         for f in frames:
             scene.frame_set(f)
@@ -426,8 +771,7 @@ def main():
             dt = time.time() - t0
             times.append(dt)
             print("Shot %s frame %d/%d took %.1f s" % (shot["id"], f, n, dt), flush=True)
-        shot_rows.append((shot["id"], shot.get("title", ""), n,
-                          time.time() - shot_start))
+        shot_rows.append((shot["id"], shot.get("title", ""), n, time.time() - shot_start))
         global_index += n
     run_total = time.time() - run_start
 
@@ -436,16 +780,14 @@ def main():
     est_min = avg * total_frames / 60.0
     if est_min <= 30:
         verdict = "GOOD: fast enough for a daily video."
-    elif est_min <= 90:
-        verdict = "OK but heavy: reduce fps, samples or scene detail if possible."
+    elif est_min <= 150:
+        verdict = "OK: heavy but fine for one video per day."
     else:
-        verdict = "TOO SLOW: simplify the scene, lower fps, or use fewer frames."
+        verdict = "TOO SLOW: simplify the scenes, lower fps, or use fewer frames."
 
     lines = [
-        "## Movie render test result",
-        "",
-        "| Item | Value |",
-        "|---|---|",
+        "## Movie render result", "",
+        "| Item | Value |", "|---|---|",
         "| Story | %s |" % plan.get("title", ""),
         "| Shots | %d |" % len(shots),
         "| Engine | %s |" % opts["engine"],
@@ -454,19 +796,13 @@ def main():
         "| Average time per frame | %.1f s |" % avg,
         "| Estimated time for the full video | %.1f minutes |" % est_min,
         "| Actual time of this run | %.1f minutes |" % (run_total / 60.0),
-        "",
-        "**Verdict:** " + verdict,
-        "",
-        "### Shots",
-        "",
-        "| Shot | Title | Frames | Render time (s) |",
-        "|---|---|---|---|",
+        "", "**Verdict:** " + verdict, "",
+        "### Shots", "", "| Shot | Title | Frames | Render time (s) |", "|---|---|---|---|",
     ]
     for sid, title, n, secs in shot_rows:
         lines.append("| %s | %s | %d | %.0f |" % (sid, title, n, secs))
     if NOTES:
-        lines += ["", "### Notes (please read)", ""]
-        lines += ["- " + x for x in NOTES]
+        lines += ["", "### Notes (please read)", ""] + ["- " + x for x in NOTES]
 
     with open(os.path.join(out, "summary.md"), "w", encoding="utf-8") as fh:
         fh.write("\n".join(lines) + "\n")
