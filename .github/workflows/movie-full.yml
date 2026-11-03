@@ -5,9 +5,16 @@ on:
     inputs:
       plan_file:
         description: "Scene plan file"
-        default: "scene_plan_2min.json"
+        default: "scene_plan_part1.json"
+      voice_mode:
+        description: "with_voice = Hindi narration + subtitles. silent_with_subtitles = no voice"
+        type: choice
+        default: with_voice
+        options:
+          - with_voice
+          - silent_with_subtitles
       voice_gender:
-        description: "Narrator voice"
+        description: "Narrator voice (only used with_voice)"
         type: choice
         default: male
         options:
@@ -81,9 +88,12 @@ jobs:
           GENDER: ${{ inputs.voice_gender }}
           ENGINE: ${{ inputs.tts_engine }}
           RATE: ${{ inputs.rate }}
+          VOICE_MODE: ${{ inputs.voice_mode }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python3 tts.py --plan "$PLAN_FILE" --gender "$GENDER" --engine "$ENGINE" --rate "$RATE"
+          EXTRA="--on-fail silent"
+          if [ "$VOICE_MODE" = "silent_with_subtitles" ]; then EXTRA="--no-audio"; fi
+          python3 tts.py --plan "$PLAN_FILE" --gender "$GENDER" --engine "$ENGINE" --rate="$RATE" $EXTRA
 
       - name: Download Blender 3.6 LTS
         run: |
@@ -91,6 +101,17 @@ jobs:
           curl -L -o blender.tar.xz https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
           tar -xf blender.tar.xz -C "$HOME/blender" --strip-components=1
           "$HOME/blender/blender" -b --version
+
+      - name: Quick check of every shot (one picture each, a few minutes)
+        env:
+          VID_FPS: ${{ inputs.fps }}
+          VID_ENGINE: ${{ inputs.engine }}
+        run: |
+          mkdir -p preflight
+          xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
+            -P movie_render.py -- \
+            --assets . --plan scene_plan_timed.json --fps "$VID_FPS" \
+            --engine "$VID_ENGINE" --out preflight --sample-only
 
       - name: Render all shots
         env:
@@ -119,6 +140,7 @@ jobs:
         run: |
           if [ -f tts_summary.md ]; then cat tts_summary.md >> "$GITHUB_STEP_SUMMARY"; fi
           if [ -f out/summary.md ]; then cat out/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+          if [ -f preflight/summary.md ]; then echo "### Quick check notes" >> "$GITHUB_STEP_SUMMARY"; cat preflight/summary.md >> "$GITHUB_STEP_SUMMARY"; fi
 
       - name: Save results
         if: always()
@@ -127,6 +149,7 @@ jobs:
           name: movie-final
           path: |
             out/movie_final.mp4
+            preflight/sample_shot*.png
             out/subs.ass
             out/summary.md
             tts_summary.md
