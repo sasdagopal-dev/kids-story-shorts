@@ -5,7 +5,7 @@ on:
     inputs:
       plan_file:
         description: "Scene plan file"
-        default: "scene_plan.json"
+        default: "scene_plan_part1.json"
       fps:
         description: "Frames per second"
         default: "12"
@@ -29,6 +29,28 @@ jobs:
       - name: Get the code
         uses: actions/checkout@v4
 
+      - name: Download asset packs from the Release (tag "assets")
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p asset_zips assets
+          gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips \
+            || echo "No release with the tag 'assets' found."
+          for z in asset_zips/*.zip; do
+            [ -f "$z" ] || continue
+            d="assets/$(basename "$z" .zip)"
+            mkdir -p "$d"
+            unzip -q -o "$z" -d "$d"
+            echo "Unpacked $z"
+          done
+          # loose .gltf/.glb files uploaded directly to the Release
+          for f in asset_zips/*.gltf asset_zips/*.glb; do
+            [ -f "$f" ] || continue
+            mkdir -p assets/loose_models
+            cp "$f" assets/loose_models/
+          done
+
       - name: List uploaded model files
         run: |
           echo "Model files found in the repository:"
@@ -37,7 +59,7 @@ jobs:
       - name: Install system packages
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb ffmpeg xz-utils \
+          sudo apt-get install -y xvfb ffmpeg xz-utils unzip \
             libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
             libxfixes3 libgl1 libegl1 libgl1-mesa-dri
 
