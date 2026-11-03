@@ -62,7 +62,9 @@ def build_ass(plan, fps, font, size, path):
         "Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, "
         "Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
         "Style: Default,%s,%d,&H00FFFFFF,&H000000FF,&H00000000,&H90000000,1,0,0,0,100,100,0,0,1,4,1,2,40,40,230,1"
-        % (font, size), "",
+        % (font, size),
+        "Style: Title,%s,%d,&H0050D8FF,&H000000FF,&H00000000,&H90000000,1,0,0,0,100,100,0,0,1,5,2,8,40,40,170,1"
+        % (font, size + 16), "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text",
     ]
@@ -82,6 +84,11 @@ def build_ass(plan, fps, font, size, path):
                               % (ass_time(cursor), ass_time(cursor + length), clean))
                 cursor += length
         t0 += dur
+    if plan.get("title_hi"):
+        events.append("Dialogue: 1,%s,%s,Title,,0,0,0,,%s" % (ass_time(0.5), ass_time(3.8), plan["title_hi"]))
+    if plan.get("outro_hi"):
+        events.append("Dialogue: 1,%s,%s,Title,,0,0,0,,%s"
+                      % (ass_time(max(0.0, t0 - 3.6)), ass_time(t0), plan["outro_hi"]))
     with open(path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(head + events) + "\n")
     return t0
@@ -140,17 +147,20 @@ def main():
     narration = os.path.join(out_dir, "narration.wav")
     build_narration(plan, fps, os.path.join(out_dir, "audio_tmp"), narration)
 
+    fade_v = "fade=t=in:st=0:d=0.5,fade=t=out:st=%.2f:d=0.9" % max(0.0, total - 0.9)
+    fade_a = "afade=t=in:st=0:d=0.3,afade=t=out:st=%.2f:d=1.0" % max(0.0, total - 1.0)
     cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps),
            "-i", os.path.join(args.frames, "frame_%05d.png"), "-i", narration]
     has_music = bool(args.music) and os.path.exists(args.music)
     if has_music:
         cmd += ["-stream_loop", "-1", "-i", args.music,
                 "-filter_complex",
-                "[2:a]volume=%s[m];[1:a][m]amix=inputs=2:duration=first:dropout_transition=0[a]" % args.music_volume,
+                "[2:a]volume=%s[m];[1:a][m]amix=inputs=2:duration=first:dropout_transition=0[mix];[mix]%s[a]"
+                % (args.music_volume, fade_a),
                 "-map", "0:v", "-map", "[a]"]
     else:
-        cmd += ["-map", "0:v", "-map", "1:a"]
-    cmd += ["-vf", "subtitles=%s,fps=%d,format=yuv420p" % (ass_path, args.out_fps),
+        cmd += ["-map", "0:v", "-map", "1:a", "-af", fade_a]
+    cmd += ["-vf", "subtitles=%s,%s,fps=%d,format=yuv420p" % (ass_path, fade_v, args.out_fps),
             "-c:v", "libx264", "-crf", "20", "-preset", "medium",
             "-c:a", "aac", "-b:a", "160k", "-t", "%.3f" % total, "-movflags", "+faststart", args.out]
     run(cmd)
