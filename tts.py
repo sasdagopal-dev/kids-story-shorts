@@ -16,6 +16,7 @@ import base64
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import urllib.request
@@ -30,6 +31,12 @@ GEMINI_MODEL = "gemini-2.5-flash-preview-tts"
 
 TEXT_KEYS = ("narration", "text", "voiceover", "voice_over", "dialogue")
 LIST_KEYS = ("shots", "scenes")
+
+QUALITY = {   # (width, height, samples) for landscape
+    "fast": (640, 360, 8),
+    "balanced": (960, 540, 16),
+    "high": (1280, 720, 24),
+}
 
 
 def find_shots(plan):
@@ -120,6 +127,25 @@ def make_audio(text, a, path):
     return None
 
 
+def srt_time(t):
+    ms = int(round(t * 1000))
+    h, ms = divmod(ms, 3600000)
+    m, ms = divmod(ms, 60000)
+    sec, ms = divmod(ms, 1000)
+    return f"{h:02}:{m:02}:{sec:02},{ms:03}"
+
+
+def split_lines(text, max_chars=46):
+    parts = [p.strip() for p in re.split(r"(?<=[।\.\?!,])\s+", text) if p.strip()]
+    merged = []
+    for p in parts:
+        if merged and (len(merged[-1]) < 14 or len(merged[-1]) + len(p) + 1 <= max_chars):
+            merged[-1] += " " + p
+        else:
+            merged.append(p)
+    return merged
+
+
 # ---------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
@@ -131,6 +157,8 @@ def main():
     ap.add_argument("--on-fail", dest="on_fail", default="stop", choices=["stop", "silent"])
     ap.add_argument("--no-audio", dest="no_audio", action="store_true")
     ap.add_argument("--out-plan", default="scene_plan_timed.json")
+    ap.add_argument("--quality", default="balanced", choices=list(QUALITY))
+    ap.add_argument("--aspect", default="landscape", choices=["landscape", "vertical"])
     a = ap.parse_args()
 
     with open(a.plan, encoding="utf-8") as f:
@@ -139,8 +167,10 @@ def main():
     os.makedirs("audio", exist_ok=True)
 
     rows, files = [], []
+    tl_shots, srt, srt_idx = [], [], 1
     t0, frame = 0.0, 0
     for i, s in enumerate(shots, start=1):
+        s.setdefault("id", i)
         text = get_text(s)
         path = os.path.join("audio", f"shot_{i:02d}.mp3")
         engine, vdur = None, 0.0
@@ -175,6 +205,20 @@ def main():
         s["end_frame"] = frame + n
         s["lead"] = LEAD
         rows.append((i, engine or ("silent" if text else "no text"), vdur, dur, n))
+        tl_shots.append({
+            "id": s["id"], "title": s.get("title", ""), "audio": path,
+            "voice_seconds": round(vdur, 3), "duration": round(dur, 3),
+            "start_time": round(t0, 3), "start_frame": frame, "end_frame": frame + n,
+            "thumb": bool((s.get("camera") or {}).get("thumb")),
+        })
+        lines = split_lines(text) if text else []
+        total_chars = sum(len(x) for x in lines) or 1
+        cur = t0 + LEAD
+        for ln in lines:
+            span = vdur * len(ln) / total_chars
+            srt.append(f"{srt_idx}\n{srt_time(cur)} --> {srt_time(cur + span)}\n{ln}\n")
+            srt_idx += 1
+            cur += span
         t0 += dur
         frame += n
 
@@ -185,6 +229,17 @@ def main():
         plan["voice_mode"] = "silent" if a.no_audio else "voice"
     with open(a.out_plan, "w", encoding="utf-8") as f:
         json.dump(plan, f, ensure_ascii=False, indent=1)
+
+    w, h, samples = QUALITY[a.quality]
+    if a.aspect == "vertical":
+        w, h = h, w
+    timeline = {"fps": a.fps, "width": w, "height": h, "samples": samples,
+                "aspect": a.aspect, "total_frames": frame,
+                "total_seconds": round(t0, 2), "lead": LEAD, "shots": tl_shots}
+    with open("timeline.json", "w", encoding="utf-8") as f:
+        json.dump(timeline, f, ensure_ascii=False, indent=1)
+    with open("subs.srt", "w", encoding="utf-8") as f:
+        f.write("\n".join(srt))
 
     # preview = all shot voices joined
     if files:
