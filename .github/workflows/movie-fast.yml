@@ -197,6 +197,15 @@ jobs:
           echo "Devanagari fonts found:"
           fc-list | grep -i "devanagari" | head -3 || echo "NO Devanagari font found"
 
+      - name: Check the new assemble script is present
+        run: |
+          if [ ! -f assemble_movie.py ]; then
+            echo "ERROR: assemble_movie.py not found in the repo root on this branch."
+            ls -la
+            exit 1
+          fi
+          grep -c -- "--video" assemble_movie.py
+
       - name: Join the parts and build the final video
         env:
           VID_FPS: ${{ inputs.fps }}
@@ -210,7 +219,7 @@ jobs:
           MUSIC=""
           MUSIC_FILE=$(find music -type f -iname "music*.mp3" 2>/dev/null | head -1 || true)
           if [ -n "$MUSIC_FILE" ]; then MUSIC="$MUSIC_FILE"; echo "Using music: $MUSIC"; fi
-          python3 assemble.py --plan scene_plan_timed.json --video out/video_all.mp4 \
+          python3 assemble_movie.py --plan scene_plan_timed.json --video out/video_all.mp4 \
             --fps "$VID_FPS" --out out/movie_final.mp4 --music "$MUSIC"
           rm -f out/video_all.mp4
 
