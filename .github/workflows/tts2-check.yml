@@ -1,0 +1,79 @@
+name: Voice full check (Gemini + retry + Edge backup)
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: "Gemini TTS model (empty = choose automatically)"
+        default: ""
+      voices:
+        description: "Gemini voices to test, comma separated"
+        default: "Charon,Kore"
+      burst:
+        description: "Quick calls to find the free-tier rate limit (0 = skip)"
+        default: "3"
+      plan_file:
+        description: "Scene plan to take real narration lines from (empty = skip)"
+        default: "scene_plan_part1.json"
+      shots:
+        description: "How many real shots to voice (0 = skip)"
+        default: "2"
+      all_models:
+        description: "Also test other TTS models your key can see"
+        type: boolean
+        default: false
+      strict:
+        description: "Fail the run if any single test fails"
+        type: boolean
+        default: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools (with retry)
+        run: |
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
+          for i in 1 2 3 4; do
+            pip install edge-tts && break
+            echo "pip failed, attempt $i"; sleep $((i*10))
+          done
+
+      - name: Run the voice check
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          MODEL: ${{ inputs.model }}
+          VOICES: ${{ inputs.voices }}
+          BURST: ${{ inputs.burst }}
+          PLAN_FILE: ${{ inputs.plan_file }}
+          SHOTS: ${{ inputs.shots }}
+          ALL_MODELS: ${{ inputs.all_models }}
+          STRICT: ${{ inputs.strict }}
+        run: |
+          ARGS="--voices $VOICES --burst $BURST"
+          [ -n "$MODEL" ] && ARGS="$ARGS --model $MODEL"
+          if [ -n "$PLAN_FILE" ] && [ -f "$PLAN_FILE" ] && [ "$SHOTS" != "0" ]; then
+            ARGS="$ARGS --plan $PLAN_FILE --shots $SHOTS"
+          fi
+          [ "$ALL_MODELS" = "true" ] && ARGS="$ARGS --all-models"
+          [ "$STRICT" = "true" ] && ARGS="$ARGS --strict"
+          python3 tts2_check.py $ARGS
+
+      - name: Show report
+        if: always()
+        run: |
+          [ -f out/tts2_report.md ] && cat out/tts2_report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save audio and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: voice-check
+          path: out/
+          if-no-files-found: warn
