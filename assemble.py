@@ -1,6 +1,13 @@
-"""Step 3: join all rendered frames, Hindi voice, subtitles and optional music.
+#!/usr/bin/env python3
+"""Join the rendered video with Hindi narration, subtitles and optional music.
 
-python scripts/assemble.py --plan out --frames frames --story story/finance_story.json --final final
+Called by the workflow:
+  python3 assemble.py --plan scene_plan_timed.json --video out/video_all.mp4 \
+      --fps 12 --out out/movie_final.mp4 --music "path/or/empty"
+
+Needs in the current folder (downloaded from the 'plan' artifact):
+  scene_plan_timed.json, timeline.json, subs.srt, audio/shot_XX.mp3
+Writes: the final mp4 and out/subs.ass
 """
 import argparse
 import json
@@ -11,90 +18,112 @@ import sys
 
 
 def run(cmd, cwd=None):
-    print("+", " ".join(str(c) for c in cmd))
-    subprocess.run([str(c) for c in cmd], check=True, cwd=cwd)
+    cmd = [str(c) for c in cmd]
+    print("+", " ".join(cmd))
+    subprocess.run(cmd, check=True, cwd=cwd)
+
+
+def find_shots(plan):
+    if isinstance(plan, list):
+        return plan
+    for k in ("shots", "scenes"):
+        if isinstance(plan.get(k), list):
+            return plan[k]
+    sys.exit("Plan has no 'shots' list")
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--plan", default="out")
-    ap.add_argument("--frames", default="frames")
-    ap.add_argument("--story", required=True)
-    ap.add_argument("--final", default="final")
-    ap.add_argument("--music", default="assets/music/bgm.mp3")
+    ap.add_argument("--plan", required=True, help="scene_plan_timed.json")
+    ap.add_argument("--video", required=True, help="joined silent video")
+    ap.add_argument("--out", required=True, help="final mp4 path")
+    ap.add_argument("--fps", type=int, default=12)
+    ap.add_argument("--music", default="")
+    ap.add_argument("--timeline", default="timeline.json")
+    ap.add_argument("--srt", default="subs.srt")
     ap.add_argument("--burn-subs", default="true")
     a = ap.parse_args()
 
-    plan = os.path.abspath(a.plan)
-    frames = os.path.abspath(a.frames)
-    final = os.path.abspath(a.final)
-    os.makedirs(final, exist_ok=True)
-    tl = json.load(open(os.path.join(plan, "timeline.json"), encoding="utf-8"))
-    story = json.load(open(a.story, encoding="utf-8"))
-    fps, total = tl["fps"], tl["total_frames"]
+    if not os.path.exists(a.video):
+        sys.exit(f"Video not found: {a.video}")
 
-    missing = [g for g in range(total) if not os.path.exists(os.path.join(frames, f"f_{g:06d}.png"))]
-    if missing:
-        print(f"ERROR: {len(missing)} frames missing, first few: {missing[:10]}")
-        sys.exit(1)
+    with open(a.plan, encoding="utf-8") as f:
+        plan = json.load(f)
+    shots = find_shots(plan)
+    tl = {}
+    if os.path.exists(a.timeline):
+        with open(a.timeline, encoding="utf-8") as f:
+            tl = json.load(f)
 
-    # ---- narration: each shot padded to its exact duration, then concatenated
-    work = os.path.join(final, "_work")
-    os.makedirs(work, exist_ok=True)
-    lead_ms = int(tl["lead"] * 1000)
-    lst = []
-    for s in tl["shots"]:
-        wav = os.path.join(work, f"shot_{s['id']:02d}.wav")
-        run(["ffmpeg", "-y", "-loglevel", "error", "-i", os.path.join(plan, os.path.relpath(s["audio"], "out")) if not os.path.exists(s["audio"]) else s["audio"],
-             "-af", f"adelay={lead_ms}|{lead_ms},apad=whole_dur={s['duration']:.3f}",
-             "-t", f"{s['duration']:.3f}", "-ar", "44100", "-ac", "2", wav])
-        lst.append(f"file '{wav}'")
+    total_seconds = tl.get("total_seconds") or plan.get("total_seconds")
+    aspect = tl.get("aspect", "landscape")
+    out_path = os.path.abspath(a.out)
+    out_dir = os.path.dirname(out_path)
+    os.makedirs(out_dir, exist_ok=True)
+    video = os.path.abspath(a.video)
+
+    work = os.path.join(out_dir, "_work")
+    shutil.rmtree(work, ignore_errors=True)
+    os.makedirs(work)
+
+    # ---- narration: each shot padded to its exact duration, then joined
+    parts = []
+    for s in shots:
+        dur = float(s["duration"])
+        lead_ms = int(float(s.get("lead", 0.3)) * 1000)
+        wav = os.path.join(work, f"shot_{int(s['id']):02d}.wav")
+        audio = s.get("audio")
+        if audio and os.path.exists(audio):
+            run(["ffmpeg", "-y", "-loglevel", "error", "-i", audio,
+                 "-af", f"adelay={lead_ms}|{lead_ms},apad=whole_dur={dur:.3f}",
+                 "-t", f"{dur:.3f}", "-ar", "44100", "-ac", "2", wav])
+        else:  # silent shot
+            run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi",
+                 "-i", "anullsrc=r=44100:cl=stereo", "-t", f"{dur:.3f}", wav])
+        parts.append(f"file '{wav}'")
     listfile = os.path.join(work, "list.txt")
-    open(listfile, "w").write("\n".join(lst))
+    with open(listfile, "w") as f:
+        f.write("\n".join(parts))
     narr = os.path.join(work, "narration.wav")
-    run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", listfile, "-c", "copy", narr])
+    run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
+         "-i", listfile, "-c", "copy", narr])
 
-    # ---- video
-    if tl["aspect"] == "vertical":
-        W, H, fsize = 1080, 1920, 11
-    else:
-        W, H, fsize = 1920, 1080, 14
-    shutil.copy(os.path.join(plan, "subs.srt"), os.path.join(work, "subs.srt"))
+    # ---- subtitles (also saved as .ass)
+    have_srt = os.path.exists(a.srt) and os.path.getsize(a.srt) > 0
+    if have_srt:
+        shutil.copy(a.srt, os.path.join(work, "subs.srt"))
+        subprocess.call(["ffmpeg", "-y", "-loglevel", "error", "-i", a.srt,
+                         os.path.join(out_dir, "subs.ass")])
+
+    # ---- final video
+    W, H, fsize = (1080, 1920, 11) if aspect == "vertical" else (1920, 1080, 14)
     vf = f"scale={W}:{H}:flags=lanczos,fps=30"
-    if a.burn_subs.lower() == "true":
+    if have_srt and a.burn_subs.lower() == "true":
         style = (f"FontName=Noto Sans Devanagari,FontSize={fsize},PrimaryColour=&H00FFFFFF,"
                  "OutlineColour=&H00000000,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=26")
         vf += f",subtitles=subs.srt:force_style='{style}'"
 
-    inputs = ["-framerate", str(fps), "-i", os.path.join(frames, "f_%06d.png"), "-i", narr]
-    af = []
-    if os.path.exists(a.music):
-        inputs += ["-stream_loop", "-1", "-i", a.music]
-        af = ["-filter_complex",
-              "[1:a]volume=1.0[v];[2:a]volume=0.10[m];[v][m]amix=inputs=2:duration=first:normalize=0[a]",
-              "-map", "0:v", "-map", "[a]"]
+    inputs = ["-i", video, "-i", narr]
+    music = os.path.abspath(a.music) if a.music else ""
+    if music and os.path.exists(music):
+        inputs += ["-stream_loop", "-1", "-i", music]
+        amap = ["-filter_complex",
+                "[1:a]volume=1.0[v];[2:a]volume=0.10[m];"
+                "[v][m]amix=inputs=2:duration=first:normalize=0[a]",
+                "-map", "0:v", "-map", "[a]"]
     else:
-        af = ["-map", "0:v", "-map", "1:a"]
+        amap = ["-map", "0:v", "-map", "1:a"]
 
-    out_mp4 = os.path.join(final, "story_final.mp4")
-    run(["ffmpeg", "-y", "-loglevel", "error", *inputs, *af, "-vf", vf,
-         "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
-         "-c:a", "aac", "-b:a", "192k", "-t", f"{tl['total_seconds']:.2f}",
-         "-movflags", "+faststart", out_mp4], cwd=work)
+    cmd = ["ffmpeg", "-y", "-loglevel", "error", *inputs, *amap, "-vf", vf,
+           "-c:v", "libx264", "-preset", "medium", "-crf", "18", "-pix_fmt", "yuv420p",
+           "-c:a", "aac", "-b:a", "192k"]
+    if total_seconds:
+        cmd += ["-t", f"{float(total_seconds):.2f}"]
+    cmd += ["-movflags", "+faststart", out_path]
+    run(cmd, cwd=work)
 
-    # ---- thumbnail
-    thumb_shot = next((s for s in tl["shots"] if s["thumb"]), tl["shots"][len(tl["shots"]) // 2])
-    g = (thumb_shot["start_frame"] + thumb_shot["end_frame"]) // 2
-    run(["ffmpeg", "-y", "-loglevel", "error", "-i", os.path.join(frames, f"f_{g:06d}.png"),
-         "-vf", f"scale={W}:{H}:flags=lanczos", "-q:v", "2", os.path.join(final, "thumbnail.jpg")])
-
-    # ---- title + description
-    desc = "\n\n".join([story.get("description", ""), story.get("disclaimer", ""), story.get("credits", "")])
-    open(os.path.join(final, "title.txt"), "w", encoding="utf-8").write(story["title"])
-    open(os.path.join(final, "description.txt"), "w", encoding="utf-8").write(desc)
-    shutil.copy(os.path.join(plan, "subs.srt"), os.path.join(final, "subtitles_hi.srt"))
     shutil.rmtree(work, ignore_errors=True)
-    print("DONE:", out_mp4, f"({tl['total_seconds']} s)")
+    print("DONE:", out_path)
 
 
 if __name__ == "__main__":
