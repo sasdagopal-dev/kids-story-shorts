@@ -1,0 +1,49 @@
+name: TTS3 - full story, one Gemini call, one voice
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_file:
+        description: "Plan .json (or a .txt with paragraphs) holding the story"
+        default: "scene_plan_part1.json"
+      voice:
+        description: "Gemini voice (Charon = deep male, Kore = female, Puck, Fenrir, Aoede, Zephyr)"
+        default: "Charon"
+      model:
+        description: "Gemini TTS model"
+        default: "gemini-2.5-flash-preview-tts"
+
+jobs:
+  voice:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ffmpeg (with retry)
+        run: |
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg && break
+            sleep $((i*10))
+          done
+
+      - name: One request, one voice
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PLAN: ${{ inputs.plan_file }}
+          VOICE: ${{ inputs.voice }}
+          MODEL: ${{ inputs.model }}
+        run: python3 tts3.py --plan "$PLAN" --voice "$VOICE" --model "$MODEL"
+
+      - name: Show report
+        if: always()
+        run: |
+          [ -f out/report.md ] && cat out/report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save the voice
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-voice-single
+          path: out/
+          if-no-files-found: warn
