@@ -120,6 +120,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", default="scene_plan_timed.json")
     ap.add_argument("--frames", default="out")
+    ap.add_argument("--video", default="", help="one joined video of all shots (instead of PNG frames)")
     ap.add_argument("--fps", type=int, default=12)
     ap.add_argument("--out-fps", type=int, default=24)
     ap.add_argument("--out", default="out/movie_final.mp4")
@@ -135,11 +136,12 @@ def main():
     out_dir = os.path.dirname(os.path.abspath(args.out))
     os.makedirs(out_dir, exist_ok=True)
 
-    expected = sum(shot_frames(s, fps) for s in plan["shots"])
-    found = len(glob.glob(os.path.join(args.frames, "frame_*.png")))
-    print("Frames expected %d, found %d" % (expected, found), flush=True)
-    if found < expected:
-        raise SystemExit("Not enough rendered frames (%d of %d). Run the render step first." % (found, expected))
+    if not args.video:
+        expected = sum(shot_frames(s, fps) for s in plan["shots"])
+        found = len(glob.glob(os.path.join(args.frames, "frame_*.png")))
+        print("Frames expected %d, found %d" % (expected, found), flush=True)
+        if found < expected:
+            raise SystemExit("Not enough rendered frames (%d of %d). Run the render step first." % (found, expected))
 
     ass_path = os.path.join(out_dir, "subs.ass")
     total = build_ass(plan, fps, args.font, args.font_size, ass_path)
@@ -149,8 +151,11 @@ def main():
 
     fade_v = "fade=t=in:st=0:d=0.5,fade=t=out:st=%.2f:d=0.9" % max(0.0, total - 0.9)
     fade_a = "afade=t=in:st=0:d=0.3,afade=t=out:st=%.2f:d=1.0" % max(0.0, total - 1.0)
-    cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps),
-           "-i", os.path.join(args.frames, "frame_%05d.png"), "-i", narration]
+    if args.video:
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-i", args.video, "-i", narration]
+    else:
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", "-framerate", str(fps),
+               "-i", os.path.join(args.frames, "frame_%05d.png"), "-i", narration]
     has_music = bool(args.music) and os.path.exists(args.music)
     if has_music:
         cmd += ["-stream_loop", "-1", "-i", args.music,
