@@ -1,240 +1,135 @@
-#!/usr/bin/env python3
-"""
-Hindi narration for every shot of a scene plan.
+"""Step 1: make Hindi voice for every shot, measure it, and build the timeline.
 
-For each shot that has "narration_hi", this makes one audio file, measures its length,
-and writes a TIMED plan where every shot is long enough for its voice.
-
-  python3 tts.py --plan scene_plan_2min.json --gender male
-
-Engines
-  edge    Microsoft Edge voices (hi-IN-MadhurNeural male, hi-IN-SwaraNeural female).
-          No key needed. Unofficial service: it can fail some days.
-  gemini  Gemini text-to-speech. Needs the secret GEMINI_API_KEY.
-  auto    (default) try edge first, then gemini if a key exists.
-
-Outputs
-  audio/shot_01.mp3 ...      one file per shot
-  scene_plan_timed.json      the plan with real shot lengths
-  tts_summary.md             table of audio lengths
-  narration_preview.mp3      all narration in one file, to listen to
+Outputs (in --out):
+  audio/shot_XX.mp3   voice per shot
+  timeline.json       frame ranges per shot, fps, resolution, samples
+  subs.srt            subtitles (Hindi)
+Also writes `shards=[0,1,...]` to $GITHUB_OUTPUT for the parallel render jobs.
 """
 import argparse
 import asyncio
-import base64
 import json
+import math
 import os
+import re
 import subprocess
-import sys
-import time
-import urllib.error
-import urllib.request
-import wave
 
-VOICES = {
-    "male": {"edge": "hi-IN-MadhurNeural", "gemini": "Charon"},
-    "female": {"edge": "hi-IN-SwaraNeural", "gemini": "Kore"},
+import edge_tts
+
+LEAD = 0.30   # seconds of silence before the voice starts in each shot
+TAIL = 0.55   # seconds of silence after the voice ends
+
+QUALITY = {   # (width, height, samples) for landscape
+    "draft": (640, 360, 8),
+    "standard": (960, 540, 16),
+    "high": (1280, 720, 24),
 }
-GEMINI_STYLE = ("Narrate this in Hindi as a calm, dramatic storyteller for a children's "
-                "adventure film. Speak clearly and not too fast: ")
 
 
-def probe_duration(path):
-    r = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration",
-                        "-of", "csv=p=0", path], capture_output=True, text=True)
-    return float(r.stdout.strip())
+def probe(path):
+    out = subprocess.check_output([
+        "ffprobe", "-v", "error", "-show_entries", "format=duration",
+        "-of", "csv=p=0", path])
+    return float(out.decode().strip())
 
 
-# ---------------------------------------------------------------- engines
-async def _edge_save(text, voice, rate, path):
-    import edge_tts
-    await edge_tts.Communicate(text, voice, rate=rate).save(path)
-
-
-def synth_edge(text, voice, rate, path, tries=4):
+async def synth(text, voice, rate, path):
     last = None
-    for i in range(tries):
+    for attempt in range(4):
         try:
-            asyncio.run(_edge_save(text, voice, rate, path))
-            if os.path.exists(path) and os.path.getsize(path) > 1000:
+            await edge_tts.Communicate(text, voice, rate=rate).save(path)
+            if os.path.getsize(path) > 1000:
                 return
-            last = RuntimeError("audio file was empty")
-        except Exception as e:  # edge-tts raises several different errors
+        except Exception as e:  # network hiccup
             last = e
-        time.sleep(2 + 2 * i)
-    raise RuntimeError("edge-tts failed: %s" % last)
+        await asyncio.sleep(2 + attempt * 3)
+    raise RuntimeError(f"TTS failed for {path}: {last}")
 
 
-def synth_gemini(text, voice_name, model, api_key, path, tries=4):
-    url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model
-    body = {
-        "contents": [{"parts": [{"text": GEMINI_STYLE + text}]}],
-        "generationConfig": {
-            "responseModalities": ["AUDIO"],
-            "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice_name}}},
-        },
-    }
-    last = None
-    for i in range(tries):
-        try:
-            req = urllib.request.Request(
-                url, data=json.dumps(body).encode("utf-8"),
-                headers={"Content-Type": "application/json", "x-goog-api-key": api_key})
-            with urllib.request.urlopen(req, timeout=180) as resp:
-                data = json.load(resp)
-            b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
-            pcm = base64.b64decode(b64)
-            with wave.open(path, "wb") as wf:      # Gemini returns raw 24 kHz 16-bit mono
-                wf.setnchannels(1)
-                wf.setsampwidth(2)
-                wf.setframerate(24000)
-                wf.writeframes(pcm)
-            return
-        except urllib.error.HTTPError as e:
-            last = "HTTP %s %s" % (e.code, e.read()[:200])
-            time.sleep(20 if e.code == 429 else 4)
-        except Exception as e:
-            last = e
-            time.sleep(4)
-    raise RuntimeError("gemini tts failed: %s" % last)
+def srt_time(t):
+    ms = int(round(t * 1000))
+    h, ms = divmod(ms, 3600000)
+    m, ms = divmod(ms, 60000)
+    s, ms = divmod(ms, 1000)
+    return f"{h:02}:{m:02}:{s:02},{ms:03}"
 
 
-# ---------------------------------------------------------------- main
-def fix_argv(argv):
-    """Turn '--rate -8%' into '--rate=-8%' (argparse would read '-8%' as a new option)."""
-    out, i = [], 0
-    while i < len(argv):
-        if argv[i] == "--rate" and i + 1 < len(argv):
-            out.append("--rate=" + argv[i + 1])
-            i += 2
+def split_lines(text, max_chars=46):
+    parts = [p.strip() for p in re.split(r"(?<=[।\.\?!,])\s+", text) if p.strip()]
+    merged = []
+    for p in parts:
+        if merged and (len(merged[-1]) < 14 or len(merged[-1]) + len(p) + 1 <= max_chars):
+            merged[-1] += " " + p
         else:
-            out.append(argv[i])
-            i += 1
-    return out
-
-
-def silent_estimate(shot, text, planned, pad):
-    """No voice file: guess how long the line would take to read (about 2.3 words per second)."""
-    est = len(text.split()) / 2.3
-    shot["audio_seconds"] = round(est, 2)
-    shot["seconds"] = round(max(planned, est + pad), 2)
-    return est
+            merged.append(p)
+    return merged
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--plan", default="scene_plan_2min.json")
-    ap.add_argument("--out-dir", default="audio")
-    ap.add_argument("--timed-plan", default="scene_plan_timed.json")
-    ap.add_argument("--engine", default="auto", choices=["auto", "edge", "gemini"])
-    ap.add_argument("--gender", default="male", choices=["male", "female"])
-    ap.add_argument("--rate", default="-8%", help="speaking speed for edge, e.g. -8%% is a bit slower")
-    ap.add_argument("--gemini-model", default=os.environ.get("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts"))
-    ap.add_argument("--pad", type=float, default=0.6, help="extra seconds added to each shot after its voice")
-    ap.add_argument("--reuse-audio", action="store_true", help="use audio files that already exist")
-    ap.add_argument("--no-audio", action="store_true",
-                    help="make NO voice: shots get lengths from the text and the video has subtitles only")
-    ap.add_argument("--on-fail", default="abort", choices=["abort", "silent"],
-                    help="what to do when the voice cannot be made for a shot")
-    ap.add_argument("--summary", default="tts_summary.md")
-    ap.add_argument("--preview", default="narration_preview.mp3")
-    args = ap.parse_args(fix_argv(sys.argv[1:]))
+    ap.add_argument("--story", required=True)
+    ap.add_argument("--out", default="out")
+    ap.add_argument("--fps", type=int, default=15)
+    ap.add_argument("--quality", default="standard", choices=list(QUALITY))
+    ap.add_argument("--aspect", default="landscape", choices=["landscape", "vertical"])
+    ap.add_argument("--shards", type=int, default=6)
+    a = ap.parse_args()
 
-    with open(args.plan, "r", encoding="utf-8") as fh:
-        plan = json.load(fh)
-    os.makedirs(args.out_dir, exist_ok=True)
-    key = os.environ.get("GEMINI_API_KEY", "").strip()
-    voice = VOICES[args.gender]
-    order = ["edge", "gemini"] if args.engine == "auto" else [args.engine]
+    story = json.load(open(a.story, encoding="utf-8"))
+    os.makedirs(os.path.join(a.out, "audio"), exist_ok=True)
+    voice = story.get("voice", "hi-IN-MadhurNeural")
+    rate = story.get("rate", "+0%")
 
-    rows, audio_files = [], []
-    for shot in plan["shots"]:
-        sid = int(shot["id"])
-        planned = float(shot["seconds"])
-        shot["seconds_planned"] = planned
-        text = (shot.get("narration_hi") or "").strip()
-        if not text:
-            rows.append((sid, shot.get("title", ""), "-", 0.0, planned, planned))
-            continue
+    w, h, samples = QUALITY[a.quality]
+    if a.aspect == "vertical":
+        w, h = h, w
 
-        if args.no_audio:
-            est = silent_estimate(shot, text, planned, args.pad)
-            rows.append((sid, shot.get("title", ""), "silent", est, planned, shot["seconds"]))
-            continue
+    shots, srt, idx = [], [], 1
+    frame, t0, total_voice = 0, 0.0, 0.0
+    for s in story["shots"]:
+        path = os.path.join(a.out, "audio", f"shot_{s['id']:02d}.mp3")
+        asyncio.run(synth(s["narration"], voice, rate, path))
+        vdur = probe(path)
+        total_voice += vdur
+        dur = max(vdur + LEAD + TAIL, float(s.get("min_seconds", 0)))
+        n = int(math.ceil(dur * a.fps))
+        dur = n / a.fps
+        shots.append({
+            "id": s["id"], "title": s.get("title", ""), "audio": path,
+            "voice_seconds": round(vdur, 3), "duration": round(dur, 3),
+            "start_time": round(t0, 3), "start_frame": frame, "end_frame": frame + n,
+            "thumb": bool(s.get("camera", {}).get("thumb")),
+        })
+        # subtitles, time-share by character count
+        lines = split_lines(s["narration"])
+        total_chars = sum(len(x) for x in lines) or 1
+        cur = t0 + LEAD
+        for ln in lines:
+            span = vdur * len(ln) / total_chars
+            srt.append(f"{idx}\n{srt_time(cur)} --> {srt_time(cur + span)}\n{ln}\n")
+            idx += 1
+            cur += span
+        frame += n
+        t0 += dur
 
-        base = os.path.join(args.out_dir, "shot_%02d" % sid)
-        path, used = None, None
-        if args.reuse_audio:
-            for ext in (".mp3", ".wav"):
-                if os.path.exists(base + ext):
-                    path, used = base + ext, "reused"
-                    break
-        if path is None:
-            errors = []
-            for eng in order:
-                try:
-                    if eng == "edge":
-                        path = base + ".mp3"
-                        synth_edge(text, voice["edge"], args.rate, path)
-                    else:
-                        if not key:
-                            raise RuntimeError("the secret GEMINI_API_KEY is not set")
-                        path = base + ".wav"
-                        synth_gemini(text, voice["gemini"], args.gemini_model, key, path)
-                    used = eng
-                    break
-                except Exception as e:
-                    errors.append("%s: %s" % (eng, e))
-                    path = None
-            if path is None:
-                if args.on_fail == "silent":
-                    print("WARNING: no voice for shot %d, continuing without it.\n  %s"
-                          % (sid, "\n  ".join(errors)), flush=True)
-                    est = silent_estimate(shot, text, planned, args.pad)
-                    rows.append((sid, shot.get("title", ""), "silent (voice failed)", est, planned, shot["seconds"]))
-                    continue
-                sys.exit("Could not make the voice for shot %d.\n  %s" % (sid, "\n  ".join(errors)))
+    timeline = {
+        "fps": a.fps, "width": w, "height": h, "samples": samples,
+        "aspect": a.aspect, "total_frames": frame,
+        "total_seconds": round(t0, 2), "voice": voice, "lead": LEAD,
+        "shots": shots,
+    }
+    json.dump(timeline, open(os.path.join(a.out, "timeline.json"), "w"), indent=1)
+    open(os.path.join(a.out, "subs.srt"), "w", encoding="utf-8").write("\n".join(srt))
 
-        dur = probe_duration(path)
-        shot["audio_file"] = path
-        shot["audio_seconds"] = round(dur, 2)
-        shot["seconds"] = round(max(planned, dur + args.pad), 2)
-        audio_files.append(path)
-        rows.append((sid, shot.get("title", ""), used, dur, planned, shot["seconds"]))
-        print("shot %02d | %-8s | voice %.1f s | planned %.1f s | final %.1f s"
-              % (sid, used, dur, planned, shot["seconds"]), flush=True)
+    print(f"Voice total {total_voice:.1f}s | video {t0:.1f}s | frames {frame} @ {a.fps}fps")
+    print(f"Render size {w}x{h}, {samples} samples, {a.shards} parallel shards")
+    est = frame / a.shards * 5 / 60
+    print(f"Rough estimate at 5 s/frame: about {est:.0f} minutes per shard")
 
-    with open(args.timed_plan, "w", encoding="utf-8") as fh:
-        json.dump(plan, fh, ensure_ascii=False, indent=2)
-
-    total = sum(r[5] for r in rows)
-    voice_total = sum(r[3] for r in rows)
-    lines = ["## Hindi narration result", "",
-             "Voice: **%s** (%s)" % (args.gender, voice["edge"] if args.engine != "gemini" else voice["gemini"]),
-             "",
-             "Total voice: **%.0f s**. Final video length: **about %.0f s (%.1f minutes)**."
-             % (voice_total, total, total / 60.0), "",
-             "| Shot | Title | Engine | Voice (s) | Planned (s) | Final (s) |", "|---|---|---|---|---|---|"]
-    for sid, title, eng, dur, planned, final in rows:
-        lines.append("| %d | %s | %s | %.1f | %.1f | %.1f |" % (sid, title, eng, dur, planned, final))
-    if total > 175:
-        lines += ["", "**WARNING: the video is %.0f s. YouTube Shorts allow at most 180 s. "
-                  "Shorten some narration lines in the plan.**" % total]
-    with open(args.summary, "w", encoding="utf-8") as fh:
-        fh.write("\n".join(lines) + "\n")
-    print("\n".join(lines), flush=True)
-
-    # one preview file with every voice line in a row, so you can listen to the whole story
-    if audio_files:
-        cmd = ["ffmpeg", "-y", "-loglevel", "error"]
-        for f in audio_files:
-            cmd += ["-i", f]
-        parts = ["[%d:a]aresample=44100,aformat=channel_layouts=mono,apad=pad_dur=0.6[a%d]" % (i, i)
-                 for i in range(len(audio_files))]
-        graph = ";".join(parts) + ";" + "".join("[a%d]" % i for i in range(len(audio_files))) \
-            + "concat=n=%d:v=0:a=1[out]" % len(audio_files)
-        cmd += ["-filter_complex", graph, "-map", "[out]", "-c:a", "libmp3lame", "-q:a", "4", args.preview]
-        subprocess.run(cmd, check=False)
+    gh = os.environ.get("GITHUB_OUTPUT")
+    if gh:
+        with open(gh, "a") as f:
+            f.write("shards=" + json.dumps(list(range(a.shards))) + "\n")
 
 
 if __name__ == "__main__":
