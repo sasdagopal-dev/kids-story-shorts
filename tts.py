@@ -1,29 +1,52 @@
-"""Step 1: make Hindi voice for every shot, measure it, and build the timeline.
+#!/usr/bin/env python3
+"""Make Hindi narration for every shot and write the timed plan.
 
-Outputs (in --out):
-  audio/shot_XX.mp3   voice per shot
-  timeline.json       frame ranges per shot, fps, resolution, samples
-  subs.srt            subtitles (Hindi)
-Also writes `shards=[0,1,...]` to $GITHUB_OUTPUT for the parallel render jobs.
+Called by the workflow like this:
+  python3 tts.py --plan P.json --gender male --engine auto --rate=-8% [--on-fail silent | --no-audio] [--fps 12]
+
+Outputs (in the current folder):
+  scene_plan_timed.json   the plan + per-shot timing (seconds and frames)
+  tts_summary.md          what happened for each shot
+  narration_preview.mp3   all shot voices joined together
+  audio/shot_XX.mp3       one voice file per shot
 """
 import argparse
 import asyncio
+import base64
 import json
 import math
 import os
-import re
 import subprocess
+import sys
+import urllib.request
 
-import edge_tts
+LEAD = 0.30   # silence before the voice in each shot (seconds)
+TAIL = 0.55   # silence after the voice
+CHARS_PER_SEC = 12.0   # used to guess duration when there is no audio
 
-LEAD = 0.30   # seconds of silence before the voice starts in each shot
-TAIL = 0.55   # seconds of silence after the voice ends
+EDGE_VOICES = {"male": "hi-IN-MadhurNeural", "female": "hi-IN-SwaraNeural"}
+GEMINI_VOICES = {"male": "Charon", "female": "Kore"}
+GEMINI_MODEL = "gemini-2.5-flash-preview-tts"
 
-QUALITY = {   # (width, height, samples) for landscape
-    "draft": (640, 360, 8),
-    "standard": (960, 540, 16),
-    "high": (1280, 720, 24),
-}
+TEXT_KEYS = ("narration", "text", "voiceover", "voice_over", "dialogue")
+LIST_KEYS = ("shots", "scenes")
+
+
+def find_shots(plan):
+    if isinstance(plan, list):
+        return plan
+    for k in LIST_KEYS:
+        if isinstance(plan.get(k), list):
+            return plan[k]
+    sys.exit(f"Plan has no list called one of {LIST_KEYS}. Keys found: {list(plan)}")
+
+
+def get_text(shot):
+    for k in TEXT_KEYS:
+        v = shot.get(k)
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+    return ""
 
 
 def probe(path):
@@ -33,103 +56,154 @@ def probe(path):
     return float(out.decode().strip())
 
 
-async def synth(text, voice, rate, path):
+# ---------------------------------------------------------------- engines
+async def _edge(text, voice, rate, path):
+    import edge_tts
     last = None
     for attempt in range(4):
         try:
             await edge_tts.Communicate(text, voice, rate=rate).save(path)
             if os.path.getsize(path) > 1000:
                 return
-        except Exception as e:  # network hiccup
+        except Exception as e:
             last = e
         await asyncio.sleep(2 + attempt * 3)
-    raise RuntimeError(f"TTS failed for {path}: {last}")
+    raise RuntimeError(f"Edge TTS failed: {last}")
 
 
-def srt_time(t):
-    ms = int(round(t * 1000))
-    h, ms = divmod(ms, 3600000)
-    m, ms = divmod(ms, 60000)
-    s, ms = divmod(ms, 1000)
-    return f"{h:02}:{m:02}:{s:02},{ms:03}"
+def edge_synth(text, gender, rate, path):
+    asyncio.run(_edge(text, EDGE_VOICES[gender], rate, path))
 
 
-def split_lines(text, max_chars=46):
-    parts = [p.strip() for p in re.split(r"(?<=[।\.\?!,])\s+", text) if p.strip()]
-    merged = []
-    for p in parts:
-        if merged and (len(merged[-1]) < 14 or len(merged[-1]) + len(p) + 1 <= max_chars):
-            merged[-1] += " " + p
-        else:
-            merged.append(p)
-    return merged
+def gemini_synth(text, gender, rate, path):
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("GEMINI_API_KEY is not set")
+    body = {
+        "contents": [{"parts": [{"text": text}]}],
+        "generationConfig": {
+            "responseModalities": ["AUDIO"],
+            "speechConfig": {"voiceConfig": {"prebuiltVoiceConfig": {
+                "voiceName": GEMINI_VOICES[gender]}}},
+        },
+    }
+    req = urllib.request.Request(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent",
+        data=json.dumps(body).encode("utf-8"),
+        headers={"Content-Type": "application/json", "x-goog-api-key": key})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        data = json.load(r)
+    b64 = data["candidates"][0]["content"]["parts"][0]["inlineData"]["data"]
+    pcm = path + ".pcm"
+    with open(pcm, "wb") as f:
+        f.write(base64.b64decode(b64))
+    subprocess.check_call([
+        "ffmpeg", "-y", "-loglevel", "error", "-f", "s16le", "-ar", "24000",
+        "-ac", "1", "-i", pcm, "-codec:a", "libmp3lame", path])
+    os.remove(pcm)
 
 
+def make_audio(text, a, path):
+    """Returns the name of the engine that worked, or None."""
+    order = {"edge": ["edge"], "gemini": ["gemini"],
+             "auto": ["edge"] + (["gemini"] if os.environ.get("GEMINI_API_KEY") else [])}[a.engine]
+    for name in order:
+        try:
+            if name == "edge":
+                edge_synth(text, a.gender, a.rate, path)
+            else:
+                gemini_synth(text, a.gender, a.rate, path)
+            if os.path.exists(path) and os.path.getsize(path) > 1000:
+                return name
+        except Exception as e:
+            print(f"  {name} failed: {e}", file=sys.stderr)
+    return None
+
+
+# ---------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--story", required=True)
-    ap.add_argument("--out", default="out")
-    ap.add_argument("--fps", type=int, default=15)
-    ap.add_argument("--quality", default="standard", choices=list(QUALITY))
-    ap.add_argument("--aspect", default="landscape", choices=["landscape", "vertical"])
-    ap.add_argument("--shards", type=int, default=6)
+    ap.add_argument("--plan", required=True)
+    ap.add_argument("--gender", default="male", choices=["male", "female"])
+    ap.add_argument("--engine", default="auto", choices=["auto", "edge", "gemini"])
+    ap.add_argument("--rate", default="+0%")
+    ap.add_argument("--fps", type=int, default=12)
+    ap.add_argument("--on-fail", dest="on_fail", default="stop", choices=["stop", "silent"])
+    ap.add_argument("--no-audio", dest="no_audio", action="store_true")
+    ap.add_argument("--out-plan", default="scene_plan_timed.json")
     a = ap.parse_args()
 
-    story = json.load(open(a.story, encoding="utf-8"))
-    os.makedirs(os.path.join(a.out, "audio"), exist_ok=True)
-    voice = story.get("voice", "hi-IN-MadhurNeural")
-    rate = story.get("rate", "+0%")
+    with open(a.plan, encoding="utf-8") as f:
+        plan = json.load(f)
+    shots = find_shots(plan)
+    os.makedirs("audio", exist_ok=True)
 
-    w, h, samples = QUALITY[a.quality]
-    if a.aspect == "vertical":
-        w, h = h, w
+    rows, files = [], []
+    t0, frame = 0.0, 0
+    for i, s in enumerate(shots, start=1):
+        text = get_text(s)
+        path = os.path.join("audio", f"shot_{i:02d}.mp3")
+        engine, vdur = None, 0.0
 
-    shots, srt, idx = [], [], 1
-    frame, t0, total_voice = 0, 0.0, 0.0
-    for s in story["shots"]:
-        path = os.path.join(a.out, "audio", f"shot_{s['id']:02d}.mp3")
-        asyncio.run(synth(s["narration"], voice, rate, path))
-        vdur = probe(path)
-        total_voice += vdur
-        dur = max(vdur + LEAD + TAIL, float(s.get("min_seconds", 0)))
+        if text and not a.no_audio:
+            print(f"Shot {i}: making voice ({len(text)} chars)")
+            engine = make_audio(text, a, path)
+            if engine:
+                vdur = probe(path)
+                files.append(path)
+            elif a.on_fail == "stop":
+                sys.exit(f"Shot {i}: voice failed and --on-fail is 'stop'")
+            else:
+                print(f"Shot {i}: voice failed, continuing silent")
+
+        if not engine:
+            vdur = len(text) / CHARS_PER_SEC if text else 0.0
+            path = None
+
+        floor = max(float(s.get("min_seconds", 0) or 0), float(s.get("duration", 0) or 0))
+        dur = max(vdur + LEAD + TAIL if text else 0.0, floor, 1.0)
         n = int(math.ceil(dur * a.fps))
         dur = n / a.fps
-        shots.append({
-            "id": s["id"], "title": s.get("title", ""), "audio": path,
-            "voice_seconds": round(vdur, 3), "duration": round(dur, 3),
-            "start_time": round(t0, 3), "start_frame": frame, "end_frame": frame + n,
-            "thumb": bool(s.get("camera", {}).get("thumb")),
-        })
-        # subtitles, time-share by character count
-        lines = split_lines(s["narration"])
-        total_chars = sum(len(x) for x in lines) or 1
-        cur = t0 + LEAD
-        for ln in lines:
-            span = vdur * len(ln) / total_chars
-            srt.append(f"{idx}\n{srt_time(cur)} --> {srt_time(cur + span)}\n{ln}\n")
-            idx += 1
-            cur += span
-        frame += n
+
+        s["text"] = s.get("text", text) if "text" in s or not text else text
+        s["audio"] = path
+        s["voice_seconds"] = round(vdur, 3)
+        s["duration"] = round(dur, 3)
+        s["start_time"] = round(t0, 3)
+        s["end_time"] = round(t0 + dur, 3)
+        s["start_frame"] = frame
+        s["end_frame"] = frame + n
+        s["lead"] = LEAD
+        rows.append((i, engine or ("silent" if text else "no text"), vdur, dur, n))
         t0 += dur
+        frame += n
 
-    timeline = {
-        "fps": a.fps, "width": w, "height": h, "samples": samples,
-        "aspect": a.aspect, "total_frames": frame,
-        "total_seconds": round(t0, 2), "voice": voice, "lead": LEAD,
-        "shots": shots,
-    }
-    json.dump(timeline, open(os.path.join(a.out, "timeline.json"), "w"), indent=1)
-    open(os.path.join(a.out, "subs.srt"), "w", encoding="utf-8").write("\n".join(srt))
+    if isinstance(plan, dict):
+        plan["fps"] = a.fps
+        plan["total_frames"] = frame
+        plan["total_seconds"] = round(t0, 2)
+        plan["voice_mode"] = "silent" if a.no_audio else "voice"
+    with open(a.out_plan, "w", encoding="utf-8") as f:
+        json.dump(plan, f, ensure_ascii=False, indent=1)
 
-    print(f"Voice total {total_voice:.1f}s | video {t0:.1f}s | frames {frame} @ {a.fps}fps")
-    print(f"Render size {w}x{h}, {samples} samples, {a.shards} parallel shards")
-    est = frame / a.shards * 5 / 60
-    print(f"Rough estimate at 5 s/frame: about {est:.0f} minutes per shard")
+    # preview = all shot voices joined
+    if files:
+        with open("preview_list.txt", "w") as f:
+            for p in files:
+                f.write(f"file '{os.path.abspath(p)}'\n")
+        subprocess.call([
+            "ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0",
+            "-i", "preview_list.txt", "-c:a", "libmp3lame", "narration_preview.mp3"])
+        os.remove("preview_list.txt")
 
-    gh = os.environ.get("GITHUB_OUTPUT")
-    if gh:
-        with open(gh, "a") as f:
-            f.write("shards=" + json.dumps(list(range(a.shards))) + "\n")
+    with open("tts_summary.md", "w", encoding="utf-8") as f:
+        f.write(f"### Narration summary\n\nVoice: {a.gender} | engine: {a.engine} | rate: {a.rate}\n\n")
+        f.write("| Shot | Voice | Voice sec | Shot sec | Frames |\n|---|---|---|---|---|\n")
+        for i, eng, v, d, n in rows:
+            f.write(f"| {i} | {eng} | {v:.1f} | {d:.1f} | {n} |\n")
+        f.write(f"\nTotal: {t0:.1f}s, {frame} frames at {a.fps} fps\n")
+
+    print(f"Done. {len(shots)} shots, {t0:.1f}s, {frame} frames @ {a.fps}fps")
 
 
 if __name__ == "__main__":
