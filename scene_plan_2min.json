@@ -1,1268 +1,169 @@
 {
- "title": "The Last Guardian of the Forest - Chapter 1 (2 minute version)",
- "fps": 12,
- "asset_facing": 90,
- "shots": [
-  {
-   "title": "Blackwood",
-   "seconds": 5,
-   "narration_hi": "बहुत पहले, पहाड़ों के पार, ब्लैकवुड नाम का एक विशाल जंगल था, जहाँ हज़ारों जानवर शांति से रहते थे।",
-   "actors": [
+  "title": "छोटी बचत, बड़ा खज़ाना | रामू किसान की कहानी",
+  "voice": "hi-IN-MadhurNeural",
+  "rate": "-4%",
+  "description": "रामू किसान, मज़दूर श्याम और समझदार राजा की कहानी से सीखिए: पहले बचत, इमरजेंसी फंड, चक्रवृद्धि ब्याज और 'पैसा दोगुना' वाले झाँसे से बचाव।",
+  "credits": "3D models: Quaternius (CC0). Voice: Microsoft Edge neural TTS.",
+  "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+  "shots": [
     {
-     "name": "Stag",
-     "model": "Stag",
-     "action": "Eating",
-     "size": 2.2,
-     "start": [
-      -1.5,
-      0
-     ],
-     "end": [
-      -1.5,
-      0
-     ],
-     "heading": 0
+      "id": 1,
+      "title": "Gaon aur Ramu",
+      "narration": "एक छोटे से गाँव में रामू नाम का किसान रहता था। वह सुबह से शाम तक खेत में मेहनत करता था। लेकिन हर साल फ़सल बिकने के बाद उसके हाथ में कुछ भी नहीं बचता था।",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Walk", "pos": [-2.5, 0], "move": [3.0, 0.4]},
+        {"model": "Cow", "anim": "Idle_2", "pos": [2.8, 2.0], "heading": -30}
+      ],
+      "camera": {"target": [0, 0, 1.2], "dist": 8, "sweep": 20, "angle": -10}
+    },
+    {
+      "id": 2,
+      "title": "Dost Shyam",
+      "narration": "उसका दोस्त श्याम मज़दूरी करता था। दोनों अच्छी कमाई करते थे, फिर भी महीने के आख़िर में जेब खाली हो जाती थी। दोनों सोचते थे, आख़िर पैसा जाता कहाँ है?",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Interact", "pos": [-1.8, 0], "heading": 40},
+        {"model": "Worker", "anim": "Idle_Neutral", "pos": [1.8, 0], "heading": -40}
+      ],
+      "camera": {"target": [0, 0, 1.2], "dist": 8, "dist_end": 5.5}
+    },
+    {
+      "id": 3,
+      "title": "Raja aaye",
+      "narration": "एक दिन गाँव में राजा अपने सफ़ेद घोड़े पर आए। उन्होंने दोनों की परेशानी सुनी और मुस्कुराकर बोले, कमाई बढ़ाने से पहले, कमाई को संभालना सीखो।",
+      "env": "village",
+      "characters": [
+        {"model": "Horse_White", "anim": "Walk", "pos": [-6.0, 2.0], "move": [5.5, 0]},
+        {"model": "King", "anim": "Walk", "pos": [-6.5, 0.6], "move": [5.5, 0]},
+        {"model": "Farmer", "anim": "Idle", "pos": [2.2, -0.4], "heading": -80},
+        {"model": "Worker", "anim": "Idle", "pos": [3.6, 0.6], "heading": -80}
+      ],
+      "camera": {"target": [-0.5, 0.5, 1.2], "dist": 10, "angle": 10}
+    },
+    {
+      "id": 4,
+      "title": "Pehla niyam",
+      "narration": "राजा ने पहला नियम बताया। जब भी पैसा मिले, सबसे पहले उसका एक हिस्सा अपने लिए बचाओ। बाक़ी बचे पैसों से खर्च चलाओ। बचत आख़िर में नहीं, सबसे पहले होनी चाहिए।",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Idle", "pos": [-2.2, 0.3], "heading": 70},
+        {"model": "King", "anim": "Interact", "pos": [0.3, 0], "heading": -70},
+        {"model": "Worker", "anim": "Idle", "pos": [2.6, 0.8], "heading": -60}
+      ],
+      "camera": {"target": [0, 0, 1.2], "dist": 6.5, "sweep": 25, "angle": -12}
+    },
+    {
+      "id": 5,
+      "title": "Matka",
+      "narration": "रामू ने बात मान ली। हर फ़सल के पैसों में से वह थोड़ा-थोड़ा अलग रखने लगा। उसने एक अलग मटका बनाया, और उसका नाम रखा, मुसीबत का खज़ाना।",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Interact", "pos": [0, 0], "heading": 25}
+      ],
+      "props": [
+        {"model": "Pot", "pos": [1.3, 0.2], "scale": 1.6, "heading": 0}
+      ],
+      "camera": {"target": [0.6, 0, 1.0], "dist": 7, "dist_end": 4.2}
+    },
+    {
+      "id": 6,
+      "title": "Barish",
+      "narration": "एक रात ज़ोरदार बारिश आई और खेत में पानी भर गया। रामू के पास बचत थी, इसलिए उसने बिना कर्ज़ लिए काम चला लिया। श्याम के पास कुछ नहीं था, उसे भारी ब्याज पर उधार लेना पड़ा।",
+      "env": "storm",
+      "characters": [
+        {"model": "Farmer", "anim": "Idle", "pos": [-1.2, 0], "heading": 10},
+        {"model": "Cow", "anim": "Idle", "pos": [1.9, 1.0], "heading": -20},
+        {"model": "Worker", "anim": "HitRecieve_2", "pos": [2.6, -0.8], "heading": -30}
+      ],
+      "props": [
+        {"model": "Pot", "pos": [-2.4, 0.5], "scale": 1.4}
+      ],
+      "camera": {"target": [0.3, 0, 1.2], "dist": 8.5, "sweep": -30, "angle": 12}
+    },
+    {
+      "id": 7,
+      "title": "Beej se ped",
+      "narration": "रामू ने अपनी बचत का कुछ हिस्सा लंबे समय के लिए लगाया, जैसे एक छोटा सा बीज बोया जाता है। राजा ने समझाया, सौ रुपये पर दस रुपये ब्याज मिले, तो अगले साल ब्याज एक सौ दस रुपये पर मिलता है। इसे चक्रवृद्धि ब्याज कहते हैं।",
+      "env": "forest",
+      "characters": [
+        {"model": "Farmer", "anim": "Idle", "pos": [-2.4, 0], "heading": 60},
+        {"model": "King", "anim": "Interact", "pos": [2.4, 0.2], "heading": -70}
+      ],
+      "props": [
+        {"model": "CommonTree_1", "pos": [0, 2.5], "grow": [0.15, 1.4]}
+      ],
+      "camera": {"target": [0, 1, 1.5], "dist": 9.5, "dist_end": 7, "thumb": true}
+    },
+    {
+      "id": 8,
+      "title": "Chalak lomdi",
+      "narration": "तभी एक चालाक लोमड़ी आई। उसने श्याम से कहा, मुझे अपना पैसा दे दो, मैं एक महीने में उसे दोगुना कर दूँगा। श्याम की आँखें चमक उठीं।",
+      "env": "village",
+      "characters": [
+        {"model": "Fox", "anim": "Walk", "pos": [-6.0, 0], "move": [4.2, 0]},
+        {"model": "Worker", "anim": "Idle_Neutral", "pos": [0.8, 0], "heading": -90},
+        {"model": "Farmer", "anim": "Idle", "pos": [3.8, 1.5], "heading": -80}
+      ],
+      "camera": {"target": [-1, 0, 1.0], "dist": 8.5}
+    },
+    {
+      "id": 9,
+      "title": "Savdhani",
+      "narration": "रामू और राजा ने श्याम को रोका। राजा बोले, जो वादा बहुत ज़्यादा और बहुत जल्दी का हो, वहीं सबसे ज़्यादा ख़तरा होता है। पूछो, पैसा कहाँ लगेगा, कौन देख रहा है, और क्या यह कानूनी है?",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Interact", "pos": [-1.8, 0], "heading": 20},
+        {"model": "King", "anim": "Interact", "pos": [0.2, 0.5], "heading": 0},
+        {"model": "Worker", "anim": "Idle", "pos": [2.0, 0], "heading": -20},
+        {"model": "Fox", "anim": "Idle_2_HeadLow", "pos": [-4.3, 0.5], "heading": 90}
+      ],
+      "camera": {"target": [-0.3, 0.3, 1.2], "dist": 9, "dist_end": 7}
+    },
+    {
+      "id": 10,
+      "title": "Saal beete",
+      "narration": "श्याम ने पैसा नहीं दिया, और लोमड़ी भाग गई। श्याम ने भी थोड़ी-थोड़ी बचत शुरू की। साल बीतते गए, और वह छोटा बीज एक बड़ा पेड़ बन गया।",
+      "env": "forest",
+      "characters": [
+        {"model": "Fox", "anim": "Gallop", "pos": [1.0, -1.0], "move": [-10.0, -1.0]},
+        {"model": "Worker", "anim": "Walk", "pos": [1.5, 1.2], "move": [3.0, 0.5]},
+        {"model": "Farmer", "anim": "Walk", "pos": [0.0, 2.8], "move": [3.0, 0.5]}
+      ],
+      "props": [
+        {"model": "CommonTree_2", "pos": [3.0, 5.0], "scale": 1.6}
+      ],
+      "camera": {"target": [1, 1, 1.2], "dist": 9.5, "sweep": 40, "angle": -20}
+    },
+    {
+      "id": 11,
+      "title": "Teen sabak",
+      "narration": "तो याद रखिए तीन बातें। पहली, कमाई में से पहले बचत कीजिए। दूसरी, मुसीबत के लिए अलग इमरजेंसी फंड रखिए। तीसरी, धैर्य रखिए, क्योंकि समय के साथ पैसा बढ़ता है।",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Wave", "pos": [-2.0, 0], "heading": 10},
+        {"model": "King", "anim": "Idle", "pos": [0, 0.5], "heading": 0},
+        {"model": "Worker", "anim": "Wave", "pos": [2.0, 0], "heading": -10},
+        {"model": "Cow", "anim": "Idle", "pos": [4.2, 2.0], "heading": -30},
+        {"model": "Horse_White", "anim": "Idle", "pos": [-4.4, 1.6], "heading": 30}
+      ],
+      "props": [
+        {"model": "CommonTree_2", "pos": [0, 6.0], "scale": 1.7}
+      ],
+      "camera": {"target": [0, 0.5, 1.2], "dist": 8.5, "dist_end": 6.5}
+    },
+    {
+      "id": 12,
+      "title": "Samapan",
+      "narration": "और जो वादा बहुत जल्दी अमीर बनाने का हो, उससे सावधान रहिए। यह वीडियो सिर्फ़ शिक्षा के लिए है, निवेश की सलाह नहीं। ऐसी और कहानियों के लिए चैनल को सब्सक्राइब कीजिए।",
+      "env": "village",
+      "characters": [
+        {"model": "Farmer", "anim": "Wave", "pos": [-2.0, 0], "heading": 10},
+        {"model": "King", "anim": "Wave", "pos": [0, 0.4], "heading": 0},
+        {"model": "Worker", "anim": "Wave", "pos": [2.0, 0], "heading": -10},
+        {"model": "Donkey", "anim": "Idle", "pos": [4.0, 1.8], "heading": -30}
+      ],
+      "camera": {"target": [0, 0.4, 1.2], "dist": 7.5, "sweep": 15, "angle": -8}
     }
-   ],
-   "camera": {
-    "look_at": "Stag",
-    "lens": 30,
-    "pos": [
-     2,
-     -11,
-     2.4
-    ],
-    "pos_end": [
-     0,
-     -8,
-     2.0
-    ]
-   },
-   "id": 1
-  },
-  {
-   "title": "The fire",
-   "seconds": 5,
-   "narration_hi": "लेकिन बीस साल पहले, एक भयानक आग ने उत्तर के जंगल को तबाह कर दिया।",
-   "sky": [
-    0.55,
-    0.12,
-    0.05
-   ],
-   "light": {
-    "color": [
-     1.0,
-     0.45,
-     0.2
-    ],
-    "energy": 3.5
-   },
-   "actors": [],
-   "camera": {
-    "look_at": [
-     0,
-     12,
-     3.5
-    ],
-    "lens": 30,
-    "pos": [
-     -4,
-     -10,
-     2.0
-    ],
-    "pos_end": [
-     4,
-     -10,
-     2.5
-    ]
-   },
-   "id": 2
-  },
-  {
-   "title": "Arkon the guardian",
-   "seconds": 5,
-   "narration_hi": "सैकड़ों जानवर गायब हो गए, और जंगल का रक्षक, विशाल सफ़ेद भेड़िया आर्कन, फिर कभी नहीं दिखा।",
-   "rock": [
-    -2,
-    3.5,
-    1.6
-   ],
-   "actors": [
-    {
-     "name": "Arkon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 2.6,
-     "start": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "end": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "tint": [
-      2.3,
-      2.3,
-      2.5
-     ],
-     "heading": 270
-    }
-   ],
-   "camera": {
-    "look_at": [
-     -2,
-     3.5,
-     2.6
-    ],
-    "lens": 30,
-    "pos": [
-     -2,
-     -6,
-     0.8
-    ],
-    "pos_end": [
-     -2,
-     -4.5,
-     1.2
-    ]
-   },
-   "id": 3
-  },
-  {
-   "title": "A divided forest",
-   "seconds": 5,
-   "narration_hi": "उसके बाद जानवर अलग-अलग इलाक़ों में बँट गए, और किसी को किसी पर भरोसा नहीं रहा।",
-   "actors": [
-    {
-     "name": "Deer",
-     "model": "Deer",
-     "action": "Idle",
-     "size": 2.0,
-     "start": [
-      -2.5,
-      0
-     ],
-     "end": [
-      -2.5,
-      0
-     ],
-     "heading": 0
-    },
-    {
-     "name": "Wolf",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      2.5,
-      1
-     ],
-     "end": [
-      2.5,
-      1
-     ],
-     "tint": [
-      0.5,
-      0.5,
-      0.55
-     ],
-     "heading": 180
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "pos": [
-     0,
-     -10,
-     2.0
-    ],
-    "pos_end": [
-     0.5,
-     -9,
-     1.8
-    ]
-   },
-   "id": 4
-  },
-  {
-   "title": "Winter night",
-   "seconds": 4,
-   "narration_hi": "फिर एक ठंडी सर्दी की रात आई। बर्फ़ गिर रही थी, और हवा चीख रही थी।",
-   "actors": [],
-   "camera": {
-    "look_at": [
-     0,
-     12,
-     3.0
-    ],
-    "lens": 30,
-    "pos": [
-     6,
-     -9,
-     2.2
-    ],
-    "pos_end": [
-     -6,
-     -9,
-     2.2
-    ]
-   },
-   "id": 5
-  },
-  {
-   "title": "Milo runs",
-   "seconds": 5,
-   "narration_hi": "तभी एक छोटा हिरण, मिलो, अपनी जान बचाकर भागता हुआ आया। उसके पैर घायल थे।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Gallop",
-     "size": 2.0,
-     "start": [
-      -10,
-      0
-     ],
-     "end": [
-      6,
-      0
-     ]
-    }
-   ],
-   "camera": {
-    "look_at": "Milo",
-    "lens": 30,
-    "offset": [
-     0,
-     -9,
-     2.2
-    ]
-   },
-   "id": 6
-  },
-  {
-   "title": "The wolves chase",
-   "seconds": 4,
-   "narration_hi": "उसके पीछे भेड़ियों का झुंड पड़ा था।",
-   "actors": [
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Gallop",
-     "size": 1.9,
-     "start": [
-      -12,
-      0.4
-     ],
-     "end": [
-      4,
-      0.4
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    },
-    {
-     "name": "Pack1",
-     "model": "Wolf",
-     "action": "Gallop",
-     "size": 1.8,
-     "start": [
-      -14.5,
-      -0.8
-     ],
-     "end": [
-      1.5,
-      -0.8
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    },
-    {
-     "name": "Pack2",
-     "model": "Wolf",
-     "action": "Gallop",
-     "size": 1.8,
-     "start": [
-      -14.5,
-      1.6
-     ],
-     "end": [
-      1.5,
-      1.6
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    }
-   ],
-   "camera": {
-    "look_at": "Drakon",
-    "lens": 30,
-    "offset": [
-     0,
-     -9,
-     2.2
-    ]
-   },
-   "id": 7
-  },
-  {
-   "title": "The frozen river",
-   "seconds": 5,
-   "narration_hi": "भागते-भागते वह जमी हुई नदी के किनारे पहुँच गया। आगे कोई रास्ता नहीं था।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      3,
-      0
-     ],
-     "end": [
-      3,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Walk",
-     "size": 1.9,
-     "start": [
-      -6,
-      0
-     ],
-     "end": [
-      -0.5,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    },
-    {
-     "name": "Pack1",
-     "model": "Wolf",
-     "action": "Walk",
-     "size": 1.8,
-     "start": [
-      -8,
-      1.2
-     ],
-     "end": [
-      -2,
-      1.2
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "pos": [
-     1,
-     -9,
-     1.8
-    ],
-    "pos_end": [
-     1,
-     -7,
-     1.5
-    ]
-   },
-   "id": 8
-  },
-  {
-   "title": "Surrounded",
-   "seconds": 4,
-   "narration_hi": "भेड़ियों ने उसे चारों तरफ़ से घेर लिया।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      2.5,
-      0
-     ],
-     "end": [
-      2.5,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -1,
-      0
-     ],
-     "end": [
-      -1,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    },
-    {
-     "name": "Pack1",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.8,
-     "start": [
-      5.2,
-      0.5
-     ],
-     "end": [
-      5.2,
-      0.5
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Pack2",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.8,
-     "start": [
-      2.5,
-      2.4
-     ],
-     "end": [
-      2.5,
-      2.4
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 270
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "pos": [
-     2,
-     -9,
-     2.0
-    ],
-    "pos_end": [
-     2,
-     -8,
-     1.8
-    ]
-   },
-   "id": 9
-  },
-  {
-   "title": "Drakon",
-   "seconds": 6,
-   "narration_hi": "उनका नेता था ड्रैकन: काला शरीर, चेहरे पर निशान, और ठंडी, बेरहम आँखें।",
-   "actors": [
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -1,
-      0
-     ],
-     "end": [
-      -1,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 270
-    }
-   ],
-   "camera": {
-    "look_at": "Drakon",
-    "lens": 30,
-    "pos": [
-     -1,
-     -5,
-     1.2
-    ],
-    "pos_end": [
-     -1,
-     -3.8,
-     1.3
-    ]
-   },
-   "id": 10
-  },
-  {
-   "title": "The pendant question",
-   "seconds": 5,
-   "narration_hi": "ड्रैकन ने पूछा, यह चाँदी का लॉकेट तुम्हें कहाँ से मिला?",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      2.5,
-      0
-     ],
-     "end": [
-      2.5,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Walk",
-     "size": 1.9,
-     "start": [
-      -3,
-      0
-     ],
-     "end": [
-      -0.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "pos": [
-     0.5,
-     -8,
-     1.6
-    ],
-    "pos_end": [
-     0.5,
-     -7,
-     1.5
-    ]
-   },
-   "id": 11
-  },
-  {
-   "title": "Milo answers",
-   "seconds": 5,
-   "narration_hi": "मिलो डरते हुए बोला, मुझे नहीं पता तुम किस बारे में बात कर रहे हो।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      2.5,
-      0
-     ],
-     "end": [
-      2.5,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -0.8,
-      0
-     ],
-     "end": [
-      -0.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    }
-   ],
-   "camera": {
-    "look_at": "Milo",
-    "lens": 30,
-    "pos": [
-     3,
-     -5,
-     1.4
-    ],
-    "pos_end": [
-     3,
-     -4.2,
-     1.4
-    ]
-   },
-   "id": 12
-  },
-  {
-   "title": "Where is the map",
-   "seconds": 6,
-   "narration_hi": "ड्रैकन ने कहा, तुम्हारी माँ सब जानती थी। अब बताओ, उसने नक़्शा कहाँ छिपाया है?",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      2.5,
-      0
-     ],
-     "end": [
-      2.5,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Walk",
-     "size": 1.9,
-     "start": [
-      -1.5,
-      0
-     ],
-     "end": [
-      0.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ]
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "pos": [
-     1,
-     -7.5,
-     1.5
-    ],
-    "pos_end": [
-     1.2,
-     -6,
-     1.4
-    ]
-   },
-   "id": 13
-  },
-  {
-   "title": "Milo pleads",
-   "seconds": 4,
-   "narration_hi": "मिलो गिड़गिड़ाया, मैंने तीन दिन से अपनी माँ को नहीं देखा।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      2.5,
-      0
-     ],
-     "end": [
-      2.5,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      0.8,
-      0
-     ],
-     "end": [
-      0.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    }
-   ],
-   "camera": {
-    "look_at": "Milo",
-    "lens": 30,
-    "pos": [
-     3.5,
-     -4.6,
-     1.2
-    ],
-    "pos_end": [
-     3.2,
-     -4.0,
-     1.3
-    ]
-   },
-   "id": 14
-  },
-  {
-   "title": "The roar",
-   "seconds": 4,
-   "narration_hi": "ड्रैकन ने पंजा उठाया। तभी पूरे जंगल में एक भयानक दहाड़ गूँजी।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      2.5,
-      0
-     ],
-     "end": [
-      2.5,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.9,
-     "start": [
-      0.4,
-      0
-     ],
-     "end": [
-      0.4,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "pos": [
-     1.5,
-     -7,
-     1.6
-    ],
-    "pos_end": [
-     1.5,
-     -6,
-     1.4
-    ]
-   },
-   "id": 15
-  },
-  {
-   "title": "Ragnar on the rock",
-   "seconds": 6,
-   "narration_hi": "चट्टान के ऊपर खड़ा था एक और भेड़िया: भूरा शरीर, सुनहरी आँखें, और जिस्म पर अनगिनत लड़ाइयों के निशान। वह था रैगनर।",
-   "rock": [
-    -2,
-    3.5,
-    1.6
-   ],
-   "actors": [
-    {
-     "name": "Ragnar",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "end": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "heading": 270
-    }
-   ],
-   "camera": {
-    "look_at": [
-     -2,
-     3.5,
-     2.3
-    ],
-    "lens": 30,
-    "pos": [
-     -2,
-     -5,
-     0.8
-    ],
-    "pos_end": [
-     -2,
-     -3.5,
-     1.1
-    ]
-   },
-   "id": 16
-  },
-  {
-   "title": "Leave the deer",
-   "seconds": 5,
-   "narration_hi": "रैगनर बोला, हिरण को छोड़ दो। मैं यह दोबारा नहीं कहूँगा।",
-   "rock": [
-    -2,
-    3.5,
-    1.6
-   ],
-   "actors": [
-    {
-     "name": "Ragnar",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "end": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "heading": 270
-    }
-   ],
-   "camera": {
-    "look_at": [
-     -2,
-     3.5,
-     2.2
-    ],
-    "lens": 30,
-    "pos": [
-     -2.5,
-     -3.6,
-     1.6
-    ],
-    "pos_end": [
-     -2.2,
-     -2.8,
-     1.9
-    ]
-   },
-   "id": 17
-  },
-  {
-   "title": "Old friend",
-   "seconds": 5,
-   "narration_hi": "ड्रैकन मुस्कुराया, अब यह तुम्हारा इलाक़ा नहीं रहा, पुराने दोस्त।",
-   "actors": [
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -1,
-      0
-     ],
-     "end": [
-      -1,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 270
-    }
-   ],
-   "camera": {
-    "look_at": "Drakon",
-    "lens": 30,
-    "pos": [
-     -1,
-     -5,
-     1.2
-    ],
-    "pos_end": [
-     -1,
-     -4,
-     1.3
-    ]
-   },
-   "id": 18
-  },
-  {
-   "title": "Ragnar jumps",
-   "seconds": 4,
-   "narration_hi": "रैगनर ने छलाँग लगाई और मिलो और ड्रैकन के बीच आ खड़ा हुआ।",
-   "rock": [
-    -2,
-    3.5,
-    1.6
-   ],
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Idle_Headlow",
-     "size": 2.0,
-     "start": [
-      3,
-      0
-     ],
-     "end": [
-      3,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -1.8,
-      0
-     ],
-     "end": [
-      -1.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    },
-    {
-     "name": "Ragnar",
-     "model": "Wolf",
-     "action": "Gallop_Jump",
-     "size": 1.9,
-     "start": [
-      -2,
-      3.5,
-      1.6
-     ],
-     "end": [
-      0.8,
-      0.3,
-      0
-     ]
-    }
-   ],
-   "camera": {
-    "look_at": "all",
-    "lens": 30,
-    "offset": [
-     0,
-     -9.5,
-     2.0
-    ]
-   },
-   "id": 19
-  },
-  {
-   "title": "The fight",
-   "seconds": 6,
-   "narration_hi": "ड्रैकन के इशारे पर उसके भेड़िये टूट पड़े, और जमी हुई नदी युद्ध का मैदान बन गई।",
-   "actors": [
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.9,
-     "start": [
-      -0.8,
-      0
-     ],
-     "end": [
-      -0.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    },
-    {
-     "name": "Ragnar",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.9,
-     "start": [
-      1.0,
-      0
-     ],
-     "end": [
-      1.0,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Pack1",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.8,
-     "start": [
-      -2.6,
-      1.4
-     ],
-     "end": [
-      -2.6,
-      1.4
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    },
-    {
-     "name": "Pack2",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.8,
-     "start": [
-      2.8,
-      -0.2
-     ],
-     "end": [
-      2.8,
-      -0.2
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 180
-    }
-   ],
-   "camera": {
-    "look_at": [
-     0.5,
-     0,
-     0.9
-    ],
-    "lens": 30,
-    "pos": [
-     0.5,
-     -9,
-     2.2
-    ],
-    "pos_end": [
-     1.5,
-     -8.5,
-     2.0
-    ]
-   },
-   "id": 20
-  },
-  {
-   "title": "Run, Milo",
-   "seconds": 6,
-   "narration_hi": "रैगनर चिल्लाया, भागो! मिलो जंगल के अँधेरे में गुम हो गया।",
-   "actors": [
-    {
-     "name": "Milo",
-     "model": "Deer",
-     "action": "Gallop",
-     "size": 2.0,
-     "start": [
-      3.5,
-      0.6
-     ],
-     "end": [
-      14,
-      0.6
-     ]
-    },
-    {
-     "name": "Ragnar",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.9,
-     "start": [
-      1.0,
-      0
-     ],
-     "end": [
-      1.0,
-      0
-     ],
-     "heading": 180
-    },
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Attack",
-     "size": 1.9,
-     "start": [
-      -0.8,
-      0
-     ],
-     "end": [
-      -0.8,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    }
-   ],
-   "camera": {
-    "look_at": [
-     0.5,
-     0,
-     0.9
-    ],
-    "lens": 30,
-    "pos": [
-     0.5,
-     -9,
-     2.2
-    ],
-    "pos_end": [
-     3,
-     -9,
-     2.0
-    ]
-   },
-   "id": 21
-  },
-  {
-   "title": "Find them",
-   "seconds": 6,
-   "narration_hi": "ड्रैकन किनारे पर खड़ा देखता रहा। फिर उसने हुक्म दिया, उन्हें ढूँढो, पहाड़ तक पहुँचने से पहले!",
-   "actors": [
-    {
-     "name": "Drakon",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.9,
-     "start": [
-      -1,
-      0
-     ],
-     "end": [
-      -1,
-      0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    },
-    {
-     "name": "Pack1",
-     "model": "Wolf",
-     "action": "Idle",
-     "size": 1.8,
-     "start": [
-      -3.2,
-      1.0
-     ],
-     "end": [
-      -3.2,
-      1.0
-     ],
-     "tint": [
-      0.15,
-      0.14,
-      0.16
-     ],
-     "heading": 0
-    }
-   ],
-   "camera": {
-    "look_at": "Drakon",
-    "lens": 30,
-    "pos": [
-     -1,
-     -5.5,
-     1.1
-    ],
-    "pos_end": [
-     -1,
-     -4.2,
-     1.2
-    ]
-   },
-   "id": 22
-  }
- ]
+  ]
 }
