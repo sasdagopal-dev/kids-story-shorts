@@ -60,10 +60,18 @@ ENV = {
         "key": ((0.72, 0.82, 1.0), 3.4, (55, 10, 35)), "fill": ((0.4, 0.5, 1.0), 0.9),
         "ground": (0.82, 0.88, 1.0), "disc": ((0.92, 0.96, 1.0), 11.0, 6.0),
         "river": (0.50, 0.72, 0.92, 0.12),
-        "trees": ["DeadTree_", "CommonTree_"], "bushes": ["Bush_Common"], "flowers": [],
+        "trees": ["Pine_", "DeadTree_"], "bushes": ["Bush_Common"], "flowers": [],
         "grass": ["Grass_Wispy"], "extras": ["Pebble_Round"],
-        "frost": ((0.92, 0.96, 1.0), 0.7), "snow": 1,
+        "frost": ((0.92, 0.96, 1.0), 0.55), "snow": 1,
     },
+}
+
+
+# render quality presets: fewer samples / props / flakes = faster
+QUALITY = {
+    "fast":     {"samples": 6,  "props": 0.45, "snow": 90,  "soft": False, "shadow": "512"},
+    "balanced": {"samples": 10, "props": 0.65, "snow": 160, "soft": False, "shadow": "1024"},
+    "high":     {"samples": 16, "props": 1.00, "snow": 420, "soft": True,  "shadow": "2048"},
 }
 
 
@@ -72,7 +80,8 @@ def parse_args():
     argv = sys.argv
     argv = argv[argv.index("--") + 1:] if "--" in argv else []
     opts = {"plan": "scene_plan.json", "assets": ".", "fps": None,
-            "engine": "EEVEE", "sample_only": False, "out": "out"}
+            "engine": "EEVEE", "sample_only": False, "out": "out",
+            "quality": "balanced", "shard": 0, "shards": 1}
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -86,6 +95,12 @@ def parse_args():
             opts["engine"] = argv[i + 1].upper(); i += 2
         elif a == "--out":
             opts["out"] = argv[i + 1]; i += 2
+        elif a == "--quality":
+            opts["quality"] = argv[i + 1].lower(); i += 2
+        elif a == "--shard":
+            opts["shard"] = int(argv[i + 1]); i += 2
+        elif a == "--shards":
+            opts["shards"] = int(argv[i + 1]); i += 2
         elif a == "--sample-only":
             opts["sample_only"] = True; i += 1
         else:
@@ -304,11 +319,15 @@ def add_sky(env, scene):
                radius=drad, segments=24, rings=12)
 
 
-def add_lights(scene, env):
+def add_lights(scene, env, q):
     kcol, kenergy, krot = env["key"]
     key_data = bpy.data.lights.new("Key", 'SUN')
     key_data.energy = kenergy
     key_data.color = kcol
+    try:
+        key_data.shadow_cascade_count = 4 if q["soft"] else 2
+    except Exception:
+        pass
     key = bpy.data.objects.new("Key", key_data)
     scene.collection.objects.link(key)
     key.rotation_euler = Euler(tuple(math.radians(a) for a in krot), 'XYZ')
@@ -381,7 +400,7 @@ def pick_band(rng, bands):
     return rng.uniform(bands[-1][0], bands[-1][1])
 
 
-def build_scenery(scene, env, models, region, rock, has_river, seed_name):
+def build_scenery(scene, env, models, region, rock, has_river, seed_name, props_scale=1.0):
     rng = random.Random(zlib.crc32(seed_name.encode("utf-8")))
     xmin, xmax = region
     width = xmax - xmin
@@ -429,6 +448,22 @@ def build_scenery(scene, env, models, region, rock, has_river, seed_name):
     kit = 7.5 / templates["trees"][0]["height"]
     kit = min(max(kit, 0.15), 8.0)
 
+    # cheaper materials: no shadows from small plants, alpha clip instead of alpha blend
+    for key, tpls in templates.items():
+        for tpl in tpls:
+            for o in tpl["meshes"]:
+                for slot in o.material_slots:
+                    mat = slot.material
+                    if mat is None:
+                        continue
+                    try:
+                        if mat.blend_method == 'BLEND':
+                            mat.blend_method = 'CLIP'
+                        if key in ("grass", "flowers", "extras"):
+                            mat.shadow_method = 'NONE'
+                    except Exception:
+                        pass
+
     frost = env.get("frost")
     if frost:
         for key in ("trees", "bushes"):
@@ -444,7 +479,7 @@ def build_scenery(scene, env, models, region, rock, has_river, seed_name):
         tpls = templates.get(key)
         if not tpls:
             continue
-        n = min(cap, int(width * per_m))
+        n = min(int(cap * props_scale), int(width * per_m * props_scale))
         for _ in range(n):
             x = rng.uniform(xmin, xmax)
             y = pick_band(rng, bands)
@@ -525,7 +560,7 @@ def shot_region(shot):
     return (min(xs) - 13.0, max(xs) + 13.0)
 
 
-def build_shot(shot, plan, opts, fps, models):
+def build_shot(shot, plan, opts, fps, models, q):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     try:
         bpy.ops.preferences.addon_enable(module="io_scene_gltf2")
@@ -550,8 +585,9 @@ def build_shot(shot, plan, opts, fps, models):
         scene.cycles.use_denoising = True
     else:
         scene.render.engine = 'BLENDER_EEVEE'
-        scene.eevee.taa_render_samples = 16
-        for attr, val in (("use_gtao", False), ("use_ssr", False), ("use_soft_shadows", True)):
+        scene.eevee.taa_render_samples = q["samples"]
+        for attr, val in (("use_gtao", False), ("use_ssr", False), ("use_soft_shadows", q["soft"]),
+                          ("shadow_cascade_size", q["shadow"]), ("shadow_cube_size", "512")):
             try:
                 setattr(scene.eevee, attr, val)
             except Exception:
@@ -577,7 +613,7 @@ def build_shot(shot, plan, opts, fps, models):
         add_sky(env, scene)
     except Exception as ex:
         NOTES.append("Shot %s: sky gradient failed (%s), flat sky used." % (shot["id"], ex))
-    add_lights(scene, env)
+    add_lights(scene, env, q)
 
     gcol = env["ground"]
     bpy.ops.mesh.primitive_plane_add(size=400, location=(0, 0, 0))
@@ -596,7 +632,7 @@ def build_shot(shot, plan, opts, fps, models):
         add_sphere("Rock", (rx, ry, 0), (2.2, 1.8, rtop), make_material("Rock", (0.38, 0.38, 0.42), 0.9))
 
     try:
-        build_scenery(scene, env, models, region, rock, has_river, env_name)
+        build_scenery(scene, env, models, region, rock, has_river, env_name, q["props"])
     except Exception as ex:
         NOTES.append("Shot %s (%s): nature props failed (%s) - simple forest used." % (shot["id"], env_name, ex))
         print("WARNING scenery:", ex, flush=True)
@@ -604,7 +640,7 @@ def build_shot(shot, plan, opts, fps, models):
 
     if env.get("snow"):
         try:
-            add_snow(scene, region, n, fps, env_name, min(420, int((region[1] - region[0]) * 8)))
+            add_snow(scene, region, n, fps, env_name, min(q["snow"], int((region[1] - region[0]) * 8)))
         except Exception as ex:
             NOTES.append("Shot %s: snowfall failed (%s)." % (shot["id"], ex))
 
@@ -634,7 +670,10 @@ def build_shot(shot, plan, opts, fps, models):
             length, floor = 2.0, 0.0
         if length < 0.05:
             length = 2.0
-        s = float(a.get("size", 2.0)) / length
+        if a.get("height"):                     # humans: scale by body height (metres)
+            s = float(a["height"]) / max(dim.z if meshes else 1.8, 0.05)
+        else:                                   # animals: scale by body length
+            s = float(a.get("size", 2.0)) / length
 
         if a.get("tint"):
             for o in meshes:
@@ -670,7 +709,8 @@ def build_shot(shot, plan, opts, fps, models):
         else:
             d = end - start
             heading = math.degrees(math.atan2(d.y, d.x)) if (d.x ** 2 + d.y ** 2) > 1e-4 else 0.0
-        root.rotation_euler = (0, 0, math.radians(heading + asset_facing))
+        facing = float(a.get("asset_facing", asset_facing))   # humans may need a different value
+        root.rotation_euler = (0, 0, math.radians(heading + facing))
         actors[who] = {"root": root, "start": start, "end": end, "zoff": -floor * s}
 
     # ---- camera
@@ -745,18 +785,31 @@ def main():
     models = list_models(opts["assets"])
     print("Models found in the repository: %d" % len(models), flush=True)
 
+    q = QUALITY.get(opts["quality"], QUALITY["balanced"])
     shots = plan["shots"]
+    if opts["shards"] > 1:
+        frames_per = [max(2, int(round(float(s["seconds"]) * fps))) for s in shots]
+        target = sum(frames_per) / float(opts["shards"])
+        chunks = [[] for _ in range(opts["shards"])]
+        acc, idx = 0.0, 0
+        for sh, n_fr in zip(shots, frames_per):
+            while idx < opts["shards"] - 1 and acc + n_fr / 2.0 >= target * (idx + 1):
+                idx += 1
+            chunks[idx].append(sh)
+            acc += n_fr
+        shots = chunks[opts["shard"]]
+        print("Shard %d of %d: shots %s" % (opts["shard"] + 1, opts["shards"], [s["id"] for s in shots]), flush=True)
     total_frames = sum(max(2, int(round(float(s["seconds"]) * fps))) for s in shots)
     print("=" * 60)
-    print("%s | %d shots | %d fps | %d total frames | engine %s"
-          % (plan.get("title", "movie"), len(shots), fps, total_frames, opts["engine"]))
+    print("%s | %d shots | %d fps | %d frames | engine %s | quality %s"
+          % (plan.get("title", "movie"), len(shots), fps, total_frames, opts["engine"], opts["quality"]))
     print("=" * 60, flush=True)
 
     times, shot_rows = [], []
     global_index = 0
     run_start = time.time()
     for shot in shots:
-        scene, n = build_shot(shot, plan, opts, fps, models)
+        scene, n = build_shot(shot, plan, opts, fps, models, q)
         frames = [n // 2] if opts["sample_only"] else list(range(1, n + 1))
         shot_start = time.time()
         for f in frames:
@@ -790,7 +843,8 @@ def main():
         "| Item | Value |", "|---|---|",
         "| Story | %s |" % plan.get("title", ""),
         "| Shots | %d |" % len(shots),
-        "| Engine | %s |" % opts["engine"],
+        "| Engine | %s (quality: %s) |" % (opts["engine"], opts["quality"]),
+        "| Part | shard %d of %d |" % (opts["shard"] + 1, opts["shards"]),
         "| Video | %d fps, %d frames = %.0f s |" % (fps, total_frames, total_frames / float(fps)),
         "| Mode | %s |" % ("SAMPLE (1 frame per shot)" if opts["sample_only"] else "FULL"),
         "| Average time per frame | %.1f s |" % avg,
