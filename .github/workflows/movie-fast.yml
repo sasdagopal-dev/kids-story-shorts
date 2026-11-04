@@ -65,11 +65,14 @@ jobs:
           ENGINE: ${{ inputs.tts_engine }}
           RATE: ${{ inputs.rate }}
           VOICE_MODE: ${{ inputs.voice_mode }}
+          VID_FPS: ${{ inputs.fps }}
+          QUALITY: ${{ inputs.quality }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           EXTRA="--on-fail silent"
           if [ "$VOICE_MODE" = "silent_with_subtitles" ]; then EXTRA="--no-audio"; fi
-          python3 tts.py --plan "$PLAN_FILE" --gender "$GENDER" --engine "$ENGINE" --rate="$RATE" $EXTRA
+          python3 tts.py --plan "$PLAN_FILE" --gender "$GENDER" --engine "$ENGINE" \
+            --rate="$RATE" --fps "$VID_FPS" --quality "$QUALITY" $EXTRA
 
       - name: Save plan and audio
         uses: actions/upload-artifact@v4
@@ -77,6 +80,8 @@ jobs:
           name: plan
           path: |
             scene_plan_timed.json
+            timeline.json
+            subs.srt
             tts_summary.md
             narration_preview.mp3
             audio/
@@ -133,25 +138,26 @@ jobs:
 
       - name: Render this part of the movie
         env:
-          VID_FPS: ${{ inputs.fps }}
-          QUALITY: ${{ inputs.quality }}
           SHARD: ${{ matrix.shard }}
         run: |
           mkdir -p out
           xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
             -P movie_render.py -- \
-            --assets . --plan scene_plan_timed.json --fps "$VID_FPS" \
-            --quality "$QUALITY" --shard "$SHARD" --shards 6 --out out
+            --timeline timeline.json --story scene_plan_timed.json \
+            --assets . --out out --shard "$SHARD" --shards 6
 
       - name: Pack this part into a small video file
         env:
           VID_FPS: ${{ inputs.fps }}
           SHARD: ${{ matrix.shard }}
         run: |
-          ffmpeg -y -loglevel error -framerate "$VID_FPS" -i out/frame_%05d.png \
-            -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p "out/segment_${SHARD}.mp4"
-          cp out/summary.md "out/render_summary_${SHARD}.md"
-          rm -f out/frame_*.png
+          TOTAL=$(python3 -c "import json;print(json.load(open('timeline.json'))['total_frames'])")
+          START=$((TOTAL * SHARD / 6))
+          ffmpeg -y -loglevel error -framerate "$VID_FPS" -start_number "$START" \
+            -i out/f_%06d.png -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p \
+            "out/segment_${SHARD}.mp4"
+          echo "Shard $SHARD: frames from $START, total $TOTAL" > "out/render_summary_${SHARD}.md"
+          rm -f out/f_*.png
 
       - name: Save this part
         if: always()
