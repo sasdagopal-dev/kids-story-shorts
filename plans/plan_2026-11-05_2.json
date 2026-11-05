@@ -1,0 +1,572 @@
+{
+ "title": "इमरजेंसी फंड की ताकत: हर परिवार के लिए क्यों है ज़रूरी",
+ "rate": "-8%",
+ "description": "जानिए आपातकालीन निधि या इमरजेंसी फंड क्या है और इसे धीरे-धीरे छोटी बचत से कैसे बनाया जा सकता है। कठिन समय में परिवार की सुरक्षा का सबसे आसान तरीका सीखें।",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech.",
+ "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+ "shots": [
+  {
+   "id": 1,
+   "title": "Sudden Crisis",
+   "narration": "अचानक बारिश आ जाए या बीमारी आ जाए, पैसों की ज़रूरत तुरंत पड़ती है। बिना तैयारी के ऐसी मुसीबत परिवार को संकट में डाल देती है।",
+   "env": "storm",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -1.0,
+      1.0
+     ],
+     "heading": 45
+    },
+    {
+     "model": "Cow",
+     "anim": "Idle_2",
+     "pos": [
+      2.0,
+      2.0
+     ],
+     "heading": -60
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      3.5,
+      3.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     1.0,
+     1.2
+    ],
+    "dist": 6.0,
+    "sweep": -15,
+    "angle": 5
+   }
+  },
+  {
+   "id": 2,
+   "title": "Shyam In Debt",
+   "narration": "श्याम के घर छत टूट गई और डॉक्टर का खर्चा आ गया। बचत न होने से उसे भारी ब्याज पर कर्ज़ लेना पड़ा और वह बेहद परेशान हो गया।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -1.5,
+      0.5
+     ],
+     "heading": 60
+    },
+    {
+     "model": "Suit",
+     "anim": "Interact",
+     "pos": [
+      1.0,
+      0.5
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      0.0,
+      0.2
+     ],
+     "scale": 1.2
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.2,
+     0.5,
+     1.2
+    ],
+    "dist": 5.5,
+    "sweep": 10,
+    "angle": -5
+   }
+  },
+  {
+   "id": 3,
+   "title": "Wise King Speaks",
+   "narration": "राजा ने गांव में समझाया कि अनहोनी बताकर नहीं आती। इसीलिए हर परिवार को अपनी आपातकालीन निधि यानी इमरजेंसी फंड बनाना चाहिए।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.8
+     ],
+     "heading": 0
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle",
+     "pos": [
+      -2.2,
+      0.5
+     ],
+     "heading": 70
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.2,
+      0.5
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      -3.5,
+      3.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.6,
+     1.2
+    ],
+    "dist": 7.0,
+    "sweep": 0,
+    "angle": 0
+   }
+  },
+  {
+   "id": 4,
+   "title": "The Emergency Shield",
+   "narration": "इमरजेंसी फंड वह सुरक्षा कवच है जो संकट में काम आता है। यह पैसा सिर्फ बीमारी या अचानक आई मुसीबत के लिए संभालकर रखा जाता है।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      -0.5,
+      0.2
+     ],
+     "heading": 40
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle",
+     "pos": [
+      1.8,
+      0.2
+     ],
+     "heading": -50
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      0.5,
+      0.0
+     ],
+     "scale": 1.8
+    }
+   ],
+   "camera": {
+    "target": [
+     0.5,
+     0.1,
+     1.2
+    ],
+    "dist": 4.8,
+    "dist_end": 4.0,
+    "sweep": 15,
+    "angle": -8
+   }
+  },
+  {
+   "id": 5,
+   "title": "Small Daily Savings",
+   "narration": "इसे बनाना बहुत आसान है। अगर आप रोज़ बीस रुपये बचाते हैं, तो महीने में छह सौ रुपये और साल भर में बड़ी रकम जमा हो जाती है।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.0,
+      0.2
+     ],
+     "heading": 50
+    },
+    {
+     "model": "Suit",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.5,
+      0.3
+     ],
+     "heading": -60
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      -0.2,
+      0.1
+     ],
+     "scale": 1.4
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.2,
+     1.2
+    ],
+    "dist": 5.5,
+    "sweep": -20,
+    "angle": 5
+   }
+  },
+  {
+   "id": 6,
+   "title": "Building The Fund",
+   "narration": "रामू ने अपनी कमाई से हर महीने छोटी बचत की। धीरे-धीरे उसके पास तीन महीने के राशन और इलाज का इमरजेंसी फंड तैयार हो गया।",
+   "env": "forest",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Walk",
+     "pos": [
+      -3.0,
+      0.5
+     ],
+     "heading": 70,
+     "move": [
+      0.0,
+      0.5
+     ]
+    },
+    {
+     "model": "Horse_White",
+     "anim": "Eating",
+     "pos": [
+      2.5,
+      1.5
+     ],
+     "heading": -45
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_2",
+     "pos": [
+      1.0,
+      2.5
+     ],
+     "grow": [
+      0.3,
+      1.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -1.0,
+     0.5,
+     1.2
+    ],
+    "dist": 6.5,
+    "sweep": 15,
+    "angle": 0
+   }
+  },
+  {
+   "id": 7,
+   "title": "Prepared For Storm",
+   "narration": "जब खेत में नुकसान हुआ, तो रामू को कर्ज़ नहीं लेना पड़ा। उसने अपनी गुल्लक से पैसा निकाला और परिवार को मुश्किल से बचा लिया।",
+   "env": "storm",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -0.8,
+      0.3
+     ],
+     "heading": 30
+    },
+    {
+     "model": "Donkey",
+     "anim": "Idle",
+     "pos": [
+      2.0,
+      1.0
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      -0.2,
+      0.1
+     ],
+     "scale": 1.5
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.3,
+     1.2
+    ],
+    "dist": 5.8,
+    "sweep": -10,
+    "angle": -4,
+    "thumb": true
+   }
+  },
+  {
+   "id": 8,
+   "title": "Warning Against Scam",
+   "narration": "सावधान रहें! चालाक लोमड़ी जैसे लोग इस बचत को फिजूलखर्च या सट्टेबाज़ी में लगाने को कहेंगे। इस पैसे को कभी भी मत छुएं।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Fox",
+     "anim": "Walk",
+     "pos": [
+      -4.0,
+      0.2
+     ],
+     "heading": 70,
+     "move": [
+      -1.0,
+      0.2
+     ]
+    },
+    {
+     "model": "Farmer",
+     "anim": "HitRecieve_2",
+     "pos": [
+      1.2,
+      0.2
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      1.8,
+      0.0
+     ],
+     "scale": 1.2
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.2,
+     1.2
+    ],
+    "dist": 6.0,
+    "sweep": 20,
+    "angle": 8
+   }
+  },
+  {
+   "id": 9,
+   "title": "Lesson One And Two",
+   "narration": "पहला नियम: आज ही बीस-पचास रुपये से शुरुआत करें। दूसरा नियम: इस आपातकालीन पैसे को किसी सुरक्षित और आसान जगह पर रखें।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.4
+     ],
+     "heading": 0
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle",
+     "pos": [
+      -2.0,
+      0.4
+     ],
+     "heading": 60
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      3.0,
+      2.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.5,
+     0.4,
+     1.2
+    ],
+    "dist": 6.2,
+    "sweep": -15,
+    "angle": -2
+   }
+  },
+  {
+   "id": 10,
+   "title": "Lesson Three",
+   "narration": "तीसरा नियम: इसका इस्तेमाल सिर्फ असली मुसीबत में करें, शौक के लिए नहीं। यह आपातकालीन गुल्लक परिवार की सबसे बड़ी ढाल है।",
+   "env": "forest",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -0.8,
+      0.5
+     ],
+     "heading": 70
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.2,
+      0.5
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      -0.1,
+      0.3
+     ],
+     "scale": 1.4
+    }
+   ],
+   "camera": {
+    "target": [
+     0.2,
+     0.5,
+     1.2
+    ],
+    "dist": 5.2,
+    "sweep": 10,
+    "angle": -5
+   }
+  },
+  {
+   "id": 11,
+   "title": "Education Disclaimer",
+   "narration": "यह वीडियो केवल वित्तीय शिक्षा के लिए है। हम किसी बैंक, स्कीम या निवेश की सलाह नहीं देते। समझदारी से सही फैसले लें।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Suit",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.3
+     ],
+     "heading": 0
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_2",
+     "pos": [
+      -2.5,
+      2.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.3,
+     1.2
+    ],
+    "dist": 5.0,
+    "sweep": 0,
+    "angle": 0
+   }
+  },
+  {
+   "id": 12,
+   "title": "Subscribe And Save",
+   "narration": "आज ही अपनी आपातकालीन बचत शुरू करें! पैसों की सीख के लिए इस वीडियो को शेयर करें और हमारे चैनल को सब्सक्राइब जरूर करें। यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      -1.2,
+      0.2
+     ],
+     "heading": 30
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      1.2,
+      0.2
+     ],
+     "heading": -30
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      0.0,
+      3.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.2,
+     1.2
+    ],
+    "dist": 6.0,
+    "dist_end": 5.0,
+    "sweep": 0,
+    "angle": 0
+   }
+  }
+ ],
+ "topic": "Emergency fund: why every family needs one and how to build it slowly",
+ "director_model": "gemini-3.6-flash"
+}
