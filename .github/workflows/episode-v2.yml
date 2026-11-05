@@ -91,6 +91,9 @@ jobs:
           source ./retry.sh
           retry python3 tts.py --plan scene_plan_auto.json --gender "$GENDER" --engine auto
 
+      - name: Match walking and running to the real shot length
+        run: python3 retime_v2.py --plan scene_plan_timed.json
+
       - name: Show the plan
         if: always()
         run: |
