@@ -1,0 +1,89 @@
+name: Daily video - Gemini director, voice, render
+
+on:
+  schedule:
+    - cron: "30 2 * * *"        # 02:30 UTC = 08:00 India time, every day
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Optional: your own lesson topic (empty = next topic from director_config.json)"
+        default: ""
+      voice_gender:
+        description: "Narrator"
+        type: choice
+        default: male
+        options: [male, female]
+      quality:
+        description: "Render quality (high = best, about 40-45 min)"
+        type: choice
+        default: high
+        options: [high, balanced, fast]
+      render_workflow:
+        description: "File name of your 6-parallel-jobs movie workflow"
+        default: "movie-fast.yml"
+      only_plan:
+        description: "Only write the story and plan, do NOT start the render (good for testing)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: daily-video
+  cancel-in-progress: false
+
+jobs:
+  director:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gemini director writes today's story and scene plan (with retry)
+        id: plan
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TOPIC: ${{ inputs.topic }}
+        run: |
+          ok=0
+          for i in 1 2 3; do
+            if [ -n "$TOPIC" ]; then
+              python3 director.py --topic "$TOPIC" && ok=1 && break
+            else
+              python3 director.py && ok=1 && break
+            fi
+            echo "Director attempt $i failed, waiting 60 s"; sleep 60
+          done
+          [ "$ok" = 1 ] || { echo "Director failed 3 times"; exit 1; }
+
+      - name: Show result
+        if: always()
+        run: |
+          [ -f director_summary.md ] && cat director_summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save the plan in the repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add plans director_progress.json
+          git commit -m "Daily story plan ${{ steps.plan.outputs.plan_file }}" || echo "Nothing to commit"
+          for i in 1 2 3; do
+            git pull --rebase origin "${{ github.ref_name }}" && git push && break
+            sleep 10
+          done
+
+      - name: Start voice and render (your 6-parallel-jobs workflow)
+        if: ${{ inputs.only_plan != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAN: ${{ steps.plan.outputs.plan_file }}
+          WF: ${{ inputs.render_workflow || 'movie-fast.yml' }}
+          GENDER: ${{ inputs.voice_gender || 'male' }}
+          QUALITY: ${{ inputs.quality || 'high' }}
+        run: |
+          gh workflow run "$WF" --ref "${{ github.ref_name }}" \
+            -f plan_file="$PLAN" -f tts_engine=gemini \
+            -f voice_gender="$GENDER" -f quality="$QUALITY"
+          echo "Render started with $PLAN. Open Actions to follow it; the video appears as the artifact movie-final." >> "$GITHUB_STEP_SUMMARY"
