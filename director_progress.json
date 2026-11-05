@@ -1,5 +1,5 @@
 {
- "next_topic": 5,
+ "next_topic": 6,
  "history": [
   {
    "date": "2026-11-05",
@@ -30,6 +30,12 @@
    "title": "कर्ज़ का असली सच: अच्छा कर्ज़ या बर्बादी का फंदा?",
    "topic": "Good debt versus bad debt: why high-interest loans trap people",
    "file": "plans/plan_2026-11-05_5.json"
+  },
+  {
+   "date": "2026-11-05",
+   "title": "तूफ़ान और सही बजट: ज़रूरत, चाहत और बचत का नियम",
+   "topic": "Simple budgeting: needs, wants and savings",
+   "file": "plans/plan_2026-11-05_6.json"
   }
  ]
 }

@@ -1,0 +1,611 @@
+{
+ "title": "तूफ़ान और सही बजट: ज़रूरत, चाहत और बचत का नियम",
+ "rate": "-8%",
+ "description": "तूफ़ान आने पर जब श्याम का घर तबाह हो गया, तब रामू की बचत ने उसकी रक्षा की। जानिए कैसे कमाई को ज़रूरत, चाहत और बचत के सही बजट नियम में बाँटकर हर मुसीबत से बचा जा सकता है।",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech.",
+ "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+ "shots": [
+  {
+   "id": 1,
+   "title": "Storm Strikes Village",
+   "narration": "अचानक गाँव में भयंकर तूफ़ान आ गया। भारी बारिश से सब डूबने लगा। श्याम रोकर बोला, \"मेरा सब कुछ नष्ट हो गया!\"",
+   "env": "storm",
+   "visual": "Dark storm clouds flood the village as Ramu leads his cow to shelter while Shyam panics in fear.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Walk",
+     "pos": [
+      -2.5,
+      0.0
+     ],
+     "move": [
+      2.0,
+      0.0
+     ]
+    },
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      2.0,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Cow",
+     "anim": "Idle",
+     "pos": [
+      -4.0,
+      0.5
+     ],
+     "heading": 80
+    }
+   ],
+   "props": [
+    {
+     "model": "DeadTree_1",
+     "pos": [
+      4.0,
+      3.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -1.25,
+     0.12,
+     1.2
+    ],
+    "dist": 10.0,
+    "dist_end": 5.5,
+    "sweep": -15
+   }
+  },
+  {
+   "id": 2,
+   "title": "Wage Day and Savings First",
+   "narration": "कुछ दिन पहले रामू और श्याम को ₹500 की कमाई मिली थी। रामू ने तुरंत ₹100 मटके में डाल दिए। रामू बोला, \"सबसे पहले बचत।\"",
+   "env": "village",
+   "visual": "A sunny village market. Ramu receives money from Seth Dhanpal and immediately puts some into a clay pot.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.0,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Suit",
+     "anim": "Idle_Neutral",
+     "pos": [
+      3.5,
+      0.0
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      -4.0,
+      4.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.38,
+     0.0,
+     1.2
+    ],
+    "dist": 9.2,
+    "dist_end": 5.0
+   }
+  },
+  {
+   "id": 3,
+   "title": "Spending on Essential Needs",
+   "narration": "रामू ने ₹250 से घर का राशन और गाय लक्ष्मी के लिए चारा ख़रीदा। यह उसकी असली ज़रूरत थी। उसने ज़रूरतों को प्राथमिकता दी।",
+   "env": "village",
+   "visual": "Ramu buys grains from Birju and feed for his cow Lakshmi, prioritising basic survival needs.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Beach",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.5,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Cow",
+     "anim": "Eating",
+     "pos": [
+      -4.0,
+      0.5
+     ],
+     "heading": 80
+    }
+   ],
+   "props": [
+    {
+     "model": "Bush_Common",
+     "pos": [
+      3.5,
+      3.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -1.38,
+     0.12,
+     1.2
+    ],
+    "dist": 9.6,
+    "dist_end": 8.3,
+    "angle": -5
+   }
+  },
+  {
+   "id": 4,
+   "title": "Tempted by Wants in Town",
+   "narration": "दूसरी तरफ़ श्याम ने पूरी ₹500 की कमाई से महँगे खिलौने ख़रीद लिए। श्याम हँसकर बोला, \"आज तो सारा पैसा मौज में उड़ाऊँगा!\"",
+   "env": "city",
+   "visual": "In the town market, Shyam gets excited seeing fancy clothes and toys sold by Birju.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Roll",
+     "pos": [
+      -1.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Beach",
+     "anim": "Interact",
+     "pos": [
+      1.5,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "Pine_1",
+     "pos": [
+      4.0,
+      2.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.17,
+     0.5,
+     1.2
+    ],
+    "dist": 7.4,
+    "dist_end": 4.5
+   }
+  },
+  {
+   "id": 5,
+   "title": "Zero Savings Mistake",
+   "narration": "गोलू और बिरजू ने भी श्याम को उकसाया। श्याम ने बचत के लिए एक रुपया नहीं रखा। चाहत पर सब लुटाकर अपनी जेब ख़ाली कर ली।",
+   "env": "city",
+   "visual": "Golu and Birju cheer Shyam as he spends every last rupee on useless luxuries.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Casual_Hoodie",
+     "anim": "Interact",
+     "pos": [
+      -2.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Beach",
+     "anim": "Wave",
+     "pos": [
+      2.0,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.5,
+     1.2
+    ],
+    "dist": 8.5,
+    "sweep": 10
+   }
+  },
+  {
+   "id": 6,
+   "title": "Consequence of No Savings",
+   "narration": "फिर तूफ़ानी रात आई! श्याम का घर टूट गया और सामान बह गया। श्याम चिल्लाया, \"मेरे पास छप्पर ठीक करने के भी पैसे नहीं हैं!\"",
+   "env": "storm",
+   "visual": "Heavy rain destroys Shyam's unstable roof while Ramu rushes in with a warm cloth.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve",
+     "pos": [
+      1.0,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Run",
+     "pos": [
+      -5.0,
+      0.0
+     ],
+     "move": [
+      3.5,
+      0.0
+     ]
+    }
+   ],
+   "props": [
+    {
+     "model": "DeadTree_1",
+     "pos": [
+      -3.5,
+      3.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.42,
+     0.0,
+     1.2
+    ],
+    "dist": 10.0,
+    "dist_end": 4.0,
+    "sweep": -20,
+    "thumb": true
+   }
+  },
+  {
+   "id": 7,
+   "title": "Regret and Poverty",
+   "narration": "श्याम के पास मुसीबत के लिए एक रुपया नहीं था। उसने समझ लिया कि फ़ालतू ख़र्च ने उसे सड़क पर ला दिया। वह उदास बैठ गया।",
+   "env": "storm",
+   "visual": "Shyam sits crying in the mud, realizing that wasting money on wants left him with nothing for emergencies.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.0,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": 80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.17,
+     0.0,
+     1.2
+    ],
+    "dist": 7.4,
+    "angle": 10
+   }
+  },
+  {
+   "id": 8,
+   "title": "The Debt Trap Temptation",
+   "narration": "तभी भेड़िया साहूकार आया और भारी ब्याज पर कर्ज़ देने लगा। रामू ने रोका और बोला, \"मुसीबत में ऊँचे ब्याज का कर्ज़ मत लो!\"",
+   "env": "storm",
+   "visual": "Bhediya Sahukar tries to trap Shyam with high-interest debt, but Ramu steps in to block the deal.",
+   "focus": "Wolf",
+   "characters": [
+    {
+     "model": "Wolf",
+     "anim": "Idle_2",
+     "pos": [
+      2.5,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      0.5,
+      0.0
+     ],
+     "heading": 80
+    }
+   ],
+   "camera": {
+    "target": [
+     1.0,
+     0.0,
+     1.2
+    ],
+    "dist": 8.5,
+    "dist_end": 5.0
+   }
+  },
+  {
+   "id": 9,
+   "title": "Savings to the Rescue",
+   "narration": "सुबह तूफ़ान थमा। रामू ने अपने मटके की बचत से श्याम की मदद की। रामू बोला, \"सच्ची बचत ही बुरे समय में जान बचाती है।\"",
+   "env": "village",
+   "visual": "Morning comes. Ramu breaks his clay pot and gives part of his emergency savings to rebuild Shyam's home.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.0,
+      0.0
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      1.5,
+      0.0
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_2",
+     "pos": [
+      4.0,
+      4.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.17,
+     0.0,
+     1.2
+    ],
+    "dist": 7.4,
+    "dist_end": 4.5
+   }
+  },
+  {
+   "id": 10,
+   "title": "Teaching the Budget Rule",
+   "narration": "रामू ने ज़मीन पर तीन घेरे बनाए, \"कमाई के तीन हिस्से करो—पचास फ़ीसदी ज़रूरत, तीस फ़ीसदी चाहत और बीस फ़ीसदी बचत!\"",
+   "env": "village",
+   "visual": "Ramu draws three budget circles on the soil: Needs 50%, Wants 30%, Savings 20%. Shyam listens intently.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.0,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Casual_2",
+     "anim": "Idle_Neutral",
+     "pos": [
+      3.5,
+      0.0
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "Bush_Common_Flowers",
+     "pos": [
+      -4.0,
+      3.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.38,
+     0.0,
+     1.2
+    ],
+    "dist": 9.2,
+    "dist_end": 8.0,
+    "angle": -5
+   }
+  },
+  {
+   "id": 11,
+   "title": "Shot 11",
+   "narration": "राजा विक्रम ने कहा, \"याद रखो: 1. पहले ज़रूरत पूरी करो, 2. चाहतों पर फ़ालतू मत उड़ाओ, 3. बीस प्रतिशत बचत ज़रूर करो!\"",
+   "env": "village",
+   "visual": "Raja Vikram arrives on his white horse, praising Ramu and reinforcing the budgeting lesson to all villagers.",
+   "focus": "King",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Horse_White",
+     "anim": "Idle",
+     "pos": [
+      2.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.0,
+      0.0
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -4.0,
+      0.0
+     ],
+     "heading": 80
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.7,
+     0.1,
+     1.2
+    ],
+    "dist": 10.4,
+    "dist_end": 5.5
+   }
+  },
+  {
+   "id": 12,
+   "title": "Disclaimer and Call to Action",
+   "narration": "यह वीडियो केवल वित्तीय जागरूकता के लिए है। निवेश से पहले विचार करें। बचत के पाठ सीखने के लिए चैनल सब्सक्राइब करें! यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+   "env": "village",
+   "visual": "Ramu and Shyam wave happily to the viewer under a sunny sky.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      -1.0,
+      0.0
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      1.0,
+      0.0
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_3",
+     "pos": [
+      3.5,
+      4.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.33,
+     0.0,
+     1.2
+    ],
+    "dist": 7.0,
+    "dist_end": 4.5
+   }
+  }
+ ],
+ "topic": "Simple budgeting: needs, wants and savings",
+ "genre": "a rescue story: a flood or storm tests who saved money and who did not",
+ "director_model": "gemini-3.6-flash"
+}
