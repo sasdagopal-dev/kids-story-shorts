@@ -4,10 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: "Leave EMPTY to use today's topic from channel_v2.json"
+        description: "Leave empty to use the next topic from channel_v2.json"
+        required: false
         default: ""
+        type: string
       length:
-        description: "Episode length in seconds. Use 60 for a quick first test."
+        description: "Episode length in seconds"
+        required: true
         type: choice
         default: "150"
         options:
@@ -15,21 +18,23 @@ on:
           - "90"
           - "150"
       quality:
-        description: "high = best look. balanced = faster. fast = quickest (good for tests)."
+        description: "Blender render quality"
+        required: true
         type: choice
         default: balanced
         options:
-          - high
-          - balanced
           - fast
+          - balanced
+          - high
       voice_gender:
         description: "Narrator voice"
+        required: true
         type: choice
         default: male
         options:
           - male
           - female
-  # Later, to make one episode automatically every day, remove the # in front of the next 2 lines:
+  # To enable daily generation later, uncomment:
   # schedule:
   #   - cron: "30 1 * * *"
 
@@ -41,70 +46,105 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # ------------------------------------------------------------ 1) story, safety check, voice
+  # 1) Generate the story, create voice files, and time the shots.
   prepare:
     runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
-      - name: Get the code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download the asset packs from the Release
+      - name: Download 3D asset packs from the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           source ./retry.sh
           mkdir -p asset_zips assets
           retry gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber \
             --pattern "animals*" --pattern "modular-men*" --pattern "stylized-nature*" --pattern "downtown-city*"
-          for z in asset_zips/*.zip; do
-            [ -f "$z" ] || continue
+          shopt -s nullglob
+          zips=(asset_zips/*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "No matching asset ZIPs were downloaded from the 'assets' release."
+            exit 1
+          fi
+          for z in "${zips[@]}"; do
             d="assets/$(basename "$z" .zip)"
             mkdir -p "$d"
             unzip -q -o "$z" -d "$d"
           done
+          echo "Asset files found: $(find assets -type f | wc -l)"
 
-      - name: Install tools
+      - name: Install command-line tools
         run: |
+          set -euo pipefail
           source ./retry.sh
           retry sudo apt-get update
-          retry sudo apt-get install -y ffmpeg unzip
-          retry pip install --upgrade edge-tts
+          retry sudo apt-get install -y ffmpeg unzip python3-venv
+          python3 -m venv .venv
+          .venv/bin/python -m pip install --upgrade pip edge-tts
+          echo "$GITHUB_WORKSPACE/.venv/bin" >> "$GITHUB_PATH"
 
-      - name: Write the episode with Gemini
+      - name: Generate the episode with Gemini
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TOPIC: ${{ inputs.topic }}
           LENGTH: ${{ inputs.length || '150' }}
         run: |
+          set -euo pipefail
           source ./retry.sh
-          args=(--config channel_v2.json --assets assets --seconds "$LENGTH" --out scene_plan_auto.json \
-                --report plan_report.md --meta video_meta.json)
-          if [ -n "$TOPIC" ]; then args+=(--topic "$TOPIC"); fi
+          args=(--config channel_v2.json --assets assets --seconds "$LENGTH" \
+                --out scene_plan_auto.json --report plan_report.md --meta video_meta.json)
+          if [ -n "${TOPIC:-}" ]; then args+=(--topic "$TOPIC"); fi
           retry python3 story_brain_v2.py "${args[@]}"
+          test -s scene_plan_auto.json
 
-      - name: Make the narration
+      - name: Generate narration and timed shot plan
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GENDER: ${{ inputs.voice_gender || 'male' }}
         run: |
+          set -euo pipefail
           source ./retry.sh
           retry python3 tts.py --plan scene_plan_auto.json --gender "$GENDER" --engine auto
+          test -s scene_plan_timed.json
 
-      - name: Match walking and running to the real shot length
-        run: python3 retime_v2.py --plan scene_plan_timed.json
+      - name: Retiming and plan preflight
+        run: |
+          set -euo pipefail
+          python3 retime_v2.py --plan scene_plan_timed.json --fps 12
+          python3 - <<'PY'
+          import json, os
+          p = json.load(open('scene_plan_timed.json', encoding='utf-8'))
+          shots = p.get('shots')
+          if not isinstance(shots, list) or not shots:
+              raise SystemExit('Invalid timed plan: shots list is missing or empty')
+          total = sum(float(s.get('duration', s.get('seconds', 0))) for s in shots)
+          if total <= 0:
+              raise SystemExit('Invalid timed plan: total duration is zero')
+          print(f"Preflight OK: {len(shots)} shots, {total:.2f} seconds, {round(total*12)} frames")
+          print('Audio folder exists:', os.path.isdir('audio'))
+          PY
 
-      - name: Show the plan
+      - name: Add plan and voice summary to the job summary
         if: always()
         run: |
-          if [ -f plan_report.md ]; then cat plan_report.md >> "$GITHUB_STEP_SUMMARY"; fi
-          if [ -f tts_summary.md ]; then cat tts_summary.md >> "$GITHUB_STEP_SUMMARY"; fi
+          for f in plan_report.md tts_summary.md; do
+            if [ -s "$f" ]; then
+              echo "## $f" >> "$GITHUB_STEP_SUMMARY"
+              cat "$f" >> "$GITHUB_STEP_SUMMARY"
+              echo >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
 
-      - name: Save plan and audio
+      - name: Save the timed plan, subtitles and audio
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: plan
+          if-no-files-found: warn
+          retention-days: 2
           path: |
             scene_plan_timed.json
             scene_plan_auto.json
@@ -112,10 +152,11 @@ jobs:
             video_meta.json
             tts_summary.md
             narration_preview.mp3
+            subs.srt
+            timeline.json
             audio/
-          if-no-files-found: warn
 
-  # ------------------------------------------------------------ 2) eight jobs render different shots at the same time
+  # 2) Eight independent render jobs. Each renders a contiguous time slice.
   render:
     needs: prepare
     runs-on: ubuntu-24.04
@@ -125,152 +166,175 @@ jobs:
       matrix:
         shard: [0, 1, 2, 3, 4, 5, 6, 7]
     steps:
-      - name: Get the code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get the plan and audio
+      - name: Download the timed plan and narration files
         uses: actions/download-artifact@v4
         with:
           name: plan
+          path: .
 
-      - name: Download the asset packs from the Release
+      - name: Download 3D asset packs from the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           source ./retry.sh
           mkdir -p asset_zips assets
           retry gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber \
             --pattern "animals*" --pattern "modular-men*" --pattern "stylized-nature*" --pattern "downtown-city*"
-          for z in asset_zips/*.zip; do
-            [ -f "$z" ] || continue
+          shopt -s nullglob
+          zips=(asset_zips/*.zip)
+          if [ ${#zips[@]} -eq 0 ]; then
+            echo "No matching asset ZIPs were downloaded from the 'assets' release."
+            exit 1
+          fi
+          for z in "${zips[@]}"; do
             d="assets/$(basename "$z" .zip)"
             mkdir -p "$d"
             unzip -q -o "$z" -d "$d"
           done
 
-      - name: Install system packages
+      - name: Install Blender runtime libraries
         run: |
+          set -euo pipefail
           source ./retry.sh
           retry sudo apt-get update
           retry sudo apt-get install -y xvfb ffmpeg xz-utils unzip \
             libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
             libxfixes3 libgl1 libegl1 libgl1-mesa-dri
 
-      - name: Remember Blender between runs
+      - name: Restore Blender 3.6.5 cache
         uses: actions/cache@v4
         with:
           path: ~/blender
           key: blender-3.6.5-linux-x64
 
-      - name: Get Blender 3.6 LTS (checks the file, tries several mirrors)
+      - name: Install Blender 3.6.5 if cache is empty
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash ./get_blender_v2.sh
 
-      - name: Render this part of the movie (tries up to 3 times)
+      - name: Render this shard with Story Brain v2 renderer
         env:
           QUALITY: ${{ inputs.quality || 'balanced' }}
           SHARD: ${{ matrix.shard }}
         run: |
+          set -euo pipefail
           mkdir -p out
           ok=0
           for attempt in 1 2 3; do
-            rm -f out/frame_*.png
+            rm -f out/frame_*.png out/summary.md
             if xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
-                 -P movie_render.py -- \
-                 --assets assets --plan scene_plan_timed.json --fps 12 \
-                 --quality "$QUALITY" --shard "$SHARD" --shards 8 --out out; then
+                 -P movie_render_v2.py -- \
+                 --plan scene_plan_timed.json --assets assets --out out \
+                 --fps 12 --quality "$QUALITY" --shard "$SHARD" --shards 8; then
               ok=1
               break
             fi
-            echo "Render attempt $attempt failed. Trying again in 20 seconds."
-            sleep 20
+            echo "Render attempt $attempt failed."
+            if [ "$attempt" -lt 3 ]; then sleep 20; fi
           done
-          [ "$ok" = 1 ] || exit 1
+          if [ "$ok" -ne 1 ]; then exit 1; fi
+          test -n "$(find out -maxdepth 1 -name 'frame_*.png' -print -quit)"
 
-      - name: Pack this part into a small video file
+      - name: Encode this shard as an MP4 segment
         env:
           SHARD: ${{ matrix.shard }}
         run: |
-          if ls out/frame_*.png >/dev/null 2>&1; then
-            ffmpeg -y -loglevel error -framerate 12 -i out/frame_%05d.png \
-              -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p "out/segment_${SHARD}.mp4"
-            rm -f out/frame_*.png
-          else
-            echo "This part had no shots."
-          fi
+          set -euo pipefail
+          ffmpeg -y -loglevel error -framerate 12 -start_number 0 \
+            -i out/frame_%05d.png -c:v libx264 -preset fast -crf 16 \
+            -pix_fmt yuv420p -an "out/segment_${SHARD}.mp4"
+          test -s "out/segment_${SHARD}.mp4"
+          rm -f out/frame_*.png
           cp out/summary.md "out/render_summary_${SHARD}.md" || true
 
-      - name: Save this part
+      - name: Save this render segment
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: segment-${{ matrix.shard }}
+          if-no-files-found: ignore
+          retention-days: 2
           path: |
             out/segment_${{ matrix.shard }}.mp4
             out/render_summary_${{ matrix.shard }}.md
-          if-no-files-found: ignore
 
-  # ------------------------------------------------------------ 3) join the parts, add voice, subtitles, cards
+  # 3) Concatenate the eight silent segments and add narration/music/subtitles.
   assemble:
     needs: render
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - name: Get the code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get the plan and audio
+      - name: Download the timed plan and narration files
         uses: actions/download-artifact@v4
         with:
           name: plan
+          path: .
 
-      - name: Get the video parts
+      - name: Download all render segments
         uses: actions/download-artifact@v4
         with:
           pattern: segment-*
           merge-multiple: true
           path: segments
 
-      - name: Install tools
+      - name: Install FFmpeg and subtitle fonts
         run: |
+          set -euo pipefail
           source ./retry.sh
           retry sudo apt-get update
           retry sudo apt-get install -y ffmpeg fonts-noto-core
           fc-cache -f
 
-      - name: Join the parts and build the final video
+      - name: Join the eight segments and assemble the final video
         run: |
+          set -euo pipefail
           mkdir -p out
-          : > list.txt
-          for f in $(ls segments/segment_*.mp4 | sort -V); do
-            echo "file '$PWD/$f'" >> list.txt
-          done
-          ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy out/video_all.mp4
-          MUSIC=""
-          MUSIC_FILE=$(find music -type f -iname "music*.mp3" 2>/dev/null | head -1 || true)
-          if [ -n "$MUSIC_FILE" ]; then MUSIC="$MUSIC_FILE"; echo "Using music: $MUSIC"; fi
-          python3 assemble.py --plan scene_plan_timed.json --video out/video_all.mp4 \
-            --fps 12 --out out/movie_final.mp4 --music "$MUSIC"
+          python3 - <<'PY'
+          from pathlib import Path
+          files = sorted(Path('segments').glob('segment_*.mp4'), key=lambda p: int(p.stem.split('_')[-1]))
+          if len(files) != 8:
+              raise SystemExit(f'Expected 8 render segments, found {len(files)}: {files}')
+          with open('segments/list.txt', 'w', encoding='utf-8') as f:
+              for p in files:
+                  f.write("file '" + str(p.resolve()).replace("'", "'\\''") + "'\n")
+          print('Joining:', ', '.join(p.name for p in files))
+          PY
+          ffmpeg -y -loglevel error -f concat -safe 0 -i segments/list.txt -c copy out/video_all.mp4
+          MUSIC_FILE=""
+          if [ -d music ]; then
+            MUSIC_FILE=$(find music -type f -iname 'music*.mp3' -print -quit || true)
+          fi
+          python3 assemble_v2.py --plan scene_plan_timed.json --video out/video_all.mp4 \
+            --fps 12 --out out/movie_final.mp4 --music "$MUSIC_FILE" --srt subs.srt
           rm -f out/video_all.mp4
 
-      - name: Show result summary
+      - name: Add render reports to job summary
         if: always()
         run: |
           for f in segments/render_summary_*.md; do
             [ -f "$f" ] || continue
-            echo "### Part $(basename "$f" .md | sed 's/render_summary_//')" >> "$GITHUB_STEP_SUMMARY"
+            echo "### $(basename "$f" .md)" >> "$GITHUB_STEP_SUMMARY"
             cat "$f" >> "$GITHUB_STEP_SUMMARY"
+            echo >> "$GITHUB_STEP_SUMMARY"
           done
 
-      - name: Save the episode (this is your video)
+      - name: Save the final episode
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: episode-v2-final
           retention-days: 14
+          if-no-files-found: error
           path: |
             out/movie_final.mp4
+            out/subs.ass
             video_meta.json
             plan_report.md
             tts_summary.md
-            out/subs.ass
