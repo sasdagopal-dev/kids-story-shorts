@@ -1,0 +1,23 @@
+name: Auto retry episode v2
+
+# If "Make episode v2" fails, this re-runs ONLY the failed jobs, up to 3 tries in total.
+on:
+  workflow_run:
+    workflows: ["Make episode v2"]
+    types: [completed]
+
+permissions:
+  actions: write
+
+jobs:
+  retry:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt < 3 }}
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Re-run the failed jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          sleep 60
+          gh run rerun "$RUN_ID" --failed --repo "$GITHUB_REPOSITORY"
