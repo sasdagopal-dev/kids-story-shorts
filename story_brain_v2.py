@@ -151,10 +151,16 @@ def build_vocab(assets_dir):
     return vocab
 
 
+PROMPT_ACTIONS = {"idle", "idle_2", "idle_2_headlow", "idle_headlow", "idle_neutral", "eating", "walk", "gallop",
+                  "gallop_jump", "run", "interact", "wave", "hitrecieve", "hitrecieve_2", "idle_hitreact1",
+                  "attack", "attack_headbutt", "attack_kick", "death", "punch_left", "punch_right", "sword_slash"}
+
+
 def vocab_text(vocab):
     groups = {}
     for name, info in sorted(vocab.items()):
-        groups.setdefault((info["kind"], tuple(info["animations"])), []).append(name)
+        shown = [a for a in info["animations"] if a.lower() in PROMPT_ACTIONS] or info["animations"]
+        groups.setdefault((info["kind"], tuple(shown)), []).append(name)
     return "\n".join("- %s models: %s\n  actions: %s" % (kind.upper(), ", ".join(names), ", ".join(anims))
                      for (kind, anims), names in groups.items())
 
@@ -204,15 +210,29 @@ STORY SHAPE (make it feel like a tiny movie, not a lecture)
 Put short dialogue inside the narration so the characters feel alive. Use warm humour and real emotion.
 Vary the story each time: different cast, different looks, different shot types.
 
-THE PICTURE MUST MATCH THE WORDS (very important)
-- If the narration names a character, that character MUST be in "actors" of the same shot.
-- The action must fit the sentence: Walk/Run/Gallop when someone goes or flees, Idle_Neutral/Idle when talking,
-  Idle_Headlow/Idle_2 when sad or worried, Interact when a human handles money or a phone, Wave to greet,
-  Attack actions only in real fights. Death only for a dramatic loss (use rarely).
+THE PICTURE MUST MATCH THE WORDS (very important: viewers see ONLY the animation, so it must tell the story)
+- ONE moment per shot. Each narration line describes ONE thing we can SEE: who does what. Do not pack two events
+  into one line. Show thoughts, numbers and rules with a "card" instead.
+- Name the character who acts, with a verb that matches the action you choose:
+    standing or talking        -> Idle_Neutral (humans) / Idle (animals), shot type two_shot or close_up
+    walks, goes, travels       -> Walk, shot type follow  (use follow ONLY when the narration says someone goes or walks)
+    runs, flees, rushes        -> Run (humans) / Gallop (animals), shot type follow or chase
+    chases someone             -> shot type chase, the character who RUNS AWAY is the FIRST actor
+    gives, pays, counts, taps  -> Interact (humans only), shot type two_shot or close_up
+    greets or cheers           -> Wave (humans only)
+    sad or worried (animal)    -> Idle_2_HeadLow or Idle_Headlow
+    shocked, tricked, scared   -> HitRecieve (humans) / Idle_HitReact1 (animals)
+    eats                       -> Eating (animals)
+- NEVER use Walk, Run or Gallop in a shot unless the narration says the character moves.
+- NEVER use Attack, Death, Punch or Sword actions unless the story really shows a fight or a loss. Avoid fights.
+- If the narration names a character, that character MUST be in "actors" of the same shot. List the speaker or the
+  one who acts FIRST. Use at most 3 characters in a talking shot.
 - Pick the "env" from the mood: danger/scam/fraud = fire_red, hardship/debt/fear = winter_night,
   hope/farming/saving = meadow_day, bank/shop/phone payment = town_day, lesson learned/calm = forest_sunset.
 - Change the shot type often (close_up, two_shot, follow, chase, group, establishing) so the picture changes
   every 5-6 seconds. Use empty_pan only for time passing.
+- Use the "coins" prop only when the narration talks about saving or earning money, and "growing_tree" only when it
+  talks about growth, patience or time.
 - For fintech topics, imagine animals and people as the story world of phones, payments, loans and scams:
   a sly fox "caller" who tricks people, a wolf "lender" with hidden fees, a banker who explains safe habits.
   Never show real app names or logos.
@@ -304,7 +324,7 @@ def call_gemini(prompt, key, models, rounds=3):
         for model in models:
             url = "https://generativelanguage.googleapis.com/v1beta/models/%s:generateContent" % model
             body = {"contents": [{"parts": [{"text": prompt}]}],
-                    "generationConfig": {"temperature": 0.85, "responseMimeType": "application/json"}}
+                    "generationConfig": {"temperature": 0.75, "responseMimeType": "application/json"}}
             for attempt in range(3):
                 try:
                     req = urllib.request.Request(
@@ -445,6 +465,152 @@ def cast_key(name):
     return re.sub(r"[^a-z0-9]", "", str(name).lower())
 
 
+# ------------------------------------------------------------------ the director: picture must follow the words
+def _rx(words):
+    return re.compile(r"\b(?:%s)\b" % "|".join(words), re.I)
+
+
+RE_RUN = _rx([r"ran", r"run(?:s|ning)?", r"rush(?:ed|es|ing)?", r"fled", r"flee(?:s|ing)?", r"escap\w+", r"sprint\w*",
+              r"hurr(?:y|ied|ies|ying)", r"rac(?:e|ed|es|ing)", r"dash(?:ed|es|ing)?", r"bolt(?:ed)?", r"gallop\w*",
+              r"chas(?:e|ed|es|ing)", r"pursu\w+"])
+RE_WALK = _rx([r"walk(?:ed|s|ing)?", r"went to", r"go(?:es)? to", r"going to", r"came to", r"arriv\w+",
+               r"head(?:ed|ing) (?:to|for|home|out)", r"journey\w*", r"travel\w*", r"stroll\w*", r"march\w*",
+               r"reach(?:ed|es) the", r"set out", r"left (?:the|for|home)", r"trot\w*", r"rode", r"rid(?:e|ing)"])
+RE_CHASE = _rx([r"chas(?:e|ed|es|ing)", r"pursu\w+", r"after (?:him|her|them|it)", r"ran after", r"hunt\w*",
+                r"(?:ran|run|fled|flee|escaped|escape)(?: away)? from"])
+RE_FIGHT = _rx([r"fight\w*", r"fought", r"attack\w*", r"punch\w*", r"kick\w*", r"slash\w*", r"battle\w*", r"clash\w*",
+                r"struck", r"hit"])
+RE_DIE = _rx([r"died", r"dead", r"death", r"collaps\w+", r"fell", r"faint\w*", r"dying"])
+RE_EAT = _rx([r"ate", r"eat(?:s|ing)?", r"graz\w+", r"food", r"meal", r"lunch", r"dinner", r"feast\w*", r"snack\w*",
+              r"chew\w*"])
+RE_SHOCK = _rx([r"shock\w*", r"panic\w*", r"gasp\w*", r"trick(?:ed|s)?", r"cheat(?:ed|s)?", r"fooled", r"robbed", r"stole",
+                r"stolen", r"vanish\w*", r"disappear\w*", r"scream\w*"])
+RE_SAD = _rx([r"sad", r"cried", r"cry", r"crying", r"worried", r"worry", r"afraid", r"scared", r"fear\w*", r"regret\w*",
+              r"alone", r"hopeless", r"trapped", r"stuck", r"tears"])
+RE_HANDLE = _rx([r"gave", r"give[sn]?", r"giving", r"took", r"take[sn]?", r"pay", r"paid", r"paying", r"count\w*",
+                 r"saved?", r"saving", r"deposit\w*", r"hand(?:ed|s)?", r"lend\w*", r"lent", r"borrow\w*", r"scan\w*",
+                 r"tap(?:ped|s)?", r"sign(?:ed|s)?", r"shar(?:e|ed|es|ing)", r"plant\w*", r"bought", r"buy\w*", r"sold",
+                 r"sell\w*", r"spen[dt]\w*", r"withdr\w+", r"transfer\w*", r"click\w*", r"press\w*", r"typed?",
+                 r"enter(?:ed|s)?", r"check(?:ed|s)?", r"open(?:ed|s)?", r"put"])
+RE_GREET = _rx([r"hello", r"hi", r"namaste", r"welcome", r"greet\w*", r"wave[sd]?", r"waving", r"goodbye", r"bye",
+                r"cheer\w*", r"hello"])
+RE_CELEB = _rx([r"happy", r"joy\w*", r"celebrat\w*", r"proud", r"smil\w*", r"laugh\w*", r"danc\w*", r"won", r"success\w*",
+                r"hooray", r"yay"])
+RE_COINS = _rx([r"coins?", r"sav\w+", r"rs", r"rupees?", r"money", r"earn\w*", r"income", r"wealth", r"deposit\w*",
+                r"interest", r"salary", r"cash", r"fund\w*"])
+RE_GROW = _rx([r"grow\w*", r"grew", r"patien\w+", r"compound\w*", r"tree", r"seed\w*", r"years?", r"time",
+               r"long[- ]term", r"plant\w*"])
+
+
+def detect_mood(low):
+    for name, rx in (("shock", RE_SHOCK), ("sad", RE_SAD), ("handle", RE_HANDLE), ("eat", RE_EAT),
+                     ("greet", RE_GREET), ("celeb", RE_CELEB)):
+        if rx.search(low):
+            return name
+    return "talk"
+
+
+def is_move(action):
+    return str(action).lower().startswith(("walk", "run", "gallop", "roll", "jump"))
+
+
+def is_violent(action):
+    return str(action).lower().startswith(("attack", "sword", "punch", "kick", "gun", "idle_gun", "idle_sword", "run_shoot"))
+
+
+def mood_action(model, vocab, mood, notes):
+    kind = vocab[model]["kind"]
+    anims = vocab[model]["animations"]
+    if kind == "human":
+        table = {"shock": ("HitRecieve",), "sad": ("Idle", "Idle_Neutral"), "handle": ("Interact",),
+                 "eat": ("Interact",), "greet": ("Wave",), "celeb": ("Wave",), "talk": ("Idle_Neutral", "Idle")}
+    else:
+        table = {"shock": ("Idle_HitReact1",), "sad": ("Idle_2_HeadLow", "Idle_Headlow", "Idle_2"),
+                 "handle": ("Idle",), "eat": ("Eating",), "greet": ("Idle",), "celeb": ("Idle",), "talk": ("Idle",)}
+    for cand in table.get(mood, table["talk"]):
+        for x in sorted(anims, key=len):
+            if x.lower() == cand.lower():
+                return x
+    return fix_action(model, "Idle", vocab, notes)
+
+
+def move_action(model, vocab, fast, notes):
+    human = vocab[model]["kind"] == "human"
+    return fix_action(model, ("Run" if human else "Gallop") if fast else "Walk", vocab, notes)
+
+
+def direct_shot(narr, rtype, actors, vocab, notes, i):
+    """Makes the shot type and every character's action agree with the narration. Returns the shot type."""
+    n = len(actors)
+    if n == 0:
+        return rtype
+    low = narr.lower()
+    new_type = rtype
+    fight = bool(RE_FIGHT.search(low))
+    run, walk = bool(RE_RUN.search(low)), bool(RE_WALK.search(low))
+    moving_story = bool(narr) and (run or walk) and not fight
+    moving_type = rtype in ("follow", "chase")
+
+    if moving_story and rtype != "hero_rock":
+        new_type = "chase" if (n >= 2 and RE_CHASE.search(low)) else "follow"
+        wants_move = True
+        if new_type != rtype:
+            notes.append("shot %d: the story says someone moves, so shot type changed %s -> %s" % (i, rtype, new_type))
+        if new_type == "chase":
+            # the one who runs AWAY goes first: "A chased B" -> B first; "A ran from B" -> A first
+            order = list(range(n))
+            named = sorted([k for k in range(n) if actors[k]["name"].lower() in low],
+                           key=lambda k: low.find(actors[k]["name"].lower()))
+            if len(named) >= 2:
+                chased_form = bool(re.search(r"chas(?:e|ed|es|ing)|pursu\w+", low)) and \
+                    not re.search(r"\b(?:ran|run|fled|flee)\b", low)
+                runner = named[1] if chased_form else named[0]
+                order = [runner] + [k for k in range(n) if k != runner]
+            actors[:] = [actors[k] for k in order]
+    elif moving_type and narr:
+        wants_move = False
+        new_type = "two_shot" if n in (2, 3) else ("close_up" if n == 1 else "group")
+        notes.append("shot %d: the story shows no travel, so %s changed to %s" % (i, rtype, new_type))
+    else:
+        wants_move = rtype in ("follow", "chase")
+
+    if rtype == "fight" and narr and not fight:
+        new_type = "two_shot" if n in (2, 3) else ("group" if n >= 4 else "close_up")
+        notes.append("shot %d: no fight in the story, so 'fight' changed to %s" % (i, new_type))
+
+    words = set(re.sub(r"[^a-z0-9]", " ", low).split())
+    subjects = [a for a in actors if cast_key(a["name"]) in words] or actors[:1]
+    mood = detect_mood(low)
+
+    for a in actors:
+        m = a["model"]
+        act = a["action"]
+        if wants_move:
+            a["action"] = move_action(m, vocab, run, notes)
+            continue
+        if is_move(act):
+            act = mood_action(m, vocab, "talk", notes)
+            notes.append("shot %d: %s was walking on the spot, now standing" % (i, a["name"]))
+        if is_violent(act) and (not fight or new_type != "fight"):
+            act = mood_action(m, vocab, "talk", notes)
+        if act.lower().startswith("death") and not RE_DIE.search(low):
+            act = mood_action(m, vocab, "shock" if mood in ("shock", "sad") else "talk", notes)
+        if act.lower().startswith("eating") and not RE_EAT.search(low):
+            act = mood_action(m, vocab, "talk", notes)
+        if act.lower().startswith("wave") and not (RE_GREET.search(low) or RE_CELEB.search(low)):
+            act = mood_action(m, vocab, "talk", notes)
+        if act.lower().startswith("hitrecieve") and not (RE_SHOCK.search(low) or RE_SAD.search(low)):
+            act = mood_action(m, vocab, "talk", notes)
+        a["action"] = act
+
+    if not wants_move and narr and mood != "talk":
+        for a in subjects:
+            if a["action"].lower() in ("idle", "idle_neutral", "idle_2") or a["action"].lower().startswith("idle_2"):
+                a["action"] = mood_action(a["model"], vocab, mood, notes)
+    return new_type
+
+
+
 def validate(answer, vocab, cfg, lang):
     """Returns (shots, meta, notes, hard_errors)."""
     notes, hard = [], []
@@ -519,8 +685,14 @@ def validate(answer, vocab, cfg, lang):
                     present.add(key)
                     added += 1
 
+        raw_type = direct_shot(narr, raw_type, actors, vocab, notes, i)
         stype = adapt_type(raw_type, len(actors))
         prop = s.get("prop") if s.get("prop") in PROPS else None
+        if prop and narr:
+            rx = RE_COINS if prop == "coins" else RE_GROW
+            if not rx.search(narr.lower()):
+                notes.append("shot %d: prop '%s' removed (the narration does not talk about it)" % (i, prop))
+                prop = None
         if prop and stype not in PROP_OK_TYPES:
             notes.append("shot %d: prop '%s' removed (shot type %s)" % (i, prop, stype))
             prop = None
@@ -550,6 +722,70 @@ def make_actor(spec, vocab, start, end=None, heading=None):
     return a
 
 
+HW = 0.3375       # half picture width per metre of camera distance (30 mm lens, 720x1280 portrait video)
+ZOOM_END = 0.92   # the camera moves in a little during a shot
+
+
+def is_animal(m, vocab):
+    return vocab[m]["kind"] == "animal"
+
+
+def body_w(m, vocab):      # width seen from the side
+    return SIZES.get(m, 2.0) if is_animal(m, vocab) else 0.8
+
+
+def front_w(m, vocab):     # width seen from the front
+    return 0.45 * SIZES.get(m, 2.0) if is_animal(m, vocab) else 0.75
+
+
+def subj_h(m, vocab):      # body height
+    return 0.55 * SIZES.get(m, 2.0) if is_animal(m, vocab) else HUMAN_HEIGHT.get(m, 1.8)
+
+
+def dist_for(half_width, zoom=ZOOM_END):
+    return half_width / (HW * zoom)
+
+
+def clamp(v, lo, hi):
+    return max(lo, min(hi, v))
+
+
+def line_layout(widths, gap):
+    xs, cur = [], 0.0
+    for k, w in enumerate(widths):
+        if k:
+            cur += (widths[k - 1] + w) / 2.0 + gap
+        xs.append(cur)
+    return xs
+
+
+def group_layout(widths):
+    """Positions (x, y) so that every character is visible and nobody overlaps."""
+    n = len(widths)
+    xs = line_layout(widths, 0.6)
+    if n <= 4 and (xs[-1] - xs[0]) <= 7.5:
+        cx = (xs[0] + xs[-1]) / 2.0
+        return [(x - cx, 1.0 if k % 2 else 0.0) for k, x in enumerate(xs)]
+    front = [k for k in range(n) if k % 2 == 0]
+    back = [k for k in range(n) if k % 2 == 1]
+    pos = {}
+    for idxs, y, shift in ((front, 0.0, 0.0), (back, 1.9, 0.9)):
+        if not idxs:
+            continue
+        rx = line_layout([widths[k] for k in idxs], 0.5)
+        cx = (rx[0] + rx[-1]) / 2.0
+        for k, x in zip(idxs, rx):
+            pos[k] = (x - cx + shift, y)
+    return [pos[k] for k in range(n)]
+
+
+def frame_half(items, vocab, side=True, margin=0.4):
+    """items: list of (spec, x). Returns the half width the camera must cover."""
+    cx = sum(x for _s, x in items) / len(items)
+    return max(abs(x - cx) + (body_w(sp["model"], vocab) if side else front_w(sp["model"], vocab)) / 2.0
+               for sp, x in items) + margin
+
+
 def expand(shot, idx, vocab):
     t, specs = shot["type"], shot["actors"]
     actors, cam, extra = [], {}, {}
@@ -557,47 +793,80 @@ def expand(shot, idx, vocab):
     if t == "empty_pan":
         cam = {"look_at": [0, 12, 3.0], "pos": [6, -9, 2.2], "pos_end": [-6, -9, 2.2]}
     elif t in ("establishing", "group"):
-        n = min(len(specs), 5 if t == "establishing" else 6)
-        spread = 2.7 if t == "establishing" else 1.9
-        for k, sp in enumerate(specs[:n]):
-            x = (k - (n - 1) / 2.0) * spread
-            y = 0.3 + (1.1 if k % 2 else 0.0) - (0.9 if (t == "group" and k % 3 == 2) else 0)
+        use = specs[:(5 if t == "establishing" else 6)]
+        pos = group_layout([body_w(sp["model"], vocab) for sp in use])
+        items = []
+        for sp, (x, y) in zip(use, pos):
             actors.append(make_actor(sp, vocab, (round(x, 2), round(y, 2)), heading=0 if x < 0 else 180))
-        cam = ({"look_at": "all", "pos": [0.5, -11.5, 2.6], "pos_end": [0.5, -8.5, 2.0]} if t == "establishing"
-               else {"look_at": "all", "pos": [0.5, -13, 3.0], "pos_end": [0.5, -11.5, 2.4]})
+            items.append((sp, x))
+        d = clamp(dist_for(frame_half(items, vocab)), 7.0, 17.0)
+        cam = {"look_at": "all", "pos": [0, -d, 1.6 + 0.08 * d], "pos_end": [0, -d * ZOOM_END, 1.5 + 0.07 * d]}
     elif t == "follow":
-        lead = specs[0]
-        fast = any(k in lead["action"].lower() for k in ("gallop", "run", "roll"))
-        x0, x1 = (-10, 6) if fast else (-6, 2)
-        for k, sp in enumerate(specs[:4]):
-            y = [0.0, -1.0, 1.4, -2.0][k]
-            actors.append(make_actor(sp, vocab, (x0 - 2.6 * k, y), (x1 - 2.6 * k, y)))
-        cam = {"look_at": specs[0]["name"], "offset": [0, -9, 2.2], "shake": 0.02}
+        use = specs[:4]
+        gap = max(body_w(sp["model"], vocab) for sp in use) / 2.0 + 1.0
+        offs = [(0.0, 0.0), (-gap, 1.2), (-0.7 * gap, -1.2), (-2 * gap, 0.3)]
+        items = []
+        for k, sp in enumerate(use):
+            ox, oy = offs[k]
+            actors.append(make_actor(sp, vocab, (ox - 4.0, oy), (ox + 4.0, oy)))   # real distance is set later by retime_v2.py
+            items.append((sp, ox))
+        d = clamp(dist_for(frame_half(items, vocab, margin=0.8), 1.0), 6.5, 14.0)
+        cam = {"look_at": "all", "offset": [0, -d, 1.8], "shake": 0.02}
     elif t == "chase":
-        for k, sp in enumerate(specs[:5]):
-            if k == 0:
-                actors.append(make_actor(sp, vocab, (-5, 0.0), (11, 0.0)))
-            else:
-                y = [0.4, -0.9, 1.6, -1.8][k - 1]
-                actors.append(make_actor(sp, vocab, (-9.5 - 2.4 * (k - 1), y), (6.5 - 2.4 * (k - 1), y)))
-        cam = {"look_at": "all", "offset": [0, -10.5, 2.4], "shake": 0.03}
+        use = specs[:5]
+        gap = max(body_w(sp["model"], vocab) for sp in use) / 2.0 + 1.6
+        items = []
+        for k, sp in enumerate(use):
+            ox = 0.0 if k == 0 else -gap * k - 1.2
+            oy = 0.0 if k == 0 else [0.5, -0.9, 1.6, -1.6][(k - 1) % 4]
+            actors.append(make_actor(sp, vocab, (ox - 4.0, oy), (ox + 4.0, oy)))
+            items.append((sp, ox))
+        d = clamp(dist_for(frame_half(items, vocab, margin=1.0), 1.0), 8.0, 16.0)
+        cam = {"look_at": "all", "offset": [0, -d, 2.0], "shake": 0.03}
     elif t == "two_shot":
-        for sp, (x, y, h) in zip(specs[:3], [(-1.0, 0.0, 0), (2.5, 0.0, 180), (5.2, 0.6, 180)]):
-            actors.append(make_actor(sp, vocab, (x, y), heading=h))
-        cam = {"look_at": "all", "pos": [1, -8, 1.6], "pos_end": [1, -6.4, 1.5]}
+        use = specs[:3]
+        ws = [body_w(sp["model"], vocab) for sp in use]
+        xs = line_layout(ws, 0.7)
+        cx = (xs[0] + xs[-1]) / 2.0
+        items = []
+        for k, (sp, x) in enumerate(zip(use, xs)):
+            actors.append(make_actor(sp, vocab, (round(x - cx, 2), 0.6 if k == 2 else 0.0), heading=0 if k == 0 else 180))
+            items.append((sp, x - cx))
+        d = max(5.5, dist_for(frame_half(items, vocab, margin=0.5)))
+        cam = {"look_at": "all", "pos": [0, -d, 1.5], "pos_end": [0, -d * ZOOM_END, 1.4]}
     elif t == "close_up":
-        actors.append(make_actor(specs[0], vocab, (0, 0), heading=270))
-        if len(specs) > 1:
-            actors.append(make_actor(specs[1], vocab, (2.4, 1.2), heading=270))
-        cam = {"look_at": specs[0]["name"], "pos": [0, -5, 1.2], "pos_end": [0, -3.8, 1.3]}
+        use = specs[:2]
+        hmax = max(subj_h(sp["model"], vocab) for sp in use)
+        d = clamp(hmax / 0.48, 2.8, 5.5)
+        if len(use) == 2:
+            sep = (front_w(use[0]["model"], vocab) + front_w(use[1]["model"], vocab)) / 2.0 + 0.5
+            items = [(use[0], -sep / 2.0), (use[1], sep / 2.0)]
+            d = max(d, dist_for(frame_half(items, vocab, side=False, margin=0.4), 0.9))
+            actors.append(make_actor(use[0], vocab, (round(-sep / 2.0, 2), 0.0), heading=270))
+            actors.append(make_actor(use[1], vocab, (round(sep / 2.0, 2), 0.3), heading=270))
+        else:
+            actors.append(make_actor(use[0], vocab, (0, 0), heading=270))
+        cz = 0.8 + 0.25 * min(hmax, 1.8)
+        cam = {"look_at": "all", "pos": [0, -d, cz], "pos_end": [0, -d * 0.9, cz + 0.05]}
     elif t == "hero_rock":
         actors.append(make_actor(specs[0], vocab, (-2, 3.5, 1.6), heading=270))
         extra = {"rock": [-2, 3.5, 1.6], "river": False}
         cam = {"look_at": [-2, 3.5, 2.3], "pos": [-2, -5, 0.8], "pos_end": [-2, -3.5, 1.1]}
     elif t == "fight":
-        for sp, (x, y, h) in zip(specs[:4], [(-0.8, 0.0, 0), (1.0, 0.0, 180), (-2.6, 1.4, 0), (2.8, -0.2, 180)]):
-            actors.append(make_actor(sp, vocab, (x, y), heading=h))
-        cam = {"look_at": [0.5, 0, 0.9], "pos": [0.5, -9, 2.2], "pos_end": [1.5, -8.5, 2.0], "shake": 0.07}
+        use = specs[:4]
+        ws = [body_w(sp["model"], vocab) for sp in use[:2]]
+        sep = (ws[0] + ws[1]) / 2.0 + 0.3
+        pl = [(-sep / 2.0, 0.0, 0), (sep / 2.0, 0.0, 180)]
+        if len(use) > 2:
+            pl.append((-sep / 2.0 - (body_w(use[2]["model"], vocab) + ws[0]) / 2.0 - 0.5, 1.4, 0))
+        if len(use) > 3:
+            pl.append((sep / 2.0 + (body_w(use[3]["model"], vocab) + ws[1]) / 2.0 + 0.5, 1.2, 180))
+        items = []
+        for sp, (x, y, h) in zip(use, pl):
+            actors.append(make_actor(sp, vocab, (round(x, 2), y), heading=h))
+            items.append((sp, x))
+        d = max(6.0, dist_for(frame_half(items, vocab, margin=0.6)))
+        cam = {"look_at": "all", "pos": [0, -d, 1.8], "pos_end": [0.5, -d * ZOOM_END, 1.7], "shake": 0.07}
     cam["lens"] = 30
 
     out = {"id": idx, "title": shot["title"], "seconds": 3 if shot["narration"] else 4,
