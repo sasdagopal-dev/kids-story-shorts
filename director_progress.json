@@ -1,5 +1,5 @@
 {
- "next_topic": 3,
+ "next_topic": 4,
  "history": [
   {
    "date": "2026-11-05",
@@ -18,6 +18,12 @@
    "title": "समय और बचत का जादू: चक्रवृद्धि ब्याज की कहानी",
    "topic": "Compound interest: a small seed becomes a big tree with time",
    "file": "plans/plan_2026-11-05_3.json"
+  },
+  {
+   "date": "2026-11-05",
+   "title": "पैसा दुगना करने का सच: फ्रॉड से बचें",
+   "topic": "Double-your-money scams: the red flags of fraud and Ponzi schemes",
+   "file": "plans/plan_2026-11-05_4.json"
   }
  ]
 }
