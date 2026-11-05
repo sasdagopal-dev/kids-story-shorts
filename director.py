@@ -14,6 +14,8 @@ What is new in v2
 * choreography is fixed by code, not left to Gemini: walkers/runners always get a destination,
   characters face each other or the speaker, characters are spread apart, and the camera
   looks at the action (target and distance follow the characters).
+The renderer reads "move" as a DISTANCE to travel (end point minus start). Gemini and this script work
+with the end point; it is converted to the distance when the plan is written.
 Edit the ASSET lists if you add packs. Everything is checked against them.
 """
 import argparse, datetime, json, math, os, re, sys, time, urllib.error, urllib.request
@@ -56,7 +58,7 @@ ACTIONS = {
 }
 MOVING_ACTIONS = {"walk", "run"}
 MOVING_ANIMS = {"Walk", "Run", "Gallop"}
-ENVS = ["village", "forest", "storm"]
+ENVS = ["village", "forest", "storm", "city"]
 DEFAULT_PROPS = ["CommonTree_1", "CommonTree_2", "CommonTree_3", "Pine_1", "Bush_Common"]
 
 SLEEP = time.sleep
@@ -310,7 +312,7 @@ def repair_plan(plan, cfg, strict_length=True):
     if not (want - 2 <= len(shots_in) <= want + 2):
         raise Reject(f"you wrote {len(shots_in)} shots, I need exactly {want}")
     allowed = cfg.get("props_allowed") or DEFAULT_PROPS
-    shots, human_shots = [], 0
+    shots, human_shots, city_shots = [], 0, 0
     for n, s in enumerate(shots_in, start=1):
         if not isinstance(s, dict):
             raise Reject(f"shot {n} is not an object")
@@ -323,6 +325,13 @@ def repair_plan(plan, cfg, strict_length=True):
         chars = [c for c in chars if c][:4]
         if not chars:
             raise Reject(f"shot {n} has no valid characters (use only the listed models)")
+        env_here = s.get("env") if s.get("env") in ENVS else "village"
+        if env_here == "city":
+            city_shots += 1
+            for c in chars:                      # the road and cars are behind y = 5
+                c["pos"][1] = min(c["pos"][1], 3.5)
+                if "move" in c:
+                    c["move"][1] = min(c["move"][1], 3.5)
         models = [c["model"] for c in chars]
         focus = s.get("focus") if s.get("focus") in models else next((m for m in models if m in HUMANS), models[0])
         if any(m in HUMANS for m in models):
@@ -334,14 +343,24 @@ def repair_plan(plan, cfg, strict_length=True):
         title = s.get("title") if isinstance(s.get("title"), str) else ""
         if not re.fullmatch(r"[A-Za-z0-9 _\-]{2,40}", title or ""):
             title = f"Shot {n}"
+        camera = build_camera(s.get("camera"), chars, focus)
+        out_chars = []
+        for c in chars:
+            d = {k: v for k, v in c.items() if k != "action"}
+            if d["anim"] in MOVING_ANIMS and "move" in d:
+                d["move"] = [round(d["move"][0] - d["pos"][0], 2), round(d["move"][1] - d["pos"][1], 2)]
+            else:
+                d.pop("move", None)
+            out_chars.append(d)
         shot = {"id": n, "title": title, "narration": text, "env": env,
-                "visual": (s.get("visual") or "")[:200], "focus": focus,
-                "characters": [{k: v for k, v in c.items() if k != "action"} for c in chars]}
+                "visual": (s.get("visual") or "")[:200], "focus": focus, "characters": out_chars}
         if props:
             shot["props"] = props
-        shot["camera"] = build_camera(s.get("camera"), chars, focus)
+        shot["camera"] = camera
         shots.append(shot)
 
+    if city_shots > 4:
+        raise Reject(f"env 'city' is used in {city_shots} shots, use it in at most 3 (market, bank or town scenes)")
     if human_shots < int(cfg.get("min_human_shots", 0)):
         raise Reject(f"only {human_shots} shots show a human character, at least {cfg['min_human_shots']} must "
                      f"(use Farmer, King, Worker, Suit and the other human models in the story)")
@@ -409,7 +428,7 @@ WHAT THE RENDERER CAN DO (use ONLY these)
 - "move":[x,y] is REQUIRED for walk and run (the end point). Everyone else stands at "pos".
 - Positions: x from -6 to 6 (left to right), y from -1 to 5 (near to far). Keep standing characters at least 2 units apart. Walkers may start off-screen at x=-6.5 or 6.5. I will turn characters toward each other automatically.
 - "focus" = the model of the main character of the shot (the speaker or the one the event happens to).
-- env: {', '.join(ENVS)} (village = sunny village, forest = green forest, storm = rain and dark sky)
+- env: {', '.join(ENVS)} (village = sunny village, forest = green forest, storm = rain and dark sky, city = town street with buildings, cars and a road behind the actors: use it for at most 3 shots, for market, bank or town scenes, and keep characters at y 3 or less there)
 - props (optional, background only): {', '.join(cfg.get('props_allowed') or DEFAULT_PROPS)}; CommonTree_* may have "grow":[start,end] to show a seed becoming a tree.
 - camera (optional): "dist_end" to push in, "sweep" -30..30, "angle" -15..15; put "thumb":true on exactly one shot, the most exciting one. I place the camera on the action automatically.
 - title: 2-4 English words. visual: one English sentence of what the viewer sees.
