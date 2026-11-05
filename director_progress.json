@@ -1,5 +1,5 @@
 {
- "next_topic": 4,
+ "next_topic": 5,
  "history": [
   {
    "date": "2026-11-05",
@@ -24,6 +24,12 @@
    "title": "पैसा दुगना करने का सच: फ्रॉड से बचें",
    "topic": "Double-your-money scams: the red flags of fraud and Ponzi schemes",
    "file": "plans/plan_2026-11-05_4.json"
+  },
+  {
+   "date": "2026-11-05",
+   "title": "कर्ज़ का असली सच: अच्छा कर्ज़ या बर्बादी का फंदा?",
+   "topic": "Good debt versus bad debt: why high-interest loans trap people",
+   "file": "plans/plan_2026-11-05_5.json"
   }
  ]
 }

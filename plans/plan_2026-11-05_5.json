@@ -1,0 +1,726 @@
+{
+ "title": "कर्ज़ का असली सच: अच्छा कर्ज़ या बर्बादी का फंदा?",
+ "rate": "-8%",
+ "description": "मेले की चकाचौंध में दिखावे के लिए लिया गया भारी ब्याज का कर्ज़ कैसे मुसीबत बना, और सही सोच ने कैसे बचाया। जानिए अच्छे और बुरे कर्ज़ का फर्क।",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech.",
+ "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+ "shots": [
+  {
+   "id": 1,
+   "title": "Festival arrival",
+   "narration": "दिवाली के मेले में ढोल बज रहे थे और बिरजू रंग-बिरंगी मिठाइयाँ सजा रहा था। रामू और श्याम गाँव के चौक में पहुँचे।",
+   "env": "village",
+   "visual": "Birju waves happily near his sweet stall while Ramu and Shyam enter the festive village square.",
+   "focus": "Beach",
+   "characters": [
+    {
+     "model": "Beach",
+     "anim": "Wave",
+     "pos": [
+      2.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Walk",
+     "pos": [
+      -6.0,
+      0.5
+     ],
+     "move": [
+      4.5,
+      0.0
+     ]
+    },
+    {
+     "model": "Worker",
+     "anim": "Walk",
+     "pos": [
+      -5.0,
+      0.2
+     ],
+     "move": [
+      4.8,
+      0.0
+     ]
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      4.5,
+      3.5
+     ],
+     "scale": 1.2
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.34,
+     0.42,
+     1.2
+    ],
+    "dist": 10.5,
+    "dist_end": 5.0,
+    "sweep": 10
+   }
+  },
+  {
+   "id": 2,
+   "title": "Shot 2",
+   "narration": "गाँव में मेले की भारी चहल-पहल थी। श्याम बोला, \"रामू, इस बार मेले में मुझे सबसे महँगे कपड़े और बड़े पटाखे खरीदने हैं!\"",
+   "env": "village",
+   "visual": "Shyam excitedly talks to Ramu about buying costly clothes and firecrackers, while Mohan listens nearby.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Interact",
+     "pos": [
+      -0.4,
+      0.2
+     ],
+     "heading": -74
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.0,
+      0.3
+     ],
+     "heading": 74
+    },
+    {
+     "model": "Casual_2",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.0,
+      0.8
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "Bush_Common_Flowers",
+     "pos": [
+      -3.5,
+      2.0
+     ],
+     "scale": 1.0
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.2,
+     0.38,
+     1.2
+    ],
+    "dist": 8.5,
+    "dist_end": 4.5,
+    "angle": 5
+   }
+  },
+  {
+   "id": 3,
+   "title": "Productive loan",
+   "narration": "रामू ने समझाया, \"दिखावे पर फिजूलखर्च मत कर।\" रामू ने सेठ धनपाल से मेले में मिठाई का ठेला लगाने के लिए छोटा कर्ज लिया।",
+   "env": "city",
+   "visual": "In the market street, Ramu talks calmly with honest Seth Dhanpal, who grants him a small business loan.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.2,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Suit",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.2,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -3.5,
+      0.8
+     ],
+     "heading": 80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_3",
+     "pos": [
+      4.0,
+      2.5
+     ],
+     "scale": 1.1
+    }
+   ],
+   "camera": {
+    "target": [
+     -1.18,
+     0.57,
+     1.2
+    ],
+    "dist": 9.0,
+    "dist_end": 4.8,
+    "sweep": -15
+   }
+  },
+  {
+   "id": 4,
+   "title": "The trap offered",
+   "narration": "तभी कालू भेड़िया साहूकार को लेकर आया। साहूकार बोला, \"मुझसे दस हज़ार लो, बिना कागज़ के, बस रोज़ भारी ब्याज देना!\"",
+   "env": "village",
+   "visual": "Kalu brings the greedy moneylender Wolf who talks slyly to Shyam, offering instant cash with hidden traps.",
+   "focus": "Wolf",
+   "characters": [
+    {
+     "model": "Wolf",
+     "anim": "Idle_2",
+     "pos": [
+      0.5,
+      0.3
+     ],
+     "heading": 75
+    },
+    {
+     "model": "Punk",
+     "anim": "Wave",
+     "pos": [
+      2.2,
+      0.5
+     ],
+     "heading": -75
+    },
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -1.8,
+      0.3
+     ],
+     "heading": 80
+    }
+   ],
+   "props": [
+    {
+     "model": "DeadTree_1",
+     "pos": [
+      3.8,
+      3.0
+     ],
+     "scale": 1.2
+    }
+   ],
+   "camera": {
+    "target": [
+     0.35,
+     0.35,
+     1.2
+    ],
+    "dist": 8.5,
+    "dist_end": 4.2,
+    "angle": -5
+   }
+  },
+  {
+   "id": 5,
+   "title": "Foolish celebration",
+   "narration": "श्याम लालच में आ गया और साहूकार से कर्ज़ लेकर नए कपड़े पहनकर बाज़ार में नाचने लगा। रामू ने अपना ठेला लगाया।",
+   "env": "village",
+   "visual": "Shyam jumps with excitement holding his borrowed cash while Ramu sets up his cart diligently.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Roll",
+     "pos": [
+      0.0,
+      0.2
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.5,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Punk",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.5,
+      0.6
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_2",
+     "pos": [
+      -4.5,
+      3.0
+     ],
+     "scale": 1.3
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.38,
+     1.2
+    ],
+    "dist": 9.2,
+    "dist_end": 5.0,
+    "sweep": 15
+   }
+  },
+  {
+   "id": 6,
+   "title": "Lender demands interest",
+   "narration": "मेला खत्म होते ही भेड़िया साहूकार लाठी लेकर श्याम के घर धमका। वह चिल्लाया, \"मूल तो छोड़, पहले इस हफ्ते का ब्याज दे!\"",
+   "env": "village",
+   "visual": "The festival ends. Moneylender Wolf aggressively threatens Shyam outside his cottage, demanding money.",
+   "focus": "Wolf",
+   "characters": [
+    {
+     "model": "Wolf",
+     "anim": "Attack",
+     "pos": [
+      0.8,
+      0.3
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -1.5,
+      0.3
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Punk",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.8,
+      0.6
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_4",
+     "pos": [
+      -4.0,
+      3.5
+     ],
+     "scale": 1.2
+    }
+   ],
+   "camera": {
+    "target": [
+     0.72,
+     0.38,
+     1.2
+    ],
+    "dist": 8.7,
+    "dist_end": 4.0,
+    "sweep": -10
+   }
+  },
+  {
+   "id": 7,
+   "title": "The burden of debt",
+   "narration": "श्याम के पास फूटी कौड़ी न बची थी। साहूकार ने उसके घर का सामान खींचा और गधे पर लादने लगा। श्याम रोने लगा।",
+   "env": "village",
+   "visual": "A heavily loaded donkey walks by as Shyam bows his head in sorrow, helpless under the moneylender's grip.",
+   "focus": "Donkey",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.0,
+      0.3
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Donkey",
+     "anim": "Walk",
+     "pos": [
+      -0.2,
+      0.5
+     ],
+     "move": [
+      2.7,
+      0.0
+     ]
+    },
+    {
+     "model": "Wolf",
+     "anim": "Idle_2",
+     "pos": [
+      1.5,
+      0.2
+     ],
+     "heading": 65
+    }
+   ],
+   "props": [
+    {
+     "model": "DeadTree_1",
+     "pos": [
+      -4.5,
+      3.0
+     ],
+     "scale": 1.0
+    }
+   ],
+   "camera": {
+    "target": [
+     0.45,
+     0.38,
+     1.2
+    ],
+    "dist": 8.9,
+    "dist_end": 5.2,
+    "angle": 5
+   }
+  },
+  {
+   "id": 8,
+   "title": "Debt assault",
+   "narration": "साहूकार ने श्याम को धक्का दिया। श्याम ज़मीन पर गिर पड़ा और चिल्लाया, \"ब्याज ने मेरी पूरी कमाई निगल ली, बचाओ!\"",
+   "env": "village",
+   "visual": "The moneylender kicks Shyam to the ground while Mohan watches horrified from behind a tree.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve",
+     "pos": [
+      -0.8,
+      0.2
+     ],
+     "heading": 77
+    },
+    {
+     "model": "Wolf",
+     "anim": "Attack",
+     "pos": [
+      1.0,
+      0.2
+     ],
+     "heading": -77
+    },
+    {
+     "model": "Casual_2",
+     "anim": "HitRecieve_2",
+     "pos": [
+      3.2,
+      0.8
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_5",
+     "pos": [
+      4.0,
+      3.0
+     ],
+     "scale": 1.4
+    }
+   ],
+   "camera": {
+    "target": [
+     0.65,
+     0.35,
+     1.2
+    ],
+    "dist": 8.5,
+    "dist_end": 4.0,
+    "sweep": -15,
+    "thumb": true
+   }
+  },
+  {
+   "id": 9,
+   "title": "Ramu to the rescue",
+   "narration": "तभी रामू अपनी कमाई की थैली लेकर दौड़ा। रामू ने अपने ठेले के मुनाफे से सेठ का कर्ज़ चुकाकर श्याम का भी ब्याज भरा।",
+   "env": "village",
+   "visual": "Ramu runs into the clearing holding his festival profit bag, standing boldly between Shyam and the lender.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Run",
+     "pos": [
+      -5.5,
+      0.3
+     ],
+     "move": [
+      5.0,
+      0.0
+     ]
+    },
+    {
+     "model": "Wolf",
+     "anim": "Idle_HitReact1",
+     "pos": [
+      1.5,
+      0.3
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -1.8,
+      0.2
+     ],
+     "heading": 69
+    }
+   ],
+   "props": [
+    {
+     "model": "Bush_Common",
+     "pos": [
+      3.5,
+      2.0
+     ],
+     "scale": 1.1
+    }
+   ],
+   "camera": {
+    "target": [
+     -1.57,
+     0.28,
+     1.2
+    ],
+    "dist": 10.5,
+    "dist_end": 4.5,
+    "sweep": 10
+   }
+  },
+  {
+   "id": 10,
+   "title": "Working together",
+   "narration": "रामू ने श्याम को गले लगाया। दोनों ने मिलकर ठेले पर मेहनत शुरू की और साहूकार का पूरा कर्ज़ सदा के लिए खत्म किया।",
+   "env": "village",
+   "visual": "Ramu and Shyam celebrate happily as Seth Dhanpal stands approvingly by the prosperous sweet stall.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      -0.8,
+      0.3
+     ],
+     "heading": 74
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      0.8,
+      0.3
+     ],
+     "heading": -74
+    },
+    {
+     "model": "Suit",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.8,
+      0.6
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      -4.0,
+      3.2
+     ],
+     "scale": 1.3
+    }
+   ],
+   "camera": {
+    "target": [
+     0.5,
+     0.38,
+     1.2
+    ],
+    "dist": 8.2,
+    "dist_end": 4.8,
+    "angle": 0
+   }
+  },
+  {
+   "id": 11,
+   "title": "The three truths",
+   "narration": "सेठ धनपाल ने सबको समझाया, \"कमाई बढ़ाने वाला कर्ज़ अच्छा कर्ज़ है, पर दिखावे और भारी ब्याज का कर्ज़ बर्बादी का फंदा है।\"",
+   "env": "village",
+   "visual": "Seth Dhanpal gestures thoughtfully as Ramu, Shyam, and Mohan listen attentively to his golden rules.",
+   "focus": "Suit",
+   "characters": [
+    {
+     "model": "Suit",
+     "anim": "Interact",
+     "pos": [
+      1.2,
+      0.3
+     ],
+     "heading": 77
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -0.9,
+      0.3
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.5,
+      0.3
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Casual_2",
+     "anim": "Idle_Neutral",
+     "pos": [
+      3.0,
+      0.7
+     ],
+     "heading": -77
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_2",
+     "pos": [
+      4.5,
+      3.5
+     ],
+     "scale": 1.2
+    }
+   ],
+   "camera": {
+    "target": [
+     0.4,
+     0.38,
+     1.2
+    ],
+    "dist": 9.6,
+    "dist_end": 5.0,
+    "sweep": -15
+   }
+  },
+  {
+   "id": 12,
+   "title": "Awareness message",
+   "narration": "यह कहानी वित्तीय समझ बढ़ाने के लिए है। किसी भी कर्ज़ से पहले ब्याज दर ज़रूर परखें। ऐसे और पाठ सीखने के लिए सब्सक्राइब करें। यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+   "env": "village",
+   "visual": "King Vikram waves warmly to the viewers alongside Ramu and Shyam in front of the peaceful village.",
+   "focus": "King",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Wave",
+     "pos": [
+      0.0,
+      0.2
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      -2.0,
+      0.3
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      2.0,
+      0.3
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_3",
+     "pos": [
+      -4.2,
+      3.0
+     ],
+     "scale": 1.2
+    },
+    {
+     "model": "Bush_Common_Flowers",
+     "pos": [
+      3.8,
+      1.8
+     ],
+     "scale": 1.0
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.25,
+     1.2
+    ],
+    "dist": 8.5,
+    "dist_end": 4.5,
+    "angle": 0
+   }
+  }
+ ],
+ "topic": "Good debt versus bad debt: why high-interest loans trap people",
+ "genre": "a festival story with a happy ending after one costly mistake",
+ "director_model": "gemini-3.8-flash"
+}
