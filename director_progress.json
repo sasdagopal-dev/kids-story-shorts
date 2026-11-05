@@ -1,5 +1,5 @@
 {
- "next_topic": 2,
+ "next_topic": 3,
  "history": [
   {
    "date": "2026-11-05",
@@ -12,6 +12,12 @@
    "title": "इमरजेंसी फंड की ताकत: हर परिवार के लिए क्यों है ज़रूरी",
    "topic": "Emergency fund: why every family needs one and how to build it slowly",
    "file": "plans/plan_2026-11-05_2.json"
+  },
+  {
+   "date": "2026-11-05",
+   "title": "समय और बचत का जादू: चक्रवृद्धि ब्याज की कहानी",
+   "topic": "Compound interest: a small seed becomes a big tree with time",
+   "file": "plans/plan_2026-11-05_3.json"
   }
  ]
 }
