@@ -1,12 +1,19 @@
-"""Step 2: render one shard of the movie with Blender (run headless).
+"""Render one shard of the movie with Blender (run headless).
 
-blender -b -P scripts/blender_render.py -- --timeline out/timeline.json \
-    --story story/finance_story.json --assets assets --out frames \
-    --shard 0 --shards 6 [--sample-only]
+blender -b -P movie_render.py -- --timeline timeline.json --story scene_plan_timed.json \
+    --assets . --out out --shard 0 --shards 6 [--sample-only]
 
-Every shard renders a contiguous slice of the global frame list, so all
-shards finish at about the same time.
-Models are found BY NAME anywhere under --assets (.glb/.gltf preferred, .fbx fallback).
+Every shard renders a contiguous slice of the global frame list, so all shards finish at
+about the same time. Models are found BY NAME anywhere under --assets
+(.glb/.gltf preferred, .fbx fallback).
+
+v2 changes
+* animal animations are now found (their action names end in "_AnimalArmature"; before, every
+  animal fell back to the first clip in the file, so animals did not do what the plan said)
+* characters that walk, run or gallop move at a natural speed and switch to Idle when they
+  arrive (before they slid slowly for the whole shot, or kept walking on the spot)
+* the "city" environment gets a road and its cars sit behind the actors
+* a report of the animation really used for every character and of missing models/animations
 """
 import argparse
 import json
@@ -22,6 +29,9 @@ from mathutils import Vector
 
 # If characters walk backwards / sideways in the sample images, change this (degrees).
 MODEL_FORWARD_OFFSET = 0.0
+
+# natural speeds in Blender units (metres) per second
+SPEED = {"walk": 1.4, "run": 3.6, "gallop": 6.0}
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
 ap = argparse.ArgumentParser()
@@ -56,10 +66,16 @@ for dp, _dn, fns in os.walk(args.assets):
 if not INDEX:
     raise SystemExit(f"No 3D models found under '{args.assets}'. Upload your Quaternius files first.")
 MISSING = set()
+ANIM_PROBLEMS = set()
+ANIM_USED = {}
 
 
 def norm_anim(n):
-    return re.sub(r"\.\d+$", "", n.split("|")[-1]).lower()
+    """'Walk_AnimalArmature' -> 'walk', 'CharacterArmature|Walk' -> 'walk', 'Walk.001' -> 'walk'"""
+    n = n.split("|")[-1]
+    n = re.sub(r"\.\d+$", "", n)
+    n = re.sub(r"_?(animal|character)?armature$", "", n, flags=re.I)
+    return n.lower()
 
 
 def link(obj):
@@ -92,22 +108,35 @@ def load_model(name):
     return wrap, new, acts
 
 
-def apply_anim(new, acts, anim):
+def add_cycles(action):
+    for fc in action.fcurves:
+        if not any(m.type == "CYCLES" for m in fc.modifiers):
+            fc.modifiers.new("CYCLES")
+
+
+def apply_anim(new, acts, anim, model=""):
+    """Plays the wanted clip. Returns {"arms", "move", "idle"} so a walker can switch to idle."""
     arms = [o for o in new if o.type == "ARMATURE"]
     if not arms or not acts:
-        return
-    pick = next((a for a in acts if norm_anim(a.name) == anim.lower()), None)
+        return None
+    want = anim.lower()
+    pick = next((a for a in acts if norm_anim(a.name) == want), None)
+    idle = next((a for a in acts if norm_anim(a.name) == "idle_neutral"), None) or \
+        next((a for a in acts if norm_anim(a.name) == "idle"), None)
     if pick is None:
-        pick = next((a for a in acts if norm_anim(a.name) == "idle"), acts[0])
-        print(f"  [warn] animation '{anim}' not found, using '{pick.name}'")
+        pick = idle or acts[0]
+        ANIM_PROBLEMS.add(f"{model}: '{anim}' not found, used '{pick.name}'")
+        print(f"  [warn] {model}: animation '{anim}' not found, using '{pick.name}'")
+    ANIM_USED[f"{model}:{anim}"] = pick.name
     for arm in arms:
         ad = arm.animation_data_create()
         for t in list(ad.nla_tracks):
             ad.nla_tracks.remove(t)
         ad.action = pick
-    for fc in pick.fcurves:
-        if not any(m.type == "CYCLES" for m in fc.modifiers):
-            fc.modifiers.new("CYCLES")
+    add_cycles(pick)
+    if idle is not None:
+        add_cycles(idle)
+    return {"arms": arms, "move": pick, "idle": idle}
 
 
 def clone_hierarchy(wrap, name):
@@ -136,7 +165,7 @@ ENVS = {
     "storm": dict(ground=(0.15, 0.25, 0.15), sky=(0.22, 0.25, 0.32), sun=1.1, sun_col=(0.65, 0.75, 1.0),
                   trees=["CommonTree_1", "DeadTree_1", "CommonTree_3"], n_trees=8,
                   extras=["Bush_Common", "Grass_Wispy_Tall"], n_extras=8),
-    "city": dict(ground=(0.22, 0.22, 0.24), sky=(0.60, 0.72, 0.88), sun=4.0, sun_col=(1, 0.97, 0.9),
+    "city": dict(ground=(0.42, 0.42, 0.44), sky=(0.60, 0.72, 0.88), sun=4.0, sun_col=(1, 0.97, 0.9),
                  trees=[], n_trees=0, extras=[], n_extras=0,
                  buildings=["Building_Large_2", "Building_Medium_2_001", "Building_Small_1"],
                  cars=["NormalCar1", "SportsCar", "Taxi", "SUV"]),
@@ -207,19 +236,22 @@ def build_env(env_name, seed):
 
     rng = random.Random(seed * 7919)
     if env_name == "city":
+        # dark road behind the actors, buildings behind the road
+        bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 7.5, 0.02))
+        road = bpy.context.active_object
+        road.scale = (120, 6, 1)
+        road.data.materials.append(make_material((0.10, 0.10, 0.11)))
         x = -24
-        i = 0
         while x < 24:
             res = load_model(rng.choice(e["buildings"]))
             if res:
-                res[0].location = (x, 12, 0)
+                res[0].location = (x, 15, 0)
                 res[0].rotation_euler.z = math.radians(180)
             x += 9
-            i += 1
         for k in range(3):
             res = load_model(rng.choice(e["cars"]))
             if res:
-                res[0].location = (-8 + k * 8, 5, 0)
+                res[0].location = (-8 + k * 8, 7.5, 0.03)
                 res[0].rotation_euler.z = math.radians(90)
     else:
         scatter(e["trees"], e["n_trees"], rng, 7, 22, -1.5, scale=(0.9, 1.4))
@@ -272,29 +304,44 @@ class Actor:
         if not self.ok:
             return
         self.wrap, new, acts = res
+        self.anims = None
         if not is_prop:
-            apply_anim(new, acts, spec.get("anim", "Idle"))
+            self.anims = apply_anim(new, acts, spec.get("anim", "Idle"), spec["model"])
         self.pos = spec.get("pos", [0, 0])
         self.move = spec.get("move", [0, 0])
+        dist = math.hypot(self.move[0], self.move[1])
         if "heading" in spec:
             self.heading = spec["heading"]
-        elif abs(self.move[0]) + abs(self.move[1]) > 0.01:
+        elif dist > 0.01:
             self.heading = math.degrees(math.atan2(self.move[0], -self.move[1]))
         else:
             self.heading = 0
+        # a character who walks/runs: move at natural speed, then switch to Idle
+        self.moving = (not is_prop) and dist > 0.01
+        speed = SPEED.get(str(spec.get("anim", "")).lower(), 1.4)
+        self.arrive = dist / speed if self.moving else 0.0
         self.scale = spec.get("scale", 1.0)
         self.grow = spec.get("grow")
 
-    def update(self, p):
+    def update(self, p, t_sec=0.0):
         if not self.ok:
             return
         q = p
+        arrived = False
+        if self.moving:
+            q = 1.0 if self.arrive <= 0 else min(1.0, t_sec / self.arrive)
+            arrived = q >= 1.0
         self.wrap.location = (self.pos[0] + self.move[0] * q, self.pos[1] + self.move[1] * q, 0)
         self.wrap.rotation_euler.z = math.radians(self.heading + MODEL_FORWARD_OFFSET)
         s = self.scale
         if self.grow:
             s = lerp(self.grow[0], self.grow[1], ease(p))
         self.wrap.scale = (s, s, s)
+        if self.moving and self.anims and self.anims.get("idle") is not None:
+            act = self.anims["idle"] if arrived else self.anims["move"]
+            for arm in self.anims["arms"]:
+                if arm.animation_data:
+                    arm.animation_data.action = act
 
 
 def build_shot(shot):
@@ -320,8 +367,9 @@ def build_shot(shot):
 
 def pose_frame(sc, cam, target, actors, props, shot, t, n):
     p = t / max(1, n - 1)
+    t_sec = t / FPS
     for a in actors + props:
-        a.update(p)
+        a.update(p, t_sec)
     c = shot.get("camera", {})
     tgt = Vector(c.get("target", [0, 0, 1.2]))
     if c.get("follow"):
@@ -380,6 +428,10 @@ def main():
                     el = time.time() - t_start
                     print(f"  {done}/{b - a} frames, {el / done:.1f}s per frame", flush=True)
     print(f"Finished {done} frames in {(time.time() - t_start) / 60:.1f} min")
+    if ANIM_USED:
+        print("ANIMATIONS USED:", "; ".join(f"{k} -> {v}" for k, v in sorted(ANIM_USED.items())))
+    if ANIM_PROBLEMS:
+        print("ANIMATION PROBLEMS:", "; ".join(sorted(ANIM_PROBLEMS)))
     if MISSING:
         print("MISSING MODELS (not found in assets):", ", ".join(sorted(MISSING)))
 
