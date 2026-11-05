@@ -1,0 +1,614 @@
+{
+ "title": "कमाई से पहले बचत: खुद को दें पहला वेतन",
+ "rate": "-8%",
+ "description": "इस वीडियो में जानिए कि अपनी हर कमाई में से सबसे पहले बचत करना क्यों जरूरी है। श्याम और रामू की इस छोटी सी कहानी से सीखें पैसों का पहला और सबसे महत्वपूर्ण नियम।",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech.",
+ "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+ "shots": [
+  {
+   "id": 1,
+   "title": "Empty Pockets",
+   "narration": "क्या आपकी मेहनत की कमाई भी हाथ में आते ही तुरंत खत्म हो जाती है? हर महीने के आख़िर में खाली हाथ रहना एक बहुत ही गंभीर समस्या है।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": 60
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.8,
+      0.5
+     ],
+     "heading": -60
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      -0.3,
+      -0.2
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 6.0,
+    "dist_end": 4.8,
+    "sweep": -15,
+    "angle": 5
+   }
+  },
+  {
+   "id": 2,
+   "title": "Hard Work",
+   "narration": "हमारे दोस्त श्याम को हर हफ्ते सौ रुपये की मजदूरी मिलती थी। वह हमेशा यही सोचता था कि हफ्ते के अंत में जो बचेगा, उसे जमा करेगा।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Walk",
+     "pos": [
+      -2.2,
+      0.0
+     ],
+     "heading": 80,
+     "move": [
+      0.2,
+      0.0
+     ]
+    },
+    {
+     "model": "Suit",
+     "anim": "Interact",
+     "pos": [
+      2.0,
+      0.0
+     ],
+     "heading": -80
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      3.0,
+      0.2
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 7.0,
+    "sweep": 20,
+    "angle": -5
+   }
+  },
+  {
+   "id": 3,
+   "title": "No Savings Left",
+   "narration": "लेकिन हफ्ते के अंत तक उसके सारे रुपये फालतू खर्चों में उड़ जाते थे। बचत वाले मटके में डालने के लिए एक भी रुपया नहीं बचता था।",
+   "env": "storm",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      0.0,
+      0.0
+     ],
+     "heading": 0
+    },
+    {
+     "model": "Cow",
+     "anim": "Idle_2",
+     "pos": [
+      -3.0,
+      1.0
+     ],
+     "heading": 45
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      1.5,
+      0.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 5.5,
+    "sweep": -20,
+    "angle": 10
+   }
+  },
+  {
+   "id": 4,
+   "title": "Wise Advice",
+   "narration": "परेशान श्याम को देखकर बुद्धिमान राजा ने उसे अपने पास बुलाया। राजा ने समझाया कि बिना सही नियम के बचत कर पाना नामुमकिन है।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.0
+     ],
+     "heading": -70
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.2,
+      0.2
+     ],
+     "heading": 70
+    },
+    {
+     "model": "Donkey",
+     "anim": "Eating",
+     "pos": [
+      3.0,
+      1.5
+     ],
+     "heading": -40
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      4.0,
+      2.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 6.5,
+    "dist_end": 5.2,
+    "sweep": 15,
+    "angle": 0
+   }
+  },
+  {
+   "id": 5,
+   "title": "Pay Yourself First",
+   "narration": "राजा ने पैसों का पहला नियम बताया: कमाई का सबसे पहला हिस्सा हमेशा खुद को दो। यानी खर्च करने से पहले अपनी बचत अलग कर लो।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Wave",
+     "pos": [
+      -1.2,
+      0.0
+     ],
+     "heading": 60
+    },
+    {
+     "model": "Worker",
+     "anim": "Interact",
+     "pos": [
+      1.5,
+      0.0
+     ],
+     "heading": -60
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      0.2,
+      -0.2
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 5.0,
+    "sweep": -10,
+    "angle": -8
+   }
+  },
+  {
+   "id": 6,
+   "title": "Small Steps Count",
+   "narration": "आसान उदाहरण समझो: जब भी तुम्हें सौ रुपये की कमाई हो, तो तुरंत उसमें से बीस रुपये निकालकर अपने मटके में डाल दो।",
+   "env": "forest",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.0
+     ],
+     "heading": 40
+    },
+    {
+     "model": "King",
+     "anim": "Idle",
+     "pos": [
+      -2.5,
+      0.5
+     ],
+     "heading": 70
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      1.2,
+      -0.1
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 4.8,
+    "dist_end": 4.0,
+    "sweep": 20,
+    "angle": 5
+   }
+  },
+  {
+   "id": 7,
+   "title": "Managing the Rest",
+   "narration": "इसके बाद जो अस्सी रुपये बचें, सिर्फ उन्हीं से अपना हफ़्ते का खर्च और राशन चलाओ। मटके में रखे पैसों को बिल्कुल मत छुओ।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Walk",
+     "pos": [
+      -1.8,
+      0.0
+     ],
+     "heading": 80,
+     "move": [
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "model": "Suit",
+     "anim": "Wave",
+     "pos": [
+      2.0,
+      0.0
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      -3.2,
+      0.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 6.8,
+    "sweep": -15,
+    "angle": 0,
+    "thumb": true
+   }
+  },
+  {
+   "id": 8,
+   "title": "Growing Wealth",
+   "narration": "किसान रामू ने राजा की बात को अच्छी तरह समझा। वह हर बार फसल बेचते ही सबसे पहले बीस रुपये बचत के मटके में जमा करने लगा।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      0.5,
+      0.0
+     ],
+     "heading": -50
+    },
+    {
+     "model": "Cow",
+     "anim": "Eating",
+     "pos": [
+      -2.5,
+      0.5
+     ],
+     "heading": 60
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      -0.8,
+      -0.1
+     ]
+    },
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      3.2,
+      1.8
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 5.5,
+    "dist_end": 4.5,
+    "sweep": 10,
+    "angle": -5
+   }
+  },
+  {
+   "id": 9,
+   "title": "Beware of Scams",
+   "narration": "लेकिन सावधान रहें! चालाक लोमड़ी जैसे लोग आपको सारे पैसे उड़ाने या रातों-रात अमीर बनने का लालच देंगे। ऐसे जाल में कभी मत पड़ना।",
+   "env": "storm",
+   "characters": [
+    {
+     "model": "Fox",
+     "anim": "Walk",
+     "pos": [
+      -1.5,
+      0.0
+     ],
+     "heading": 70,
+     "move": [
+      0.5,
+      0.0
+     ]
+    },
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      1.8,
+      0.0
+     ],
+     "heading": -70
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_2",
+     "pos": [
+      -3.5,
+      2.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 6.0,
+    "sweep": -25,
+    "angle": 8
+   }
+  },
+  {
+   "id": 10,
+   "title": "Two Core Rules",
+   "narration": "नियम याद रखें: पहला, कमाई मिलते ही बचत का हिस्सा अलग रखें। दूसरा, बाकी बचे हुए पैसों से ही समझदारी से अपना खर्च चलाएं।",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.0
+     ],
+     "heading": 0
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle",
+     "pos": [
+      -2.0,
+      0.2
+     ],
+     "heading": 50
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.0,
+      0.2
+     ],
+     "heading": -50
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      0.0,
+      -0.5
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 7.2,
+    "sweep": 0,
+    "angle": -10
+   }
+  },
+  {
+   "id": 11,
+   "title": "Patience and Growth",
+   "narration": "तीसरा नियम, इस आदत को कभी न तोड़ें। जैसे छोटा सा पौधा धीरे-धीरे बढ़कर एक मजबूत पेड़ बनता है, आपकी बचत भी बढ़ेगी।",
+   "env": "forest",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.8,
+      0.0
+     ],
+     "heading": 60
+    },
+    {
+     "model": "Horse_White",
+     "anim": "Idle_2",
+     "pos": [
+      2.2,
+      0.5
+     ],
+     "heading": -40
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "grow": [
+      0.3,
+      2.2
+     ]
+    },
+    {
+     "model": "Pot",
+     "pos": [
+      -0.8,
+      -0.2
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 6.0,
+    "dist_end": 4.8,
+    "sweep": 15,
+    "angle": -5
+   }
+  },
+  {
+   "id": 12,
+   "title": "Learn and Subscribe",
+   "narration": "यह वीडियो केवल वित्तीय शिक्षा और जागरूकता के लिए है, किसी निवेश की सलाह नहीं। ऐसी ही सीख के लिए चैनल को सब्सक्राइब करें!",
+   "env": "village",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Wave",
+     "pos": [
+      -1.2,
+      0.0
+     ],
+     "heading": 30
+    },
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      1.2,
+      0.0
+     ],
+     "heading": -30
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "heading": 0
+    }
+   ],
+   "props": [
+    {
+     "model": "Pot",
+     "pos": [
+      0.0,
+      -0.3
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.0,
+     1.2
+    ],
+    "dist": 5.8,
+    "sweep": 0,
+    "angle": 0
+   }
+  }
+ ],
+ "topic": "Pay yourself first: save a part of every income before spending",
+ "director_model": "gemini-3.6-flash"
+}
