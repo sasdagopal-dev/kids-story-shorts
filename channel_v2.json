@@ -1,0 +1,143 @@
+{
+ "channel_name": "Money Kingdom Stories",
+ "language": "en",
+ "target_seconds": 150,
+ "start_date": "2026-11-06",
+ "disclaimer": "Educational content only. Not investment advice. Examples use imaginary numbers.",
+ "cast": [
+  {
+   "name": "Arjun",
+   "model": "King",
+   "role": "A rich but careless king who spends first and worries later. He learns the lesson the hard way, then becomes wiser."
+  },
+  {
+   "name": "Ravi",
+   "model": "Worker",
+   "role": "A hard-working labourer with a small income who learns to save and use phone payments safely."
+  },
+  {
+   "name": "Hari",
+   "model": "Farmer",
+   "role": "A wise, patient farmer. Plants seeds today for harvest tomorrow. Teaches patience, saving and compounding."
+  },
+  {
+   "name": "Mehta",
+   "model": "Suit",
+   "role": "An honest banker who explains money tools and digital safety in simple words. Never promises profits."
+  },
+  {
+   "name": "Veer",
+   "model": "Adventurer",
+   "role": "A young risk-taker who chases quick gains and learns about risk."
+  },
+  {
+   "name": "Meera",
+   "model": "Casual_Hoodie",
+   "role": "A curious young villager who asks the questions viewers are thinking. Uses a phone for payments."
+  },
+  {
+   "name": "Bijli",
+   "model": "Horse",
+   "role": "Veer's fast horse. Stands for fast but risky moves."
+  },
+  {
+   "name": "Gauri",
+   "model": "Cow",
+   "role": "A calm cow. Stands for slow, steady, regular income."
+  },
+  {
+   "name": "Gadha",
+   "model": "Donkey",
+   "role": "A hard-working donkey who carries heavy loads. Stands for people who work hard but do not save."
+  },
+  {
+   "name": "Chintu",
+   "model": "Fox",
+   "role": "A sly smiling fox who runs fake schemes and scam phone calls or messages."
+  },
+  {
+   "name": "Raka",
+   "model": "Wolf",
+   "role": "A greedy wolf who runs a shady digital loan app with high interest and hidden fees.",
+   "tint": "dark"
+  },
+  {
+   "name": "Bullu",
+   "model": "Bull",
+   "role": "A strong bull. Stands for a rising market, but never a promise."
+  },
+  {
+   "name": "Sheru",
+   "model": "Husky",
+   "role": "A loyal husky who guards the family savings and warns about danger."
+  },
+  {
+   "name": "Mithu",
+   "model": "Stag",
+   "role": "A wise old stag, the village elder who gives calm advice about patience."
+  }
+ ],
+ "topics": [
+  "Pay yourself first: save before you spend",
+  "UPI safety: never share your PIN or OTP",
+  "Why an emergency fund matters",
+  "Fake KYC calls and how to stay safe",
+  "Needs versus wants",
+  "Digital loan apps: hidden fees and how to check a lender",
+  "The 50-30-20 budget rule explained simply",
+  "QR code scams: you never scan to RECEIVE money",
+  "Inflation: the silent thief of your savings",
+  "Phishing: how fake messages steal your money",
+  "Compound interest: money that grows by itself",
+  "Buy now pay later: the hidden danger",
+  "Start small: how Rs 100 a day adds up",
+  "Your credit score: what it is and how it is built",
+  "Why starting early beats starting big",
+  "The credit card trap: how interest grows against you",
+  "Regular monthly investing: small amounts, steady habit (education only)",
+  "Fake investment apps and group chat tips: how to spot them",
+  "Do not put all your eggs in one basket (diversification)",
+  "Digital payments: how to keep your accounts safe",
+  "Risk and return: why bigger rewards come with bigger risks",
+  "SIM swap and screen-sharing scams",
+  "Good debt versus bad debt",
+  "How to check if a lender or platform is registered",
+  "EMI traps: buying things you cannot afford",
+  "Scam alert: never pay money to receive money",
+  "Bull and bear markets: why prices go up and down",
+  "Ponzi schemes: how the trick works",
+  "Patience: why long-term thinking wins",
+  "Loan sharks and very high interest",
+  "Do not panic when markets fall",
+  "Fake customer care numbers on the internet",
+  "FOMO: why chasing what everyone is buying is dangerous",
+  "What happens to your money in a bank account (and why deposits are insured)",
+  "Why insurance protects your family from big shocks",
+  "Crypto and get-rich promises: why caution matters",
+  "Lifestyle inflation: when more income means more spending",
+  "Assets versus liabilities",
+  "Opportunity cost: the price of every choice",
+  "The Rule of 72: how fast money can double (a simple maths trick)",
+  "Budgeting with the envelope method, now with a phone",
+  "Debt snowball versus debt avalanche",
+  "Setting SMART money goals",
+  "Why saving for retirement must start today",
+  "Side income: using your skills to earn more",
+  "Investing in yourself: skills that pay for life",
+  "The latte factor: small leaks sink big ships",
+  "Why tracking expenses changes everything",
+  "Saving for a goal: the school fee story",
+  "Teaching children about money",
+  "Family budget: how a household plans together",
+  "Interest: when you earn it and when you pay it",
+  "Why you should read before you sign (and before you tap Accept)",
+  "The danger of borrowing to invest",
+  "Why you should check who is advising you",
+  "Tax is part of life: why records matter",
+  "Sunk cost: why you should not chase lost money",
+  "Needs, wants and the one-day waiting rule",
+  "Making a simple 5-year money plan",
+  "Net worth: how to measure your progress",
+  "If you are scammed: the first 3 steps to take (helpline 1930)"
+ ]
+}
