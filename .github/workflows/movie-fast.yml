@@ -63,6 +63,14 @@ jobs:
             echo "pip failed, attempt $i"; sleep $((i*10))
           done
 
+      - name: Check tts.py is the new version
+        run: |
+          if ! grep -q -- "--calls" tts.py; then
+            echo "ERROR: tts.py in the repo is the OLD version. Replace it with the new tts.py."
+            exit 1
+          fi
+          echo "tts.py is the new single-call version"
+
       - name: Make the Hindi narration
         env:
           PLAN_FILE: ${{ inputs.plan_file }}
