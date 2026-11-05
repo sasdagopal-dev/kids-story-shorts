@@ -1,0 +1,31 @@
+{
+  "audience": "Hindi-speaking villagers and first-time earners in India, beginners in money matters",
+  "language": "Hindi in Devanagari script, simple spoken words, rupees (Rs)",
+  "shots": 12,
+  "min_chars": 1350,
+  "max_chars": 1600,
+  "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+  "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech.",
+  "cast": [
+    {"name": "रामू", "model": "Farmer", "role": "hard-working farmer who learns and saves"},
+    {"name": "श्याम", "model": "Worker", "role": "his friend, spends everything, learns the hard way"},
+    {"name": "राजा", "model": "King", "role": "wise teacher who explains money rules simply"},
+    {"name": "सेठ धनपाल", "model": "Suit", "role": "honest banker or advisor"},
+    {"name": "चालाक लोमड़ी", "model": "Fox", "role": "scammer who promises quick riches"},
+    {"name": "गाय, घोड़ा, गधा", "model": "Cow / Horse_White / Donkey", "role": "village animals, background life"}
+  ],
+  "topics": [
+    "Pay yourself first: save a part of every income before spending",
+    "Emergency fund: why every family needs one and how to build it slowly",
+    "Compound interest: a small seed becomes a big tree with time",
+    "Double-your-money scams: the red flags of fraud and Ponzi schemes",
+    "Good debt versus bad debt: why high-interest loans trap people",
+    "Simple budgeting: needs, wants and savings",
+    "Inflation: why money kept idle loses value slowly",
+    "Insurance: protecting the family from one bad day",
+    "Regular small investing and patience (education only, no product names)",
+    "Needs versus wants: festival and wedding spending",
+    "Credit card trap: why paying only the minimum due is dangerous",
+    "Start early: two friends who began saving at different ages"
+  ]
+}
