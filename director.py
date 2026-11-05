@@ -1,32 +1,69 @@
 #!/usr/bin/env python3
-"""director.py - Gemini as the DIRECTOR. Writes today's story + scene plan for the renderer.
+"""director.py v2 - Gemini as the DIRECTOR of a real STORY, with checked choreography.
 
   python3 director.py                       # next topic from director_config.json
   python3 director.py --topic "..."         # your own topic
-  python3 director.py --validate-only plan.json   # check/repair an existing plan
+  python3 director.py --validate-only plan.json
 
-Output: plans/plan_YYYY-MM-DD.json  (same format as your Ramu plan: title, narration, env,
-characters, props, camera per shot). Everything Gemini writes is checked against the asset
-lists below and repaired, so the renderer never gets an animal or animation that does not exist.
-If the answer is rejected (wrong length, wrong shot count, not Hindi...) Gemini is asked again
-with the reason, up to --attempts times, and other Gemini models are tried.
-Edit the ASSET lists below if you add packs.
+What is new in v2
+* the prompt asks for a real story (hero, wish, obstacle, mistake, consequence, smart fix)
+  told by events, not a lecture. Each shot = one visible event, narration describes what is seen.
+* Gemini chooses an ACTION per character (talk, listen, walk, run, shock, fight, eat, sad ...).
+  This script turns it into the exact animation name of THAT model (humans, hoofed animals and
+  dogs/wolves/foxes have different animation names in your packs).
+* choreography is fixed by code, not left to Gemini: walkers/runners always get a destination,
+  characters face each other or the speaker, characters are spread apart, and the camera
+  looks at the action (target and distance follow the characters).
+Edit the ASSET lists if you add packs. Everything is checked against them.
 """
-import argparse, datetime, json, os, re, sys, time, urllib.error, urllib.request
+import argparse, datetime, json, math, os, re, sys, time, urllib.error, urllib.request
 
 BASE = "https://generativelanguage.googleapis.com/v1beta"
 
-# ---- assets the renderer can use (from your asset check and your Ramu plan)
+# ---- characters and the REAL animation names from your asset check
 HUMANS = ["Farmer", "King", "Worker", "Suit", "Adventurer", "Casual_2", "Casual_Hoodie", "Beach", "Punk"]
-ANIMALS = ["Cow", "Horse_White", "Horse", "Fox", "Donkey", "Deer", "Stag", "Wolf", "Husky", "ShibaInu", "Alpaca", "Bull"]
-HUMAN_ANIMS = ["Idle", "Idle_Neutral", "Walk", "Run", "Wave", "Interact", "Death", "HitRecieve_2",
-               "Sword_Slash", "Punch", "Kick", "Roll"]
-ANIMAL_ANIMS = ["Idle", "Idle_2", "Walk", "Gallop", "Eating", "Death"]
-MOVING = {"Walk", "Run", "Gallop"}
-PROPS = ["Pot", "CommonTree_1", "CommonTree_2"]
+HOOF = ["Cow", "Horse_White", "Horse", "Donkey", "Deer", "Stag", "Alpaca", "Bull"]
+CANINE = ["Fox", "Wolf", "Husky", "ShibaInu"]
+ANIMALS = HOOF + CANINE
+ANIMS = {
+    "human": ["Death", "Gun_Shoot", "HitRecieve", "HitRecieve_2", "Idle", "Idle_Gun", "Idle_Gun_Pointing",
+              "Idle_Gun_Shoot", "Idle_Neutral", "Idle_Sword", "Interact", "Kick_Left", "Kick_Right",
+              "Punch_Left", "Punch_Right", "Roll", "Run", "Run_Back", "Run_Left", "Run_Right", "Run_Shoot",
+              "Sword_Slash", "Walk", "Wave"],
+    "hoof": ["Attack_Headbutt", "Attack_Kick", "Death", "Eating", "Gallop", "Gallop_Jump", "Idle", "Idle_2",
+             "Idle_Headlow", "Idle_HitReact1", "Idle_HitReact2", "Jump_toIdle", "Walk"],
+    "canine": ["Attack", "Death", "Eating", "Gallop", "Gallop_Jump", "Idle", "Idle_2", "Idle_2_HeadLow",
+               "Idle_HitReact1", "Idle_HitReact2", "Jump_ToIdle", "Walk"],
+}
+# action word -> animation per kind
+ACTIONS = {
+    "idle":      {"human": "Idle_Neutral", "hoof": "Idle", "canine": "Idle"},
+    "talk":      {"human": "Interact", "hoof": "Idle_2", "canine": "Idle_2"},
+    "listen":    {"human": "Idle_Neutral", "hoof": "Idle", "canine": "Idle"},
+    "walk":      {"human": "Walk", "hoof": "Walk", "canine": "Walk"},
+    "run":       {"human": "Run", "hoof": "Gallop", "canine": "Gallop"},
+    "wave":      {"human": "Wave", "hoof": "Idle_2", "canine": "Idle_2"},
+    "shock":     {"human": "HitRecieve_2", "hoof": "Idle_HitReact1", "canine": "Idle_HitReact1"},
+    "hurt":      {"human": "HitRecieve", "hoof": "Idle_HitReact2", "canine": "Idle_HitReact2"},
+    "fight":     {"human": "Punch_Right", "hoof": "Attack_Headbutt", "canine": "Attack"},
+    "kick":      {"human": "Kick_Right", "hoof": "Attack_Kick", "canine": "Attack"},
+    "eat":       {"human": "Interact", "hoof": "Eating", "canine": "Eating"},
+    "sad":       {"human": "Idle_Neutral", "hoof": "Idle_Headlow", "canine": "Idle_2_HeadLow"},
+    "celebrate": {"human": "Wave", "hoof": "Idle_2", "canine": "Idle_2"},
+    "jump":      {"human": "Roll", "hoof": "Gallop_Jump", "canine": "Gallop_Jump"},
+    "faint":     {"human": "Death", "hoof": "Death", "canine": "Death"},
+    "sword":     {"human": "Idle_Sword", "hoof": "Idle", "canine": "Idle"},
+}
+MOVING_ACTIONS = {"walk", "run"}
+MOVING_ANIMS = {"Walk", "Run", "Gallop"}
 ENVS = ["village", "forest", "storm"]
+DEFAULT_PROPS = ["CommonTree_1", "CommonTree_2", "CommonTree_3", "Pine_1", "Bush_Common"]
 
 SLEEP = time.sleep
+
+
+def kind_of(model):
+    return "human" if model in HUMANS else ("canine" if model in CANINE else "hoof")
 
 
 class GErr(Exception):
@@ -36,7 +73,7 @@ class GErr(Exception):
 
 
 class Reject(Exception):
-    """The answer was received but is not good enough. The reason goes back to Gemini."""
+    """The answer is not good enough. The reason goes back to Gemini."""
 
 
 # ------------------------------------------------------------------ Gemini
@@ -80,7 +117,6 @@ def pick_models(key, override):
 
 
 def ask_json(prompt, models, key, state):
-    """One question to Gemini, with retries and model switching. Returns parsed JSON."""
     last = None
     for model in models:
         if model in state["dead"]:
@@ -102,10 +138,10 @@ def ask_json(prompt, models, key, state):
                 raise Reject(f"your answer was not valid JSON ({e})")
             except GErr as e:
                 last = e
-                body_t = (e.text or str(e)).lower()
-                if "api key not valid" in body_t or e.code in (401, 403):
+                t = (e.text or str(e)).lower()
+                if "api key not valid" in t or e.code in (401, 403):
                     sys.exit(f"FAIL: Gemini rejected the key or access: {str(e)[:200]}")
-                if e.code == 404 or (e.code == 429 and ("perday" in body_t or "per day" in body_t)):
+                if e.code == 404 or (e.code == 429 and ("perday" in t or "per day" in t)):
                     state["dead"].add(model)
                     print(f"  {model}: not usable now, trying the next model", file=sys.stderr)
                     break
@@ -119,7 +155,7 @@ def ask_json(prompt, models, key, state):
     raise RuntimeError(f"no Gemini model answered: {last}")
 
 
-# ------------------------------------------------------------------ validation and repair
+# ------------------------------------------------------------------ small helpers
 def clamp(v, lo, hi):
     return max(lo, min(hi, v))
 
@@ -131,76 +167,141 @@ def num(x, default):
         return default
 
 
-def pair(v, default):
+def pair(v, default, xr=(-6.5, 6.5), yr=(-1.5, 6.5)):
     if isinstance(v, (list, tuple)) and len(v) >= 2:
-        return [round(clamp(num(v[0], default[0]), -7.5, 7.5), 2), round(clamp(num(v[1], default[1]), -2.5, 7.5), 2)]
+        return [round(clamp(num(v[0], default[0]), *xr), 2), round(clamp(num(v[1], default[1]), *yr), 2)]
     return list(default)
 
 
 def hindi_ratio(s):
     letters = [c for c in s if c.isalpha()]
-    if not letters:
-        return 0.0
-    return sum(1 for c in letters if "\u0900" <= c <= "\u097f") / len(letters)
+    return (sum(1 for c in letters if "\u0900" <= c <= "\u097f") / len(letters)) if letters else 0.0
 
 
-def fix_character(c, notes, n):
-    if not isinstance(c, dict):
+# ------------------------------------------------------------------ choreography (done by code)
+def resolve_animation(model, action, anim, notes, n):
+    kind = kind_of(model)
+    action = (action or "").strip().lower() if isinstance(action, str) else ""
+    if action in ACTIONS:
+        return action, ACTIONS[action][kind]
+    if isinstance(anim, str) and anim in ANIMS[kind]:
+        return ("walk" if anim == "Walk" else "run" if anim in ("Run", "Gallop") else "raw"), anim
+    if action or anim:
+        notes.append(f"shot {n}: {model} action/animation '{action or anim}' unknown, used idle")
+    return "idle", ACTIONS["idle"][kind]
+
+
+def build_character(c, notes, n):
+    if not isinstance(c, dict) or c.get("model") not in HUMANS + ANIMALS:
+        if isinstance(c, dict):
+            notes.append(f"shot {n}: unknown character '{c.get('model')}' removed")
         return None
-    model = c.get("model")
-    if model not in HUMANS + ANIMALS:
-        notes.append(f"shot {n}: unknown character '{model}' removed")
-        return None
-    anims = HUMAN_ANIMS if model in HUMANS else ANIMAL_ANIMS
-    anim = c.get("anim")
-    if anim not in anims:
-        notes.append(f"shot {n}: {model} animation '{anim}' not available, used Idle")
-        anim = "Idle"
-    out = {"model": model, "anim": anim, "pos": pair(c.get("pos"), [0, 0])}
-    if "heading" in c:
-        out["heading"] = round(clamp(num(c["heading"], 0), -180, 180))
-    if anim in MOVING and isinstance(c.get("move"), (list, tuple)):
-        out["move"] = pair(c["move"], out["pos"])
+    action, anim = resolve_animation(c["model"], c.get("action"), c.get("anim"), notes, n)
+    ch = {"model": c["model"], "action": action, "anim": anim, "pos": pair(c.get("pos"), [0, 0])}
+    if isinstance(c.get("move"), (list, tuple)):
+        ch["move"] = pair(c["move"], ch["pos"], xr=(-8, 8))
+    return ch
+
+
+def choreograph(chars, focus_model, n, notes):
+    """Spacing, destinations for walkers, facing, in that order."""
+    movers = [c for c in chars if c["anim"] in MOVING_ANIMS]
+    still = [c for c in chars if c["anim"] not in MOVING_ANIMS]
+
+    # 1. spread standing characters apart (at least 1.6 units on the x axis)
+    still.sort(key=lambda c: c["pos"][0])
+    for i in range(1, len(still)):
+        if still[i]["pos"][0] - still[i - 1]["pos"][0] < 1.6 and abs(still[i]["pos"][1] - still[i - 1]["pos"][1]) < 1.2:
+            still[i]["pos"][0] = round(still[i - 1]["pos"][0] + 1.6, 2)
+    if still and still[-1]["pos"][0] > 6.0:
+        shift = still[-1]["pos"][0] - 6.0
+        for c in still:
+            c["pos"][0] = round(c["pos"][0] - shift, 2)
+
+    # 2. every walker or runner needs a real destination
+    focus = next((c for c in still if c["model"] == focus_model), still[0] if still else None)
+    for c in movers:
+        mv = c.get("move")
+        dist = math.hypot(mv[0] - c["pos"][0], mv[1] - c["pos"][1]) if mv else 0
+        if not mv or dist < 1.5:
+            if focus is not None:
+                side = -1.8 if c["pos"][0] < focus["pos"][0] else 1.8
+                c["move"] = [round(clamp(focus["pos"][0] + side, -6.5, 6.5), 2), focus["pos"][1]]
+            else:
+                c["move"] = [round(clamp(c["pos"][0] + (4.0 if c["pos"][0] < 0 else -4.0), -8, 8), 2), c["pos"][1]]
+            if mv:
+                notes.append(f"shot {n}: {c['model']} walk was too short, destination fixed")
+            else:
+                notes.append(f"shot {n}: {c['model']} had no destination, added one")
+        c.pop("heading", None)          # walkers face the way they walk
+
+    # 3. face each other / the speaker
+    def end_point(c):
+        return c["move"] if c["anim"] in MOVING_ANIMS and "move" in c else c["pos"]
+    spk = next((c for c in chars if c["model"] == focus_model), chars[0])
+    for c in chars:
+        if c["anim"] in MOVING_ANIMS:
+            continue
+        others = [o for o in chars if o is not c]
+        if not others:
+            c["heading"] = 25
+            continue
+        if c is spk:
+            tgt = min(others, key=lambda o: abs(end_point(o)[0] - c["pos"][0]))
+        else:
+            tgt = spk
+        dx = end_point(tgt)[0] - c["pos"][0]
+        if abs(dx) < 0.6:
+            c["heading"] = 0
+        else:
+            c["heading"] = int(math.copysign(clamp(50 + 15 * min(abs(dx), 2), 50, 80), dx))
+
+
+def build_camera(cam, chars, focus_model):
+    cam = cam if isinstance(cam, dict) else {}
+    pts, w = [], []
+    for c in chars:
+        a = c["pos"]
+        b = c.get("move") if c["anim"] in MOVING_ANIMS else None
+        p = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] if b else a
+        pts.append(p)
+        w.append(2.0 if c["model"] == focus_model else 1.0)
+    sw = sum(w)
+    tx = sum(p[0] * x for p, x in zip(pts, w)) / sw
+    ty = sum(p[1] * x for p, x in zip(pts, w)) / sw
+    xs = [c["pos"][0] for c in chars] + [c["move"][0] for c in chars if c.get("move") and c["anim"] in MOVING_ANIMS]
+    spread = max(xs) - min(xs)
+    z = 1.2 if any(c["model"] in HUMANS for c in chars) else 1.0
+    dist = 6.0 if len(chars) == 1 else clamp(5.5 + 0.75 * spread, 5.5, 10.5)
+    out = {"target": [round(clamp(tx, -4.5, 4.5), 2), round(clamp(ty, -1, 5), 2), z], "dist": round(dist, 1)}
+    de = num(cam.get("dist_end"), None) if "dist_end" in cam else None
+    if de is not None:
+        out["dist_end"] = round(clamp(de, 4.0, 11), 1)
+    elif any(c["model"] == focus_model and c["action"] == "talk" for c in chars):
+        out["dist_end"] = round(max(4.5, dist - 1.3), 1)
+    if "sweep" in cam:
+        out["sweep"] = round(clamp(num(cam["sweep"], 0), -35, 35))
+    if "angle" in cam:
+        out["angle"] = round(clamp(num(cam["angle"], 0), -20, 15))
+    if cam.get("thumb"):
+        out["thumb"] = True
     return out
 
 
-def fix_prop(p, notes, n):
-    if not isinstance(p, dict) or p.get("model") not in PROPS:
-        notes.append(f"shot {n}: unknown prop removed")
+def fix_prop(p, allowed, notes, n):
+    if not isinstance(p, dict) or p.get("model") not in allowed:
+        notes.append(f"shot {n}: prop '{p.get('model') if isinstance(p, dict) else p}' not allowed, removed")
         return None
-    out = {"model": p["model"], "pos": pair(p.get("pos"), [0, 2])}
+    out = {"model": p["model"], "pos": pair(p.get("pos"), [0, 2.5], yr=(0, 7))}
     if "scale" in p:
         out["scale"] = round(clamp(num(p["scale"], 1.0), 0.5, 2.5), 2)
-    if "heading" in p:
-        out["heading"] = round(clamp(num(p["heading"], 0), -180, 180))
     g = p.get("grow")
     if isinstance(g, (list, tuple)) and len(g) >= 2 and p["model"].startswith("CommonTree"):
         out["grow"] = [round(clamp(num(g[0], 0.15), 0.05, 1.0), 2), round(clamp(num(g[1], 1.4), 0.5, 2.5), 2)]
     return out
 
 
-def fix_camera(cam):
-    cam = cam if isinstance(cam, dict) else {}
-    t = cam.get("target")
-    if isinstance(t, (list, tuple)) and len(t) >= 3:
-        target = [round(clamp(num(t[0], 0), -6, 6), 2), round(clamp(num(t[1], 0), -2, 6), 2),
-                  round(clamp(num(t[2], 1.2), 0.5, 2.5), 2)]
-    else:
-        target = [0, 0.3, 1.2]
-    out = {"target": target, "dist": round(clamp(num(cam.get("dist"), 8), 4.5, 11), 1)}
-    if "dist_end" in cam:
-        out["dist_end"] = round(clamp(num(cam["dist_end"], out["dist"]), 4.0, 11), 1)
-    if "sweep" in cam:
-        out["sweep"] = round(clamp(num(cam["sweep"], 0), -45, 45))
-    if "angle" in cam:
-        out["angle"] = round(clamp(num(cam["angle"], 0), -25, 20))
-    if cam.get("thumb"):
-        out["thumb"] = True
-    return out
-
-
 def repair_plan(plan, cfg, strict_length=True):
-    """Returns (clean_plan, notes). Raises Reject when the story itself must be rewritten."""
     notes = []
     if not isinstance(plan, dict) or not isinstance(plan.get("shots"), list):
         raise Reject("the JSON must be an object with a 'shots' list")
@@ -208,114 +309,115 @@ def repair_plan(plan, cfg, strict_length=True):
     shots_in = plan["shots"]
     if not (want - 2 <= len(shots_in) <= want + 2):
         raise Reject(f"you wrote {len(shots_in)} shots, I need exactly {want}")
-    shots = []
+    allowed = cfg.get("props_allowed") or DEFAULT_PROPS
+    shots, human_shots = [], 0
     for n, s in enumerate(shots_in, start=1):
-        text = (s.get("narration") or "").strip() if isinstance(s, dict) else ""
+        if not isinstance(s, dict):
+            raise Reject(f"shot {n} is not an object")
+        text = (s.get("narration") or "").strip()
         if not text:
             raise Reject(f"shot {n} has no narration")
         if hindi_ratio(text) < 0.7:
             raise Reject(f"shot {n} narration is not Hindi in Devanagari script")
-        chars = [fix_character(c, notes, n) for c in (s.get("characters") or [])[:6]]
-        chars = [c for c in chars if c][:5]
+        chars = [build_character(c, notes, n) for c in (s.get("characters") or [])[:6]]
+        chars = [c for c in chars if c][:4]
         if not chars:
-            notes.append(f"shot {n}: no valid character, added the farmer")
-            chars = [{"model": "Farmer", "anim": "Idle", "pos": [0, 0]}]
-        props = [fix_prop(p, notes, n) for p in (s.get("props") or [])[:4]]
+            raise Reject(f"shot {n} has no valid characters (use only the listed models)")
+        models = [c["model"] for c in chars]
+        focus = s.get("focus") if s.get("focus") in models else next((m for m in models if m in HUMANS), models[0])
+        if any(m in HUMANS for m in models):
+            human_shots += 1
+        choreograph(chars, focus, n, notes)
+        props = [fix_prop(p, allowed, notes, n) for p in (s.get("props") or [])[:4]]
         props = [p for p in props if p][:3]
-        env = s.get("env")
-        if env not in ENVS:
-            notes.append(f"shot {n}: environment '{env}' not available, used village")
-            env = "village"
+        env = s.get("env") if s.get("env") in ENVS else "village"
         title = s.get("title") if isinstance(s.get("title"), str) else ""
         if not re.fullmatch(r"[A-Za-z0-9 _\-]{2,40}", title or ""):
             title = f"Shot {n}"
-        shot = {"id": n, "title": title, "narration": text, "env": env, "characters": chars}
+        shot = {"id": n, "title": title, "narration": text, "env": env,
+                "visual": (s.get("visual") or "")[:200], "focus": focus,
+                "characters": [{k: v for k, v in c.items() if k != "action"} for c in chars]}
         if props:
             shot["props"] = props
-        shot["camera"] = fix_camera(s.get("camera"))
+        shot["camera"] = build_camera(s.get("camera"), chars, focus)
         shots.append(shot)
 
-    # the last shot must carry the disclaimer
+    if human_shots < int(cfg.get("min_human_shots", 0)):
+        raise Reject(f"only {human_shots} shots show a human character, at least {cfg['min_human_shots']} must "
+                     f"(use Farmer, King, Worker, Suit and the other human models in the story)")
     last = shots[-1]["narration"]
     if "शिक्षा" not in last or "सलाह" not in last:
         shots[-1]["narration"] = last.rstrip() + " " + cfg["disclaimer"]
         notes.append("disclaimer sentence added to the last shot")
-
     total = sum(len(s["narration"]) for s in shots)
     lo, hi = int(cfg["min_chars"]), int(cfg["max_chars"])
     if strict_length and not (lo <= total <= hi):
         raise Reject(f"total narration is {total} characters, it must be between {lo} and {hi} "
                      f"({'shorten' if total > hi else 'lengthen'} it)")
-
     thumbs = [i for i, s in enumerate(shots) if s["camera"].get("thumb")]
     for i in thumbs[1:]:
         del shots[i]["camera"]["thumb"]
     if not thumbs:
         shots[len(shots) // 2]["camera"]["thumb"] = True
-
     title = plan.get("title") if isinstance(plan.get("title"), str) else ""
     if not title.strip() or hindi_ratio(title) < 0.5:
         raise Reject("the 'title' must be a Hindi title")
-    desc = (plan.get("description") or "").strip()
-    clean = {
-        "title": title.strip()[:95],
-        "rate": "-8%",
-        "description": desc,
-        "credits": cfg["credits"],
-        "disclaimer": cfg["disclaimer"],
-        "shots": shots,
-    }
+    clean = {"title": title.strip()[:95], "rate": "-8%", "description": (plan.get("description") or "").strip(),
+             "credits": cfg["credits"], "disclaimer": cfg["disclaimer"], "shots": shots}
     return clean, notes, total
 
 
 # ------------------------------------------------------------------ prompt
-def build_prompt(cfg, topic, history, feedback):
+def build_prompt(cfg, topic, genre, history, feedback):
     cast = "\n".join(f"- {c['name']} = model {c['model']}: {c['role']}" for c in cfg["cast"])
     past = "\n".join(f"- {h.get('title', '')}" for h in history[-15:]) or "- (none yet)"
     example = {
-        "id": 4, "title": "First rule", "narration": "राजा ने पहला नियम बताया। ...",
-        "env": "village",
-        "characters": [{"model": "Farmer", "anim": "Idle", "pos": [-2.2, 0.3], "heading": 70},
-                       {"model": "King", "anim": "Interact", "pos": [0.3, 0], "heading": -70},
-                       {"model": "Fox", "anim": "Walk", "pos": [-6.0, 0], "move": [4.0, 0]}],
-        "props": [{"model": "Pot", "pos": [1.3, 0.2], "scale": 1.6}],
-        "camera": {"target": [0, 0, 1.2], "dist": 6.5, "dist_end": 5.0, "sweep": 25, "angle": -12}}
-    p = f"""You are the director of a daily 2.5-minute animated YouTube Short about money and finance awareness.
+        "id": 6, "title": "Storm night",
+        "visual": "Rain floods the field. Ramu stands calmly by his clay pot of savings while Shyam runs in panic.",
+        "narration": "एक रात तेज़ बारिश आई और खेत में पानी भर गया। रामू बोला, \"घबराओ मत, हमारे पास बचत है।\" श्याम घबराकर भागता आया।",
+        "env": "storm", "focus": "Farmer",
+        "characters": [
+            {"model": "Farmer", "action": "talk", "pos": [-1.5, 0.3]},
+            {"model": "Worker", "action": "run", "pos": [-6.0, 0.5], "move": [1.2, 0.5]},
+            {"model": "Cow", "action": "shock", "pos": [3.0, 1.5]}],
+        "props": [{"model": "CommonTree_2", "pos": [4.5, 4.0], "scale": 1.5}],
+        "camera": {"dist_end": 5.5, "sweep": -20}}
+    return f"""You are the director of a daily 2.5-minute animated YouTube Short. It is a STORY (not a lecture) that secretly teaches money awareness.
 Audience: {cfg['audience']}.
-Today's lesson: {topic}
+Lesson to teach: {topic}
+Story style today: {genre}
 
-Write ONE new short story that teaches this lesson, and direct every shot for a 3D renderer.
-
-STORY RULES
-- Exactly {cfg['shots']} shots. Narration language: {cfg['language']}.
-- Total narration across all shots: between {cfg['min_chars']} and {cfg['max_chars']} characters (count them). Each shot about 100-140 characters, 1-3 short sentences, easy to speak aloud.
-- Arc: hook in shot 1, a problem, the wise lesson, a clear example with small rupee numbers, a warning, a 3-point recap, then the last shot says the video is for education only, not investment or financial advice, and asks viewers to subscribe.
+STORY CRAFT (most important)
+- A real story with named characters from the cast: a hero with a wish, an obstacle, a tempting mistake, a clear consequence, and a clever fix. Show the lesson through EVENTS the viewer sees, never as a lecture. Only the last two shots may recap the lesson.
+- Shot plan for {cfg['shots']} shots: 1 hook (something happens at once), 2-3 the people and their problem, 4-5 the temptation or mistake, 6-8 the consequence (storm, scam, debt, loss), 9-10 the smart fix and the happy change, 11 three-point recap by the wise character, 12 education-only disclaimer and subscribe request.
+- Narration = a storyteller's voice, vivid, 1-3 short sentences (100-140 characters), with one or two spoken lines in quotes, for example रामू बोला, "...". Language: {cfg['language']}.
+- Total narration across all shots: between {cfg['min_chars']} and {cfg['max_chars']} characters. Count them.
+- Each shot is ONE visible event. The narration must describe exactly what the viewer sees, and each character's action must match it: if the text says someone runs, that character's action is "run" with a destination; if someone speaks, action "talk" and the others "listen"; surprise = "shock"; a fight = "fight" or "kick".
 - Educational only: never name stocks, funds, apps, banks or brands, never promise returns, never tell people to buy something.
-- Do not repeat these earlier stories, make the situation and ending different:
+- Make this story different from the earlier ones:
 {past}
 {('- Fix this problem from your last answer: ' + feedback) if feedback else ''}
 
-CAST (use these, you may add the village animals):
+CAST (use these names and models consistently; at least {cfg.get('min_human_shots', 8)} of the shots must show a human):
 {cast}
 
-ASSETS THE RENDERER HAS (use ONLY these names)
-- Human models: {', '.join(HUMANS)}   animations: {', '.join(HUMAN_ANIMS)}
-- Animal models: {', '.join(ANIMALS)}   animations: {', '.join(ANIMAL_ANIMS)}
-- Props: {', '.join(PROPS)} (CommonTree_* may have "grow":[start_scale,end_scale] to show a seed becoming a tree)
-- env: {', '.join(ENVS)} (village = day village, forest = green forest, storm = rain and dark sky)
+WHAT THE RENDERER CAN DO (use ONLY these)
+- Character "model": {', '.join(HUMANS)}, {', '.join(ANIMALS)}
+- Character "action" (pick one per character): {', '.join(ACTIONS)}
+   talk = gesturing speaker, listen = standing and listening, walk/run = moves from "pos" to "move",
+   shock = surprised, hurt = knocked back, fight/kick = attack, eat, sad (head low), celebrate, wave, jump, faint, sword, idle.
+- "move":[x,y] is REQUIRED for walk and run (the end point). Everyone else stands at "pos".
+- Positions: x from -6 to 6 (left to right), y from -1 to 5 (near to far). Keep standing characters at least 2 units apart. Walkers may start off-screen at x=-6.5 or 6.5. I will turn characters toward each other automatically.
+- "focus" = the model of the main character of the shot (the speaker or the one the event happens to).
+- env: {', '.join(ENVS)} (village = sunny village, forest = green forest, storm = rain and dark sky)
+- props (optional, background only): {', '.join(cfg.get('props_allowed') or DEFAULT_PROPS)}; CommonTree_* may have "grow":[start,end] to show a seed becoming a tree.
+- camera (optional): "dist_end" to push in, "sweep" -30..30, "angle" -15..15; put "thumb":true on exactly one shot, the most exciting one. I place the camera on the action automatically.
+- title: 2-4 English words. visual: one English sentence of what the viewer sees.
 
-SHOT FIELDS
-- title: 2-4 English words. narration: Hindi text spoken by the narrator.
-- characters: 1-4 per shot. pos=[x,y] with x from -6 to 6 and y from -1 to 5 (x left-right, y depth). heading = degrees the character faces (70 faces right, -70 faces left, 0 faces the camera). "move":[x,y] only with Walk/Run/Gallop, the end point of the walk.
-- Keep characters apart by at least 1.5 units. Put the speaker or the important character near the centre.
-- camera: target=[x,y,z] (z about 1.2), dist 5-10 (smaller = closer), optional dist_end (slow push-in), sweep (-30..30 degrees) and angle (-15..15). Vary the camera between shots. Put "thumb":true on exactly one shot, the most eye-catching.
-- Vary env, grouping and camera so the video does not look repetitive.
-
-Return ONLY JSON: {{"title": "<Hindi video title, max 90 characters, no clickbait lies>", "description": "<Hindi description, 2-3 sentences>", "shots": [ ... ]}}
+Return ONLY JSON: {{"title": "<Hindi video title, max 90 characters, honest, no clickbait lies>", "description": "<Hindi description, 2-3 sentences>", "shots": [ ... ]}}
 One shot looks like this:
 {json.dumps(example, ensure_ascii=False)}
 """
-    return p
 
 
 # ------------------------------------------------------------------ main
@@ -326,12 +428,11 @@ def main():
     ap.add_argument("--out-dir", default="plans")
     ap.add_argument("--topic", default="")
     ap.add_argument("--date", default="")
-    ap.add_argument("--models", default="", help="comma list; empty = best Gemini flash models your key sees")
+    ap.add_argument("--models", default="")
     ap.add_argument("--attempts", type=int, default=5)
-    ap.add_argument("--no-progress", action="store_true", help="do not move to the next topic")
+    ap.add_argument("--no-progress", action="store_true")
     ap.add_argument("--validate-only", default="")
     a = ap.parse_args()
-
     cfg = json.load(open(a.config, encoding="utf-8"))
 
     if a.validate_only:
@@ -340,8 +441,7 @@ def main():
             clean, notes, total = repair_plan(plan, cfg, strict_length=False)
         except Reject as e:
             sys.exit(f"INVALID: {e}")
-        print(f"Plan is usable: {len(clean['shots'])} shots, {total} characters "
-              f"(about {total / 10.4:.0f} s of voice).")
+        print(f"Plan is usable: {len(clean['shots'])} shots, {total} characters (about {total / 10.4:.0f} s of voice).")
         for n in notes:
             print(" fixed:", n)
         return
@@ -349,7 +449,6 @@ def main():
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key:
         sys.exit("FAIL: GEMINI_API_KEY is empty. Add it under Settings > Secrets > Actions.")
-
     prog = {"next_topic": 0, "history": []}
     if os.path.exists(a.progress):
         try:
@@ -362,9 +461,10 @@ def main():
     elif prog["next_topic"] < len(topics):
         topic = topics[prog["next_topic"]]
     else:
-        topic = ("Choose a NEW beginner money-awareness lesson for Indian villagers that is not "
-                 "in the earlier stories list")
-    print("Topic:", topic)
+        topic = "Choose a NEW beginner money-awareness lesson for Indian villagers that is not in the earlier stories list"
+    genres = cfg.get("genres") or ["a village folk tale"]
+    genre = genres[len(prog["history"]) % len(genres)]
+    print("Topic:", topic, "| style:", genre)
 
     models = pick_models(key, a.models)
     print("Gemini models:", ", ".join(models))
@@ -373,7 +473,7 @@ def main():
     for attempt in range(1, a.attempts + 1):
         print(f"Director attempt {attempt}/{a.attempts}", flush=True)
         try:
-            raw = ask_json(build_prompt(cfg, topic, prog["history"], feedback), models, key, state)
+            raw = ask_json(build_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state)
             plan, notes, total = repair_plan(raw, cfg, strict_length=True)
             break
         except Reject as e:
@@ -395,10 +495,8 @@ def main():
     while os.path.exists(path):
         path = os.path.join(a.out_dir, f"plan_{date}_{k}.json")
         k += 1
-    plan["topic"] = topic
-    plan["director_model"] = state["model"]
+    plan["topic"], plan["genre"], plan["director_model"] = topic, genre, state["model"]
     json.dump(plan, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-
     if not a.no_progress:
         if not a.topic and prog["next_topic"] < len(topics):
             prog["next_topic"] += 1
@@ -406,9 +504,13 @@ def main():
         json.dump(prog, open(a.progress, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
     est = total / 10.4
-    summary = (f"### Director result\n\n**{plan['title']}**\n\n- Plan file: `{path}`\n- Topic: {topic}\n"
+    summary = (f"### Director result\n\n**{plan['title']}**\n\n- Plan file: `{path}`\n- Topic: {topic}\n- Style: {genre}\n"
                f"- Model: {state['model']}\n- Shots: {len(plan['shots'])}\n"
-               f"- Narration: {total} characters, about {est:.0f} s of voice, about {est + 0.85 * len(plan['shots']):.0f} s video\n")
+               f"- Narration: {total} characters, about {est:.0f} s of voice, about {est + 0.85 * len(plan['shots']):.0f} s video\n\n"
+               "| Shot | Focus | Who does what |\n|---|---|---|\n")
+    for s in plan["shots"]:
+        who = ", ".join(f"{c['model']}:{c['anim']}" for c in s["characters"])
+        summary += f"| {s['id']} {s['title']} | {s['focus']} | {who} |\n"
     if notes:
         summary += "\nAuto-fixes:\n" + "\n".join(f"- {n}" for n in notes) + "\n"
     open("director_summary.md", "w", encoding="utf-8").write(summary)
