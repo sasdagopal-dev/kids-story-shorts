@@ -21,15 +21,15 @@ on:
           - male
           - female
       tts_engine:
-        description: "Voice engine (auto = Edge first, then Gemini if you added the key)"
+        description: "gemini = Gemini voice (one call for the whole story). edge = Microsoft voice. auto = Edge first"
         type: choice
-        default: auto
+        default: gemini
         options:
-          - auto
-          - edge
           - gemini
+          - edge
+          - auto
       rate:
-        description: "Speaking speed for the Edge voice (example: -8% slower, +0% normal)"
+        description: "Speaking speed (example: -8% slower, +0% normal)"
         default: "-8%"
       fps:
         description: "Frames per second to render"
@@ -37,26 +37,31 @@ on:
       quality:
         description: "balanced = good and fast. fast = quickest. high = best look, slowest"
         type: choice
-        default: balanced
+        default: high
         options:
+          - high
           - balanced
           - fast
-          - high
 
 jobs:
   # ------------------------------------------------------------ 1) the Hindi voice and timing
   prepare:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Get the code
         uses: actions/checkout@v4
 
-      - name: Install tools
+      - name: Install tools (with retry)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg
-          pip install edge-tts
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
+          for i in 1 2 3 4; do
+            pip install edge-tts && break
+            echo "pip failed, attempt $i"; sleep $((i*10))
+          done
 
       - name: Make the Hindi narration
         env:
@@ -69,12 +74,23 @@ jobs:
           QUALITY: ${{ inputs.quality }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          EXTRA="--on-fail silent"
+          EXTRA="--on-fail stop"
           if [ "$VOICE_MODE" = "silent_with_subtitles" ]; then EXTRA="--no-audio"; fi
+          # If the first run fails, run once more after a pause. Shots that already have
+          # a voice are kept, so the second run only makes the missing ones.
           python3 tts.py --plan "$PLAN_FILE" --gender "$GENDER" --engine "$ENGINE" \
-            --rate="$RATE" --fps "$VID_FPS" --quality "$QUALITY" $EXTRA
+            --rate="$RATE" --fps "$VID_FPS" --quality "$QUALITY" $EXTRA \
+          || { echo "Voice step failed, waiting 90 s and trying once more"; sleep 90; \
+               python3 tts.py --plan "$PLAN_FILE" --gender "$GENDER" --engine "$ENGINE" \
+                 --rate="$RATE" --fps "$VID_FPS" --quality "$QUALITY" $EXTRA; }
+
+      - name: Show voice summary
+        if: always()
+        run: |
+          [ -f tts_summary.md ] && cat tts_summary.md >> "$GITHUB_STEP_SUMMARY" || true
 
       - name: Save plan and audio
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: plan
@@ -105,15 +121,16 @@ jobs:
         with:
           name: plan
 
-      - name: Download the asset packs we need from the Release
-        continue-on-error: true
+      - name: Download the asset packs we need from the Release (with retry)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p asset_zips assets
-          gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips \
-            --pattern "animals*" --pattern "modular-men*" --pattern "stylized-nature*" \
-            || echo "Could not download the asset packs."
+          for i in 1 2 3 4; do
+            gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber \
+              --pattern "animals*" --pattern "modular-men*" --pattern "stylized-nature*" && break
+            echo "Release download failed, attempt $i"; sleep $((i*15))
+          done
           for z in asset_zips/*.zip; do
             [ -f "$z" ] || continue
             d="assets/$(basename "$z" .zip)"
@@ -121,30 +138,42 @@ jobs:
             unzip -q -o "$z" -d "$d"
             echo "Unpacked $z"
           done
+          if [ -z "$(ls -A assets)" ]; then
+            echo "ERROR: no asset packs were downloaded. Check that the release tagged 'assets' exists in this repo."
+            exit 1
+          fi
 
-      - name: Install system packages
+      - name: Install system packages (with retry)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y xvfb ffmpeg xz-utils unzip \
-            libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
-            libxfixes3 libgl1 libegl1 libgl1-mesa-dri
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y xvfb ffmpeg xz-utils unzip \
+              libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
+              libxfixes3 libgl1 libegl1 libgl1-mesa-dri && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
 
-      - name: Download Blender 3.6 LTS
+      - name: Download Blender 3.6 LTS (with retry)
         run: |
           mkdir -p "$HOME/blender"
-          curl -L -o blender.tar.xz https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
+          curl -L --retry 6 --retry-all-errors --retry-delay 10 -o blender.tar.xz \
+            https://download.blender.org/release/Blender3.6/blender-3.6.5-linux-x64.tar.xz
           tar -xf blender.tar.xz -C "$HOME/blender" --strip-components=1
           "$HOME/blender/blender" -b --version
 
-      - name: Render this part of the movie
+      - name: Render this part of the movie (one automatic retry)
         env:
           SHARD: ${{ matrix.shard }}
         run: |
           mkdir -p out
-          xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
-            -P movie_render.py -- \
-            --timeline timeline.json --story scene_plan_timed.json \
-            --assets . --out out --shard "$SHARD" --shards 6
+          ok=0
+          for i in 1 2; do
+            xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
+              -P movie_render.py -- \
+              --timeline timeline.json --story scene_plan_timed.json \
+              --assets . --out out --shard "$SHARD" --shards 6 && ok=1 && break
+            echo "Render attempt $i failed, trying again in 30 s"; sleep 30
+          done
+          [ "$ok" = 1 ] || exit 1
 
       - name: Pack this part into a small video file
         env:
@@ -189,22 +218,30 @@ jobs:
           merge-multiple: true
           path: segments
 
-      - name: Install tools
+      - name: Install tools (with retry)
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-noto-core
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-core && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
           fc-cache -f
           echo "Devanagari fonts found:"
           fc-list | grep -i "devanagari" | head -3 || echo "NO Devanagari font found"
 
-      - name: Check the new assemble script is present
+      - name: Check all 6 parts and the assemble script are present
         run: |
           if [ ! -f assemble_movie.py ]; then
             echo "ERROR: assemble_movie.py not found in the repo root on this branch."
             ls -la
             exit 1
           fi
-          grep -c -- "--video" assemble_movie.py
+          for i in 0 1 2 3 4 5; do
+            if [ ! -f "segments/segment_$i.mp4" ]; then
+              echo "ERROR: segments/segment_$i.mp4 is missing. Render part $i failed. Re-run that part, or run the whole workflow again."
+              ls -la segments
+              exit 1
+            fi
+          done
 
       - name: Join the parts and build the final video
         env:
