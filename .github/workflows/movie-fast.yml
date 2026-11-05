@@ -134,9 +134,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p asset_zips assets
+          # always: animals, men, nature. Only when the story uses a city street: buildings and cars.
+          PACKS="animals* modular-men* stylized-nature*"
+          if python3 -c "import json,sys; p=json.load(open('scene_plan_timed.json',encoding='utf-8')); sys.exit(0 if any(s.get('env')=='city' for s in p['shots']) else 1)"; then
+            PACKS="$PACKS downtown-city* car-fbx*"
+            echo "This story uses the city street: also downloading downtown-city and car-fbx"
+          fi
+          ARGS=()
+          for p in $PACKS; do ARGS+=(--pattern "$p"); done
           for i in 1 2 3 4; do
-            gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber \
-              --pattern "animals*" --pattern "modular-men*" --pattern "stylized-nature*" && break
+            gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber "${ARGS[@]}" && break
             echo "Release download failed, attempt $i"; sleep $((i*15))
           done
           for z in asset_zips/*.zip; do
@@ -178,7 +185,8 @@ jobs:
             xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
               -P movie_render.py -- \
               --timeline timeline.json --story scene_plan_timed.json \
-              --assets . --out out --shard "$SHARD" --shards 6 && ok=1 && break
+              --assets . --out out --shard "$SHARD" --shards 6 2>&1 | tee "render_log_$SHARD.txt"; \
+            [ "${PIPESTATUS[0]}" = 0 ] && ok=1 && break
             echo "Render attempt $i failed, trying again in 30 s"; sleep 30
           done
           [ "$ok" = 1 ] || exit 1
@@ -194,6 +202,7 @@ jobs:
             -i out/f_%06d.png -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p \
             "out/segment_${SHARD}.mp4"
           echo "Shard $SHARD: frames from $START, total $TOTAL" > "out/render_summary_${SHARD}.md"
+          grep -E "ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|\[warn\]" "render_log_${SHARD}.txt" >> "out/render_summary_${SHARD}.md" || true
           rm -f out/f_*.png
 
       - name: Save this part
