@@ -1,0 +1,555 @@
+{
+ "title": "मटके में रखा पैसा क्यों कम हो गया? महँगाई का सच्चा सबक़",
+ "rate": "-8%",
+ "description": "जानिए कैसे तिजोरी या ज़मीन में दबाकर रखा पैसा समय के साथ अपनी ताक़त खो देता है। रामू और श्याम की इस लोककथा से समझें महँगाई (इन्फ्लेशन) का असली सच।",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech.",
+ "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+ "shots": [
+  {
+   "id": 1,
+   "title": "Hidden Money Trap",
+   "narration": "मटके में रखा धन देखकर श्याम हँसा, पर बाज़ार में महँगाई देखकर चौंक गया। बिरजू बोला, \"100 रुपये में अब बस एक बोरी अनाज मिलेगा।\"",
+   "env": "city",
+   "visual": "Shyam opens his clay pot in the market while Birju points at expensive goods.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -1.5,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Beach",
+     "anim": "Interact",
+     "pos": [
+      1.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Casual_2",
+     "anim": "Idle_Neutral",
+     "pos": [
+      3.5,
+      1.0
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.5,
+     0.62,
+     1.2
+    ],
+    "dist": 9.2,
+    "dist_end": 4.5,
+    "sweep": 15,
+    "thumb": true
+   }
+  },
+  {
+   "id": 2,
+   "title": "King Reward",
+   "narration": "पाँच साल पहले राजा विक्रम ने रामू और श्याम को मेहनत के बदले सौ-सौ रुपये इनाम दिए। राजा बोले, \"इस धन का समझदारी से उपयोग करो।\"",
+   "env": "village",
+   "visual": "King Vikram gives money to Ramu and Shyam in the palace village court.",
+   "focus": "King",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      1.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -2.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.0,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.75,
+     1.2
+    ],
+    "dist": 8.5,
+    "dist_end": 5.0
+   }
+  },
+  {
+   "id": 3,
+   "title": "Different Choices",
+   "narration": "रामू ने तुरंत बिरजू व्यापारी से एक गाय और कुछ बीज खरीदे। श्याम ने रामू का मज़ाक उड़ाया और अपना पैसा अलग रख लिया।",
+   "env": "village",
+   "visual": "Ramu buys a cow from Birju while Shyam points and laughs.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Beach",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Cow",
+     "anim": "Idle",
+     "pos": [
+      3.5,
+      1.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      -4.0,
+      0.5
+     ],
+     "heading": 80
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.4,
+     0.7,
+     1.2
+    ],
+    "dist": 10.5,
+    "dist_end": 9.2
+   }
+  },
+  {
+   "id": 4,
+   "title": "Buried Coins",
+   "narration": "श्याम ने एक पुराना मटका लिया और सारे रुपये उसमें बंद करके ज़मीन में गाड़ दिए। श्याम बोला, \"मेरा पैसा यहाँ हमेशा सुरक्षित रहेगा।\"",
+   "env": "forest",
+   "visual": "Shyam buries his earthen pot into the dirt near a big tree.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "heading": 25
+    }
+   ],
+   "props": [
+    {
+     "model": "CommonTree_1",
+     "pos": [
+      2.5,
+      3.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.5,
+     1.2
+    ],
+    "dist": 6.0,
+    "dist_end": 4.7,
+    "angle": 10
+   }
+  },
+  {
+   "id": 5,
+   "title": "Passage Of Time",
+   "narration": "समय बीतता गया। रामू खेत में पसीना बहाता रहा और उसकी गाय दूध देने लगी। श्याम बिना काम किए मटके के पैसों पर घमंड करता रहा।",
+   "env": "village",
+   "visual": "Ramu works hard on his farm next to his cow while Shyam sits lazily.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Walk",
+     "pos": [
+      -4.0,
+      0.5
+     ],
+     "move": [
+      2.5,
+      0.0
+     ]
+    },
+    {
+     "model": "Cow",
+     "anim": "Eating",
+     "pos": [
+      2.5,
+      1.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      4.5,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.38,
+     0.62,
+     1.2
+    ],
+    "dist": 10.5
+   }
+  },
+  {
+   "id": 6,
+   "title": "News Of Inflation",
+   "narration": "गाँव में एक दिन यात्री आया और उसने महँगाई की खबर दी। यात्री बोला, \"बाज़ार में हर चीज़ के दाम दोगुने-तिगुने हो गए हैं!\"",
+   "env": "village",
+   "visual": "An adventurer brings warning news of high market prices to the villagers.",
+   "focus": "Adventurer",
+   "characters": [
+    {
+     "model": "Adventurer",
+     "anim": "Interact",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Casual_2",
+     "anim": "HitRecieve_2",
+     "pos": [
+      -2.5,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Casual_Hoodie",
+     "anim": "Idle_Neutral",
+     "pos": [
+      2.5,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.5,
+     1.2
+    ],
+    "dist": 9.2,
+    "dist_end": 8.0
+   }
+  },
+  {
+   "id": 7,
+   "title": "Shock At Market",
+   "narration": "श्याम दौड़ा-दौड़ा अपने मटके के पास गया और पूरे सौ रुपये निकालकर बाज़ार पहुँचा। बिरजू ने कहा, \"अब इतने में आधी बोरी भी मुश्किल है।\"",
+   "env": "city",
+   "visual": "Shyam runs into the market with his coins but Birju shakes his head in refusal.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Run",
+     "pos": [
+      -5.0,
+      0.5
+     ],
+     "move": [
+      4.0,
+      0.0
+     ]
+    },
+    {
+     "model": "Beach",
+     "anim": "Interact",
+     "pos": [
+      1.5,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     -1.5,
+     0.5,
+     1.2
+    ],
+    "dist": 10.4,
+    "dist_end": 4.0
+   }
+  },
+  {
+   "id": 8,
+   "title": "Weakened Purchasing Power",
+   "narration": "श्याम उदास होकर अपने नोटों को देखने लगा। सिक्के तो उतने ही थे, लेकिन उनकी खरीदारी करने की ताक़त बहुत कम हो चुकी थी।",
+   "env": "city",
+   "visual": "Shyam holds his coins with a sad face as he realizes their value has dropped.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Casual_2",
+     "anim": "Walk",
+     "pos": [
+      -5.0,
+      1.5
+     ],
+     "move": [
+      10.0,
+      0.0
+     ]
+    }
+   ],
+   "camera": {
+    "target": [
+     0.0,
+     0.83,
+     1.2
+    ],
+    "dist": 10.5
+   }
+  },
+  {
+   "id": 9,
+   "title": "Ramu Offers Help",
+   "narration": "रामू ने श्याम को अनाज दिया और समझाया। रामू बोला, \"आलसी पैसा ज़मीन में पड़े-पड़े महँगाई की वजह से अपनी ताक़त खो देता है।\"",
+   "env": "village",
+   "visual": "Ramu gives grain to Shyam and explains how money loses purchasing power if hidden.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Interact",
+     "pos": [
+      -1.5,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      1.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Cow",
+     "anim": "Idle",
+     "pos": [
+      3.5,
+      1.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.5,
+     0.75,
+     1.2
+    ],
+    "dist": 9.2,
+    "dist_end": 8.0
+   }
+  },
+  {
+   "id": 10,
+   "title": "Working Together",
+   "narration": "श्याम को अपनी गलती समझ आ गई। उसने बचा हुआ धन काम में लगाया और रामू के साथ मिलकर मेहनत से खेती और व्यापार शुरू किया।",
+   "env": "village",
+   "visual": "Shyam and Ramu happily celebrate and work together on the farm.",
+   "focus": "Worker",
+   "characters": [
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      1.5,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      -1.5,
+      0.5
+     ],
+     "heading": 80
+    }
+   ],
+   "camera": {
+    "target": [
+     0.5,
+     0.5,
+     1.2
+    ],
+    "dist": 7.8
+   }
+  },
+  {
+   "id": 11,
+   "title": "Three Wisdom Keys",
+   "narration": "राजा विक्रम ने समझाया, \"पहला, तिजोरी में रखा पैसा महँगाई से घटता है। दूसरा, दाम हमेशा बढ़ते हैं। तीसरा, धन को काम पर लगाना ही असली सुरक्षा है।\"",
+   "env": "village",
+   "visual": "King Vikram rides his white horse and speaks the three main money lessons.",
+   "focus": "King",
+   "characters": [
+    {
+     "model": "King",
+     "anim": "Interact",
+     "pos": [
+      -1.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Horse_White",
+     "anim": "Idle",
+     "pos": [
+      1.5,
+      1.0
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Farmer",
+     "anim": "Idle_Neutral",
+     "pos": [
+      -4.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "Worker",
+     "anim": "Idle_Neutral",
+     "pos": [
+      4.0,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.1,
+     0.6,
+     1.2
+    ],
+    "dist": 10.5,
+    "dist_end": 9.2,
+    "sweep": -15
+   }
+  },
+  {
+   "id": 12,
+   "title": "Educational Note",
+   "narration": "यह कहानी केवल वित्तीय जागरूकता के लिए है, किसी निवेश की सलाह नहीं। पैसे की ताक़त समझें और ऐसी कहानियों के लिए सब्सक्राइब करें। यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+   "env": "village",
+   "visual": "Ramu, Shyam, and King Vikram wave at the viewer with bright smiles.",
+   "focus": "Farmer",
+   "characters": [
+    {
+     "model": "Farmer",
+     "anim": "Wave",
+     "pos": [
+      -2.0,
+      0.5
+     ],
+     "heading": 80
+    },
+    {
+     "model": "King",
+     "anim": "Wave",
+     "pos": [
+      0.0,
+      0.5
+     ],
+     "heading": -80
+    },
+    {
+     "model": "Worker",
+     "anim": "Wave",
+     "pos": [
+      2.0,
+      0.5
+     ],
+     "heading": -80
+    }
+   ],
+   "camera": {
+    "target": [
+     -0.5,
+     0.5,
+     1.2
+    ],
+    "dist": 8.5
+   }
+  }
+ ],
+ "topic": "Inflation: why money kept idle loses value slowly",
+ "genre": "a village folk tale with a clever twist, like the Panchatantra",
+ "director_model": "gemini-3.6-flash"
+}

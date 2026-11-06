@@ -1,5 +1,5 @@
 {
- "next_topic": 6,
+ "next_topic": 7,
  "history": [
   {
    "date": "2026-11-05",
@@ -36,6 +36,12 @@
    "title": "तूफ़ान और सही बजट: ज़रूरत, चाहत और बचत का नियम",
    "topic": "Simple budgeting: needs, wants and savings",
    "file": "plans/plan_2026-11-05_6.json"
+  },
+  {
+   "date": "2026-11-06",
+   "title": "मटके में रखा पैसा क्यों कम हो गया? महँगाई का सच्चा सबक़",
+   "topic": "Inflation: why money kept idle loses value slowly",
+   "file": "plans/plan_2026-11-06.json"
   }
  ]
 }
