@@ -1,0 +1,90 @@
+name: Shorts - daily (Gemini director, then voice and render)
+
+on:
+  schedule:
+    - cron: "30 2 * * *"        # 08:00 India time, every day
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Optional: your own lesson topic (empty = the next topic from animal_studio.json)"
+        default: ""
+      language:
+        description: "Narration language"
+        type: choice
+        default: English
+        options: [English, Hindi]
+      voice_gender:
+        description: "Narrator"
+        type: choice
+        default: male
+        options: [male, female]
+      quality:
+        description: "Render quality"
+        type: choice
+        default: high
+        options: [high, ultra, balanced, fast]
+      only_plan:
+        description: "Only write the story and plan, do not render (for testing)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: shorts-daily
+  cancel-in-progress: false
+
+jobs:
+  director:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Gemini writes and directs today's story (with retry)
+        id: plan
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TOPIC: ${{ inputs.topic }}
+          LANGUAGE: ${{ inputs.language || 'English' }}
+        run: |
+          ok=0
+          for i in 1 2 3; do
+            if [ -n "$TOPIC" ]; then
+              python3 story_director.py --language "$LANGUAGE" --topic "$TOPIC" && ok=1 && break
+            else
+              python3 story_director.py --language "$LANGUAGE" && ok=1 && break
+            fi
+            echo "Director attempt $i failed, waiting 90 s"; sleep 90
+          done
+          [ "$ok" = 1 ] || { echo "Director failed 3 times"; exit 1; }
+
+      - name: Show the story and direction
+        if: always()
+        run: |
+          [ -f director_report.md ] && cat director_report.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Save the plan in the repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git add plans studio_progress.json
+          git commit -m "Daily plan ${{ steps.plan.outputs.plan_file }}" || echo "Nothing to commit"
+          for i in 1 2 3; do
+            git pull --rebase origin "${{ github.ref_name }}" && git push && break
+            sleep 10
+          done
+
+      - name: Start voice and render
+        if: ${{ inputs.only_plan != true }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PLAN: ${{ steps.plan.outputs.plan_file }}
+          GENDER: ${{ inputs.voice_gender || 'male' }}
+          QUALITY: ${{ inputs.quality || 'high' }}
+        run: |
+          gh workflow run shorts-render.yml --ref "${{ github.ref_name }}" \
+            -f plan_file="$PLAN" -f voice_gender="$GENDER" -f quality="$QUALITY"
+          echo "Render started for $PLAN. Follow it in Actions; the Short is the artifact shorts-final." >> "$GITHUB_STEP_SUMMARY"
