@@ -1,0 +1,51 @@
+{
+  "language": "English",
+  "title_suffix": " | Money Kingdom Stories",
+  "target_seconds": 150,
+  "shots": 20,
+  "targets": {
+    "English": {"unit": "words", "shot": [10, 22], "total": [290, 325]},
+    "Hindi":   {"unit": "chars", "shot": [55, 105], "total": [1350, 1650]}
+  },
+  "disclaimer": {
+    "English": "This story is for education only. It is not financial or investment advice.",
+    "Hindi": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।"
+  },
+  "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech. Story and images are AI generated.",
+  "cast": [
+    {"id": "lakshmi", "name": "Lakshmi", "model": "Cow", "role": "gentle, hard-working cow, the hero who learns to save"},
+    {"id": "ashwa", "name": "King Ashwa", "model": "Horse_White", "role": "wise white horse king who teaches by asking questions"},
+    {"id": "bhola", "name": "Bhola", "model": "Donkey", "role": "cheerful donkey who spends everything and learns the hard way"},
+    {"id": "chintu", "name": "Chintu", "model": "Fox", "role": "smooth-talking fox who sells get-rich-quick tricks"},
+    {"id": "seth", "name": "Seth Bhediya", "model": "Wolf", "role": "greedy wolf moneylender with huge interest"},
+    {"id": "mohan", "name": "Mohan", "model": "Bull", "role": "strong, honest bull who works in the fields"},
+    {"id": "meera", "name": "Meera", "model": "Deer", "role": "young curious deer who asks good questions"},
+    {"id": "dev", "name": "Elder Dev", "model": "Stag", "role": "old stag who keeps the village savings box"},
+    {"id": "gudiya", "name": "Gudiya", "model": "Alpaca", "role": "cheerful alpaca trader in the market clearing"},
+    {"id": "moti", "name": "Moti", "model": "ShibaInu", "role": "small loyal dog, shopkeeper's helper and messenger"},
+    {"id": "tuffy", "name": "Tuffy", "model": "Husky", "role": "playful husky, Bhola's friend"},
+    {"id": "tej", "name": "Tej", "model": "Horse", "role": "fast brown horse who carries news"}
+  ],
+  "topics": [
+    "Pay yourself first: save a part of every income before spending",
+    "Emergency fund: why every family needs one before a bad day comes",
+    "Compound interest: a small seed becomes a big tree with time",
+    "Get-rich-quick scams: the red flags of 'double your money' promises",
+    "Good debt versus bad debt: why very high interest traps people",
+    "Needs versus wants: festival spending and simple budgeting",
+    "Inflation: why money kept idle slowly buys less",
+    "Insurance: protecting the family from one bad day",
+    "Start early: two friends who began saving at different ages",
+    "Small regular investing and patience (education only, no product names)",
+    "The minimum-due trap: why paying only a little on a loan or card costs more",
+    "Do not put all your savings in one basket"
+  ],
+  "genres": [
+    "a fable in the Panchatantra style with a clever twist",
+    "a drama in the king's court where the king tests two friends",
+    "a market-day adventure with a trader, a trickster fox and a crowd",
+    "a journey story: a messenger crosses forest, river and storm to deliver a warning",
+    "a festival story that ends happily after one costly mistake",
+    "a rescue story: a flood or storm shows who saved and who did not"
+  ]
+}
