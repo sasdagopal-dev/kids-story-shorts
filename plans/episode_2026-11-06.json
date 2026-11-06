@@ -1,0 +1,928 @@
+{
+ "version": 3,
+ "language": "English",
+ "title": "The Secret of the Golden Jar | Panchatantra Money Lesson | Money Kingdom Stories",
+ "description": "When hard times strike the meadow, Lakshmi the cow learns a powerful financial secret from King Ashwa. Discover why paying yourself first is the key to financial freedom in this fun Panchatantra fable!",
+ "tags": [
+  "panchatantra",
+  "money smarts",
+  "pay yourself first",
+  "financial literacy",
+  "savings tips",
+  "animation short",
+  "indian fables",
+  "storytelling",
+  "personal finance",
+  "education"
+ ],
+ "disclaimer": "This story is for education only. It is not financial or investment advice.",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech. Story and images are AI generated.",
+ "target_seconds": 150,
+ "cast": [
+  {
+   "id": "bhola",
+   "name": "Bhola",
+   "model": "Donkey",
+   "role": "cheerful donkey who spends everything and learns the hard way"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "gentle, hard-working cow, the hero who learns to save"
+  },
+  {
+   "id": "chintu",
+   "name": "Chintu",
+   "model": "Fox",
+   "role": "smooth-talking fox who sells get-rich-quick tricks"
+  },
+  {
+   "id": "ashwa",
+   "name": "King Ashwa",
+   "model": "Horse_White",
+   "role": "wise white horse king who teaches by asking questions"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Crying Donkey",
+   "look": "meadow_day",
+   "narration": "Bhola the donkey wept beside a huge heap of shiny, useless painted pebbles.",
+   "visual": "Bhola the donkey weeps sorrowfully beside a useless pile of brightly painted pebbles.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bhola",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      -0.5,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      },
+      {
+       "action": "talk",
+       "at": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Empty Pockets",
+   "look": "meadow_day",
+   "narration": "\"I earned one hundred rupees, but spent every paisa, and now I am starving!\" he cried.",
+   "visual": "Bhola throws his hooves up in utter despair as he cries aloud.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bhola",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      -0.5,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Hardworking Cow",
+   "look": "meadow_day",
+   "narration": "Nearby, gentle Lakshmi the cow pulled her heavy milk cart under the bright morning sun.",
+   "visual": "Lakshmi the cow enters pulling her heavy milk cart into the sunny meadow.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.8,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        -0.8,
+        2.2
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Lakshmi's Dream",
+   "look": "golden_sunset",
+   "narration": "Lakshmi worked hard every single day, dreaming of buying a soft straw barn for winter.",
+   "visual": "Lakshmi gazes warmly toward a cozy wooden barn silhouette at sunset.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      },
+      {
+       "action": "celebrate",
+       "at": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Daily Earnings",
+   "look": "meadow_day",
+   "narration": "Every evening, market traders paid her one hundred rupees for her delicious fresh milk.",
+   "visual": "Lakshmi holds her earnings of shiny hundred rupee notes with pride.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.8,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      },
+      {
+       "action": "celebrate",
+       "at": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Enter the Fox",
+   "look": "meadow_day",
+   "narration": "But Chintu the sly fox hurried into the market, shouting about magical glowing flowers.",
+   "visual": "Chintu the sly fox runs into the clearing waving a glowing magic flower.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "pan",
+    "focus": "chintu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "chintu",
+     "model": "Fox",
+     "pos": [
+      0.5,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        0.5,
+        2.2
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.5
+      }
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -1.2,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "The Fox's Pitch",
+   "look": "meadow_day",
+   "narration": "\"Buy my rare sweet flowers now! Spend your coins today, live like a king!\" Chintu sang.",
+   "visual": "Chintu dances around, tempting the animals to buy his flashy tricks.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "chintu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "chintu",
+     "model": "Fox",
+     "pos": [
+      0.5,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      },
+      {
+       "action": "celebrate",
+       "at": 0.5
+      }
+     ]
+    },
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      -1.0,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      },
+      {
+       "action": "shock",
+       "at": 0.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Foolish Spending",
+   "look": "meadow_day",
+   "narration": "Bhola excitedly ran over and threw all his hundred rupees at Chintu for one flower.",
+   "visual": "Bhola excitedly runs over and hands all his money to Chintu.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "bhola",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      -0.3,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        -0.3,
+        2.2
+       ]
+      },
+      {
+       "action": "celebrate",
+       "at": 0.5
+      }
+     ]
+    },
+    {
+     "id": "chintu",
+     "model": "Fox",
+     "pos": [
+      0.5,
+      4.2
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Lakshmi Tempted",
+   "look": "meadow_day",
+   "narration": "Lakshmi almost gave her hard-earned coins to Chintu too, wanting the beautiful sparkling petals.",
+   "visual": "Lakshmi walks closer, staring greedily at the magical glowing petals.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.2,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      },
+      {
+       "action": "walk",
+       "at": 0.4,
+       "to": [
+        -0.2,
+        2.0
+       ]
+      }
+     ]
+    },
+    {
+     "id": "chintu",
+     "model": "Fox",
+     "pos": [
+      1.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "The Storm Hits",
+   "look": "storm_dusk",
+   "narration": "Suddenly, dark storm clouds rolled in, and Chintu’s flower melted into plain worthless mud!",
+   "visual": "Dark storm clouds gather; Chintu flees as his flower turns into worthless mud.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "pull_out",
+    "focus": "bhola",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "chintu",
+     "model": "Fox",
+     "pos": [
+      2.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.0
+      },
+      {
+       "action": "run",
+       "at": 0.3,
+       "to": [
+        2.4,
+        3.0
+       ]
+      }
+     ]
+    },
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      -0.8,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Bhola's Misery",
+   "look": "storm_dusk",
+   "narration": "Cold rain poured down as hungry Bhola shivered, holding dirty mud with no money left.",
+   "visual": "Bhola shivers in rain with dirty mud on his face and empty pockets.",
+   "camera": {
+    "framing": "extreme_close",
+    "angle": "high",
+    "move": "static",
+    "focus": "bhola",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      },
+      {
+       "action": "hurt",
+       "at": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Lakshmi's Realization",
+   "look": "storm_dusk",
+   "narration": "Lakshmi gasped in shock, realizing how quickly spent money vanishes when trouble strikes the forest.",
+   "visual": "Lakshmi gasps in shock, clutching her purse tightly in the rain.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.0
+      },
+      {
+       "action": "sad",
+       "at": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "King Ashwa Appears",
+   "look": "riverbank_dawn",
+   "narration": "King Ashwa the white horse stepped forward gracefully, looking gently at shivering Bhola and Lakshmi.",
+   "visual": "King Ashwa the white horse walks forward gracefully as dawn breaks.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "ashwa",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ashwa",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.0,
+        2.2
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.6
+      }
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      }
+     ]
+    },
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "The Golden Rule",
+   "look": "riverbank_dawn",
+   "narration": "\"Listen carefully,\" Ashwa said. \"Whenever you earn one hundred rupees, pay yourself first!\"",
+   "visual": "King Ashwa speaks with quiet wisdom, pointing to a golden clay jar.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "ashwa",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ashwa",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      }
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      }
+     ]
+    }
+   ],
+   "thumb": true
+  },
+  {
+   "id": 15,
+   "title": "Save Twenty Rupees",
+   "look": "riverbank_dawn",
+   "narration": "\"Put twenty rupees into your savings jar immediately, before buying grass, toys, or treats.\"",
+   "visual": "Ashwa demonstrates dropping twenty rupees into the clay savings jar.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "ashwa",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ashwa",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      }
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      },
+      {
+       "action": "talk",
+       "at": 0.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Spend the Rest",
+   "look": "riverbank_dawn",
+   "narration": "\"Spend only the remaining eighty rupees. Your future self must eat before anyone else gets paid!\"",
+   "visual": "Ashwa points to eighty remaining rupees while Lakshmi nods with understanding.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "orbit",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "ashwa",
+     "model": "Horse_White",
+     "pos": [
+      -0.5,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      }
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.0,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      },
+      {
+       "action": "celebrate",
+       "at": 0.6
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Lakshmi Saves First",
+   "look": "forest_day",
+   "narration": "Lakshmi smiled brightly, taking twenty rupees from her earnings and hiding it safely inside a hollow tree.",
+   "visual": "Lakshmi walks to a hollow tree trunk and carefully saves twenty rupees.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.0,
+        2.0
+       ]
+      },
+      {
+       "action": "celebrate",
+       "at": 0.5
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Warm Winter Barn",
+   "look": "night_moon",
+   "narration": "Months later, when winter arrived, Lakshmi comfortably sat in her warm, cozy straw barn.",
+   "visual": "During snowy winter, Lakshmi rests comfortably inside her strong wooden straw barn.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "pull_out",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      6.7,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        1.7,
+        2.5
+       ],
+       "at": 0.0
+      },
+      {
+       "action": "idle"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "The Three Rules",
+   "look": "forest_day",
+   "narration": "Remember: pay yourself first, save twenty rupees from every hundred, and protect your future family!",
+   "visual": "Lakshmi, Ashwa, and a wiser Bhola stand together happily under the tree.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "crane_up",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "talk",
+       "at": 0.0
+      }
+     ]
+    },
+    {
+     "id": "ashwa",
+     "model": "Horse_White",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen",
+       "at": 0.0
+      }
+     ]
+    },
+    {
+     "id": "bhola",
+     "model": "Donkey",
+     "pos": [
+      1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Disclaimer & Subscribe",
+   "look": "forest_day",
+   "narration": "This story is for education only, not financial advice. Subscribe to our channel for more wise fables!",
+   "visual": "Lakshmi waves cheerfully to the audience with a big friendly smile.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.0
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "topic": "Pay yourself first: save a part of every income before spending",
+ "genre": "a fable in the Panchatantra style with a clever twist",
+ "director_model": "gemini-3.7-flash"
+}
