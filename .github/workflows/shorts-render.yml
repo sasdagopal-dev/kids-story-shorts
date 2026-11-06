@@ -1,0 +1,259 @@
+name: Shorts - make the video from a plan (voice, 6 parallel renders, final)
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_file:
+        description: "Plan file, e.g. plans/episode_2026-11-06.json (empty = the newest plan)"
+        default: ""
+      voice_gender:
+        description: "Narrator"
+        type: choice
+        default: male
+        options: [male, female]
+      voice_mode:
+        description: "auto = one call, then smaller groups only if a cut is doubtful (recommended)"
+        type: choice
+        default: auto
+        options: [auto, single, chunks, per_shot]
+      quality:
+        description: "high = 720x1280, 32 samples. ultra = 1080x1920. balanced/fast = quicker"
+        type: choice
+        default: high
+        options: [high, ultra, balanced, fast]
+      fps:
+        description: "Animation frames per second (15 = smooth, 24 = smoothest but about 1.6x slower)"
+        default: "15"
+      forward_offset:
+        description: "Only if animals face the wrong way in the preview: degrees to add (try 180, 90 or -90)"
+        default: "0"
+
+jobs:
+  # ------------------------------------------------------------ 1) voice and the exact timeline
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Choose the plan
+        id: plan
+        env:
+          PLAN_IN: ${{ inputs.plan_file }}
+        run: |
+          PLAN="$PLAN_IN"
+          [ -z "$PLAN" ] && PLAN=$(ls plans/episode_*.json 2>/dev/null | sort | tail -1)
+          if [ -z "$PLAN" ] || [ ! -f "$PLAN" ]; then
+            echo "ERROR: no plan file found. Run the Daily workflow first, or type a plan file name."; exit 1
+          fi
+          echo "Using plan: $PLAN"
+          echo "plan=$PLAN" >> "$GITHUB_OUTPUT"
+
+      - name: Install ffmpeg (with retry)
+        run: |
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
+
+      - name: Check the scripts are the new ones
+        run: |
+          for f in voice_maker.py shorts_core.py shorts_render.py shorts_assemble.py get_blender_v2.sh; do
+            [ -f "$f" ] || { echo "ERROR: $f is missing from the repo root."; exit 1; }
+          done
+
+      - name: Make the narration and the exact 2.5 minute timeline (with retry)
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PLAN: ${{ steps.plan.outputs.plan }}
+          GENDER: ${{ inputs.voice_gender }}
+          MODE: ${{ inputs.voice_mode }}
+          FPS: ${{ inputs.fps }}
+          QUALITY: ${{ inputs.quality }}
+        run: |
+          ok=0
+          for i in 1 2 3; do
+            python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --mode "$MODE" --fps "$FPS" --quality "$QUALITY" \
+              && ok=1 && break
+            echo "Voice step failed (attempt $i). Finished shots are kept. Waiting 120 s."; sleep 120
+          done
+          [ "$ok" = 1 ] || exit 1
+
+      - name: Show voice report
+        if: always()
+        run: |
+          [ -f voice_report.md ] && cat voice_report.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Save plan and audio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plan
+          path: |
+            scene_plan_timed.json
+            timeline.json
+            voice_report.md
+            audio/
+          if-no-files-found: warn
+
+  # ------------------------------------------------------------ 2) six parallel renders
+  render:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+
+      - name: Download the animal and nature packs (with retry)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p asset_zips assets
+          for i in 1 2 3 4; do
+            gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber \
+              --pattern "animals*" --pattern "stylized-nature*" && break
+            echo "Release download failed, attempt $i"; sleep $((i*15))
+          done
+          for z in asset_zips/*.zip; do
+            [ -f "$z" ] || continue
+            d="assets/$(basename "$z" .zip)"
+            mkdir -p "$d"
+            unzip -q -o "$z" -d "$d"
+            echo "Unpacked $z"
+          done
+          if [ -z "$(ls -A assets)" ]; then
+            echo "ERROR: no asset packs downloaded. The release tagged 'assets' must hold animals* and stylized-nature* zips."
+            exit 1
+          fi
+
+      - name: Install system packages (with retry)
+        run: |
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y xvfb ffmpeg xz-utils unzip \
+              libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
+              libxfixes3 libgl1 libegl1 libgl1-mesa-dri && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
+
+      - name: Keep Blender between runs
+        uses: actions/cache@v4
+        with:
+          path: ~/blender
+          key: blender-3.6.5-linux
+
+      - name: Get Blender 3.6 LTS (several mirrors)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash ./get_blender_v2.sh
+
+      - name: Render this part (3 automatic attempts, finished frames are kept)
+        env:
+          SHARD: ${{ matrix.shard }}
+          MODEL_FORWARD_OFFSET: ${{ inputs.forward_offset }}
+        run: |
+          mkdir -p out
+          ok=0
+          for i in 1 2 3; do
+            xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
+              -P shorts_render.py -- \
+              --timeline timeline.json --story scene_plan_timed.json \
+              --assets . --out out --shard "$SHARD" --shards 6 2>&1 | tee "render_log_$SHARD.txt"; \
+            [ "${PIPESTATUS[0]}" = 0 ] && ok=1 && break
+            echo "Render attempt $i failed, trying again in 30 s"; sleep 30
+          done
+          [ "$ok" = 1 ] || exit 1
+
+      - name: Pack this part into a video file
+        env:
+          FPS: ${{ inputs.fps }}
+          SHARD: ${{ matrix.shard }}
+        run: |
+          TOTAL=$(python3 -c "import json;print(json.load(open('timeline.json'))['total_frames'])")
+          START=$((TOTAL * SHARD / 6))
+          ffmpeg -y -loglevel error -framerate "$FPS" -start_number "$START" -i out/f_%06d.png \
+            -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p "out/segment_${SHARD}.mp4"
+          echo "Shard $SHARD: frames from $START, total $TOTAL" > "out/render_summary_${SHARD}.md"
+          grep -E "SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|Finished" "render_log_${SHARD}.txt" >> "out/render_summary_${SHARD}.md" || true
+          rm -f out/f_*.png
+
+      - name: Save this part
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: segment-${{ matrix.shard }}
+          path: |
+            out/segment_${{ matrix.shard }}.mp4
+            out/render_summary_${{ matrix.shard }}.md
+
+  # ------------------------------------------------------------ 3) final video, subtitle files, upload data
+  assemble:
+    needs: render
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: segment-*
+          merge-multiple: true
+          path: segments
+
+      - name: Install ffmpeg (with retry)
+        run: |
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y ffmpeg && break
+            echo "apt failed, attempt $i"; sleep $((i*10))
+          done
+
+      - name: Check all 6 parts are present
+        run: |
+          for i in 0 1 2 3 4 5; do
+            [ -f "segments/segment_$i.mp4" ] || { echo "ERROR: part $i is missing. Re-run the failed render job, then this one."; ls -la segments; exit 1; }
+          done
+
+      - name: Join the parts and make the final video
+        run: |
+          mkdir -p out
+          : > list.txt
+          for i in 0 1 2 3 4 5; do echo "file '$PWD/segments/segment_$i.mp4'" >> list.txt; done
+          ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy out/video_all.mp4
+          MUSIC=$(find music -type f -iname "*.mp3" 2>/dev/null | head -1 || true)
+          python3 shorts_assemble.py --plan scene_plan_timed.json --timeline timeline.json \
+            --video out/video_all.mp4 --out out/final_shorts.mp4 --music "$MUSIC"
+          rm -f out/video_all.mp4
+
+      - name: Show summary
+        if: always()
+        run: |
+          [ -f voice_report.md ] && cat voice_report.md >> "$GITHUB_STEP_SUMMARY"
+          for f in segments/render_summary_*.md; do
+            [ -f "$f" ] || continue
+            echo "### Part $(basename "$f" .md | sed 's/render_summary_//')" >> "$GITHUB_STEP_SUMMARY"
+            cat "$f" >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      - name: Save the Short
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts-final
+          path: |
+            out/final_shorts.mp4
+            out/subtitles.srt
+            out/subtitles.vtt
+            out/youtube_meta.json
+            out/thumbnail.jpg
+            voice_report.md
+            scene_plan_timed.json
