@@ -1,0 +1,99 @@
+name: Shorts - quick picture check (no voice, about 10 minutes)
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan_file:
+        description: "Plan file (empty = the newest plan in plans/)"
+        default: ""
+      quality:
+        description: "fast = small and quick"
+        type: choice
+        default: fast
+        options: [fast, balanced, high]
+      forward_offset:
+        description: "If animals face the wrong way: degrees to add (try 180, 90 or -90)"
+        default: "0"
+
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Choose the plan and make a timeline without voice
+        env:
+          PLAN_IN: ${{ inputs.plan_file }}
+          QUALITY: ${{ inputs.quality }}
+        run: |
+          PLAN="$PLAN_IN"
+          [ -z "$PLAN" ] && PLAN=$(ls plans/episode_*.json 2>/dev/null | sort | tail -1)
+          [ -f "$PLAN" ] || { echo "ERROR: no plan file found."; exit 1; }
+          echo "Using plan: $PLAN"
+          python3 preview_timeline.py --plan "$PLAN" --quality "$QUALITY"
+          cat preview_table.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Download the animal and nature packs (with retry)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p asset_zips assets
+          for i in 1 2 3 4; do
+            gh release download assets --repo "$GITHUB_REPOSITORY" --dir asset_zips --clobber \
+              --pattern "animals*" --pattern "stylized-nature*" && break
+            echo "Release download failed, attempt $i"; sleep $((i*15))
+          done
+          for z in asset_zips/*.zip; do
+            [ -f "$z" ] || continue
+            d="assets/$(basename "$z" .zip)"; mkdir -p "$d"; unzip -q -o "$z" -d "$d"; echo "Unpacked $z"
+          done
+          [ -n "$(ls -A assets)" ] || { echo "ERROR: no asset packs downloaded."; exit 1; }
+
+      - name: Install system packages (with retry)
+        run: |
+          for i in 1 2 3 4; do
+            sudo apt-get update && sudo apt-get install -y xvfb ffmpeg xz-utils unzip \
+              libxi6 libxrender1 libxkbcommon0 libsm6 libxxf86vm1 \
+              libxfixes3 libgl1 libegl1 libgl1-mesa-dri && break
+            sleep $((i*10))
+          done
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/blender
+          key: blender-3.6.5-linux
+
+      - name: Get Blender 3.6 LTS (several mirrors)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash ./get_blender_v2.sh
+
+      - name: Render 3 pictures per shot (with retry)
+        env:
+          MODEL_FORWARD_OFFSET: ${{ inputs.forward_offset }}
+        run: |
+          mkdir -p out
+          ok=0
+          for i in 1 2 3; do
+            xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 -P shorts_render.py -- \
+              --timeline timeline.json --story scene_plan_timed.json --assets . --out out --sample-only \
+              2>&1 | tee render_log.txt; \
+            [ "${PIPESTATUS[0]}" = 0 ] && ok=1 && break
+            echo "Attempt $i failed, trying again in 30 s"; sleep 30
+          done
+          [ "$ok" = 1 ] || exit 1
+          {
+            echo "### Render report"
+            grep -E "SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS" render_log.txt || echo "no problems reported"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save the pictures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-pictures
+          path: |
+            out/*.png
+            preview_table.md
+            render_log.txt
