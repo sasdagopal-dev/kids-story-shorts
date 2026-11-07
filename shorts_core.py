@@ -28,13 +28,13 @@ def kind_of(model):
 
 
 def body_len(model):
-    """Nose to tail length in metres (about)."""
-    return TARGET_HEIGHT.get(model, 1.5) * (1.25 if model in CANINE else 1.12)
+    """Nose to rump in metres (without the tail)."""
+    return TARGET_HEIGHT.get(model, 1.5) * (1.5 if model in CANINE else 1.2)
 
 
-def min_sep(model_a, model_b):
-    """Smallest allowed distance between the centres of two animals."""
-    return 0.5 * (body_len(model_a) + body_len(model_b)) + 0.1
+def min_sep(model_a, model_b, extra=0.0):
+    """Smallest allowed distance between the centres of two animals (nose to nose room included)."""
+    return 0.5 * (body_len(model_a) + body_len(model_b)) + 0.45 + extra
 
 
 # action word -> clip per kind, and speed in m/s (0 = stays where it is)
@@ -92,7 +92,7 @@ LOOKS = {
                       trees=["DeadTree_1", "DeadTree_2", "DeadTree_3", "DeadTree_4", "CommonTree_1"], n_trees=12,
                       extras=["Bush_Common", "Grass_Wispy_Tall", "Mushroom_Common"], n_extras=10,
                       decor=["Grass_Common_Short", "Pebble_Round_2", "Pebble_Square_1"], n_decor=14),
-    "night_moon": dict(elev=25, az=-30, sun=1.0, sun_col=(0.55, 0.65, 1.0), world=0.16, dust=1.0,
+    "night_moon": dict(elev=25, az=-30, sun=1.9, sun_col=(0.55, 0.66, 1.0), world=0.9, dust=1.0,
                        ground=((0.10, 0.17, 0.12), (0.06, 0.11, 0.08)), water=False, night=True,
                        trees=["Pine_1", "Pine_3", "CommonTree_2", "DeadTree_2"], n_trees=14,
                        extras=["Bush_Common", "Mushroom_Laetiporus", "Grass_Common_Tall"], n_extras=12,
@@ -304,10 +304,37 @@ def _moving(ch):
     return any(ACTIONS.get(b.get("action"), {"speed": 0})["speed"] > 0 and b.get("to") for b in ch.get("beats", []))
 
 
-def fix_collisions(chars, dur, step=0.2, tries=16):
+def _attacks(ch):
+    return any(b.get("action") in ("fight", "kick") for b in ch.get("beats", []))
+
+
+def _free_spot(chars, idx, sched, dur, step=0.4):
+    """Closest free place (x -2.6..2.6, y 0..7.5) where a standing animal keeps its distance from every other
+    animal during the whole shot. None if the area is full."""
+    me = chars[idx]
+    times = [min(dur, k * step) for k in range(int(dur / step) + 2)]
+    others = []
+    for j, c in enumerate(chars):
+        if j == idx:
+            continue
+        lunge = 0.8 if (_attacks(me) or _attacks(c)) else 0.0
+        others.append((min_sep(me["model"], c["model"], lunge), [state_at(sched[j], t)[0] for t in times]))
+    best, best_d = None, None
+    xs = [x / 10.0 for x in range(-26, 27, 4)]
+    ys = [y / 10.0 for y in range(0, 76, 4)]
+    for x in xs:
+        for y in ys:
+            if all(math.hypot(x - p[0], y - p[1]) >= need for need, path in others for p in path if abs(p[0]) <= 4.0):
+                d = math.hypot(x - me["pos"][0], y - me["pos"][1])
+                if best is None or d < best_d:
+                    best, best_d = [x, y], d
+    return best
+
+
+def fix_collisions(chars, dur, step=0.2, tries=20):
     """chars = [{"id","model","pos":[x,y],"beats":[...]}] is changed in place so that no two animals come
-    closer than min_sep at any moment of the shot (neither standing nor while walking). Animals are moved
-    in DEPTH (y) first, because the vertical picture is narrow. Returns True when everything is clear."""
+    closer than min_sep at any moment of the shot (neither standing nor while walking). Standing animals are
+    moved to the nearest free spot (depth first, the picture is narrow). Returns True when everything is clear."""
     for _ in range(tries):
         sched = [build_schedule(c, dur) for c in chars]
         worst = None
@@ -320,7 +347,8 @@ def fix_collisions(chars, dur, step=0.2, tries=16):
                     if abs(pos[i][0]) > 4.0 or abs(pos[j][0]) > 4.0:      # one of them is still off-screen
                         continue
                     d = math.hypot(pos[i][0] - pos[j][0], pos[i][1] - pos[j][1])
-                    gap = min_sep(chars[i]["model"], chars[j]["model"]) - d
+                    lunge = 0.8 if (_attacks(chars[i]) or _attacks(chars[j])) else 0.0
+                    gap = min_sep(chars[i]["model"], chars[j]["model"], lunge) - d
                     if gap > 0.05 and (worst is None or gap > worst[0]):
                         worst = (gap, i, j, t, pos[i], pos[j])
             if t >= dur:
@@ -329,24 +357,31 @@ def fix_collisions(chars, dur, step=0.2, tries=16):
         if worst is None:
             return True
         gap, i, j, t, pi, pj = worst
-        mover = j if (_moving(chars[j]) or not _moving(chars[i])) else i
+        order = [j, i] if (_moving(chars[j]) or not _moving(chars[i])) else [i, j]
+        done = False
+        for mover in order:
+            c = chars[mover]
+            if not _moving(c):
+                spot = _free_spot(chars, mover, sched, dur)
+                if spot is not None:
+                    c["pos"] = [round(spot[0], 2), round(spot[1], 2)]
+                    done = True
+                    break
+        if done:
+            continue
+        mover = order[0]                                   # a walker: shift its path sideways
         other = i if mover == j else j
         pm, po = (pj, pi) if mover == j else (pi, pj)
         sign = 1.0 if pm[1] >= po[1] else -1.0
         shift = gap + 0.35
         c = chars[mover]
-        ny = clamp(pm[1] + sign * shift, 0.0, 5.5)
-        if abs(ny - pm[1]) < 0.2:                       # no room in depth: use width
-            sx = 1.0 if pm[0] >= po[0] else -1.0
-            dx = clamp(pm[0] + sx * shift, -2.6, 2.6) - pm[0]
-            dy = 0.0
-        else:
-            dx, dy = 0.0, ny - pm[1]
+        ny = clamp(pm[1] + sign * shift, 0.0, 7.5)
+        dx, dy = (0.0, ny - pm[1]) if abs(ny - pm[1]) >= 0.2 else (clamp(pm[0] + (1.0 if pm[0] >= po[0] else -1.0) * shift, -2.6, 2.6) - pm[0], 0.0)
         for b in c.get("beats", []):
             if b.get("to"):
-                b["to"] = [round(clamp(b["to"][0] + dx, -2.6, 2.6), 2), round(clamp(b["to"][1] + dy, 0.0, 5.5), 2)]
-        if not _moving(c) or abs(c["pos"][0]) <= 4.0:
-            c["pos"] = [round(clamp(c["pos"][0] + dx, -7.0, 7.0), 2), round(clamp(c["pos"][1] + dy, 0.0, 5.5), 2)]
+                b["to"] = [round(clamp(b["to"][0] + dx, -2.6, 2.6), 2), round(clamp(b["to"][1] + dy, 0.0, 7.5), 2)]
+        if abs(c["pos"][0]) <= 4.0:
+            c["pos"] = [round(clamp(c["pos"][0] + dx, -7.0, 7.0), 2), round(clamp(c["pos"][1] + dy, 0.0, 7.5), 2)]
     return False
 
 
