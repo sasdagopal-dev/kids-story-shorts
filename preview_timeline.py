@@ -42,6 +42,8 @@ with open("preview_table.md", "w", encoding="utf-8") as f:
         cam = s["camera"]
         who = "; ".join(f"{c['id']} ({c['model']}) at {c['pos']}: " + " > ".join(
             b["action"] + (f" to {b['to']}" if 'to' in b else "") for b in c["beats"]) for c in s["characters"])
+        if s.get("speakers"):
+            who += " | SPEAKS: " + ", ".join(f"{x['id']}@{x['at']}" for x in s["speakers"])
         f.write(f"| {s['id']} | {s['look']} | {cam['framing']} / {cam['angle']} / {cam['move']} on {cam['focus']} ({cam['side']}) | "
                 f"{who} | {s['narration'].replace('|', '/')} |\n")
 print("Preview timeline ready:", len(shots), "shots,", total_frames, "frames")
