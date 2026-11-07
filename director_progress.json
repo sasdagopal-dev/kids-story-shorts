@@ -1,5 +1,5 @@
 {
- "next_topic": 7,
+ "next_topic": 8,
  "history": [
   {
    "date": "2026-11-05",
@@ -42,6 +42,12 @@
    "title": "मटके में रखा पैसा क्यों कम हो गया? महँगाई का सच्चा सबक़",
    "topic": "Inflation: why money kept idle loses value slowly",
    "file": "plans/plan_2026-11-06.json"
+  },
+  {
+   "date": "2026-11-07",
+   "title": "राजा की परीक्षा और बीमे की ताक़त: बुरे दिन की ढाल",
+   "topic": "Insurance: protecting the family from one bad day",
+   "file": "plans/plan_2026-11-07.json"
   }
  ]
 }
