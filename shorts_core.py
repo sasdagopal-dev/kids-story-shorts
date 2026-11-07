@@ -426,3 +426,19 @@ def shot_setup(shot, dur):
                       "segs": build_schedule(c, dur)})
     assign_headings(chars, (shot.get("camera") or {}).get("focus"))
     return chars
+
+
+# ------------------------------------------------------------------ shot / reverse shot
+def cut_camera(shot, t, dur):
+    """Camera setup at time t. In a conversation shot (shot['cuts']) the camera cuts to whoever speaks."""
+    cam = dict(shot.get("camera") or {})
+    if not shot.get("cuts") or not shot.get("speakers"):
+        return cam
+    active = None
+    for sp in shot["speakers"]:
+        if sp["at"] * dur <= t + 1e-6:
+            active = sp["id"]
+    ids = {c["id"] for c in shot.get("characters", [])}
+    if active in ids:
+        cam.update({"focus": active, "framing": "close", "move": "static", "angle": "eye"})
+    return cam
