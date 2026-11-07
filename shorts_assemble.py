@@ -1,22 +1,29 @@
 #!/usr/bin/env python3
-"""shorts_assemble.py - final video, subtitle FILES (not burned in), and upload data.
+"""shorts_assemble.py (v4) - final video, subtitle FILES, optional burned-in captions, and upload data.
 
   python3 shorts_assemble.py --plan scene_plan_timed.json --timeline timeline.json \
-      --video out/video_all.mp4 --out out/final_shorts.mp4 [--music music/bg.mp3]
+      --video out/video_all.mp4 --out out/final_shorts.mp4 [--music music/bg.mp3] [--burn-captions]
 
 Makes in the output folder:
-  final_shorts.mp4     vertical 1080x1920, exactly the planned length, NO subtitles on the picture
+  final_shorts.mp4     vertical 1080x1920, exactly the planned length
   subtitles.srt / .vtt subtitle files for YouTube (upload them with the video as captions)
   youtube_meta.json    title, description, tags, flags for the later upload step
   thumbnail.jpg        frame from the most eye-catching shot
+
+v4 changes
+* voice is loudness-normalised (-16 LUFS) and the music DUCKS (gets quieter) while someone speaks
+* no fade to black at the end by default, so the Short loops cleanly (--fades brings them back)
+* optional big burned-in captions (--burn-captions), off by default as before
+* animal-channel metadata (category, hashtags), and the "made for kids" flag is now explicit and your decision
+* warns when a shot has no voice, and when the video is longer than the 3 minute Shorts limit
 """
 import argparse, json, os, re, shutil, subprocess, sys, textwrap
 
 
-def run(cmd):
+def run(cmd, cwd=None):
     cmd = [str(c) for c in cmd]
     print("+", " ".join(cmd[:14]), "..." if len(cmd) > 14 else "", flush=True)
-    subprocess.run(cmd, check=True)
+    subprocess.run(cmd, check=True, cwd=cwd)
 
 
 def probe(path):
@@ -32,13 +39,13 @@ def srt_time(t, sep=","):
     return f"{h:02}:{m:02}:{s:02}{sep}{ms:03}"
 
 
-def caption_chunks(text, max_line=36):
-    """Split a narration into short caption texts (<= 2 lines of max_line characters)."""
-    parts = [p.strip() for p in re.split(r"(?<=[.!?।])\s+", text) if p.strip()]
+def caption_chunks(text, max_line=26):
+    """Split a narration into short caption texts (<= 2 lines). Short lines read better on a phone."""
+    parts = [p.strip() for p in re.split(r"(?<=[.!?\u0964])\s+", text) if p.strip()]
     chunks = []
     for p in parts:
-        nlines = max(1, -(-len(p) // max_line))                 # lines needed
-        width = -(-len(p) // nlines) + 5                        # even lines, no one-word orphan
+        nlines = max(1, -(-len(p) // max_line))
+        width = -(-len(p) // nlines) + 5
         lines = textwrap.wrap(p, width) or [p]
         for i in range(0, len(lines), 2):
             chunks.append("\n".join(lines[i:i + 2]))
@@ -49,15 +56,14 @@ def build_captions(plan, tl):
     tempo = tl.get("tempo", 1.0)
     cues = []
     for s, t in zip(plan["shots"], tl["shots"]):
-        text = s["narration"].strip()
         start = t["start_time"] + t["lead"]
         span = t["voice_seconds"] / tempo
-        chunks = caption_chunks(text)
-        total = sum(len(c) for c in chunks) or 1
+        chunks = caption_chunks(s["narration"].strip())
+        total = sum(len(c) + 8 for c in chunks) or 1            # a pause after every caption
         cur = start
         for c in chunks:
-            d = span * len(c) / total
-            cues.append((cur, min(cur + d, t["start_time"] + t["duration"]), c))
+            d = span * (len(c) + 8) / total
+            cues.append((cur, min(cur + d - 0.04, t["start_time"] + t["duration"]), c))
             cur += d
     return cues
 
@@ -71,11 +77,19 @@ def main():
     ap.add_argument("--music", default="")
     ap.add_argument("--upscale", default="1080x1920", help="final size, empty = keep the render size")
     ap.add_argument("--out-fps", type=int, default=30)
+    ap.add_argument("--music-level", type=float, default=0.22, help="music volume while nobody speaks (it ducks under the voice)")
+    ap.add_argument("--fades", action="store_true", help="fade in/out of the picture (off = clean loop)")
+    ap.add_argument("--burn-captions", action="store_true", help="burn big captions into the picture")
+    ap.add_argument("--made-for-kids", choices=["yes", "no"], default="",
+                    help="YouTube 'made for kids' declaration; default: plan['made_for_kids'] or yes")
+    ap.add_argument("--category", default="1", help="YouTube category id: 1 Film & Animation, 24 Entertainment")
     a = ap.parse_args()
 
     plan = json.load(open(a.plan, encoding="utf-8"))
     tl = json.load(open(a.timeline, encoding="utf-8"))
     target = float(tl["total_seconds"])
+    if target > 180:
+        print(f"WARNING: {target:.0f} s is longer than the 3 minute Shorts limit, YouTube will treat it as a normal video.")
     if not os.path.exists(a.video):
         sys.exit(f"FAIL: video not found: {a.video}")
     out_path = os.path.abspath(a.out)
@@ -87,7 +101,7 @@ def main():
 
     # ---- narration: every shot padded to its exact length, then joined
     tempo = tl.get("tempo", 1.0)
-    parts = []
+    parts, silent = [], []
     for t in tl["shots"]:
         wav = os.path.join(work, f"shot_{int(t['id']):02d}.wav")
         lead_ms = int(round(t["lead"] * 1000))
@@ -96,9 +110,12 @@ def main():
                  f"atempo={tempo:.4f},adelay={lead_ms}|{lead_ms},apad=whole_dur={t['duration']:.3f}",
                  "-t", f"{t['duration']:.3f}", "-ar", "44100", "-ac", "2", wav])
         else:
+            silent.append(t["id"])
             run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
                  "-t", f"{t['duration']:.3f}", wav])
         parts.append(f"file '{wav}'")
+    if silent:
+        print(f"WARNING: no voice for shots {silent}, they are silent in the video.")
     open(os.path.join(work, "list.txt"), "w").write("\n".join(parts))
     narr = os.path.join(work, "narration.wav")
     run(["ffmpeg", "-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", os.path.join(work, "list.txt"),
@@ -107,32 +124,10 @@ def main():
     if abs(nd - target) > 0.3:
         sys.exit(f"FAIL: narration is {nd:.2f} s but the plan says {target:.2f} s")
 
-    # ---- video
-    vf = []
-    if a.upscale:
-        w, h = a.upscale.split("x")
-        vf.append(f"scale={w}:{h}:flags=lanczos")
-    vf += [f"fps={a.out_fps}", "fade=t=in:st=0:d=0.3", f"fade=t=out:st={target - 0.5:.2f}:d=0.5"]
-    inputs = ["-i", os.path.abspath(a.video), "-i", narr]
-    music = os.path.abspath(a.music) if a.music else ""
-    if music and os.path.exists(music):
-        inputs += ["-stream_loop", "-1", "-i", music]
-        af = ["-filter_complex",
-              f"[1:a]volume=1.0[v];[2:a]volume=0.07,afade=t=in:d=1.5,afade=t=out:st={target - 2:.2f}:d=2[m];"
-              f"[v][m]amix=inputs=2:duration=first:normalize=0,afade=t=out:st={target - 0.5:.2f}:d=0.5[a]",
-              "-map", "0:v", "-map", "[a]"]
-    else:
-        af = ["-filter_complex", f"[1:a]afade=t=out:st={target - 0.5:.2f}:d=0.5[a]", "-map", "0:v", "-map", "[a]"]
-    run(["ffmpeg", "-y", "-loglevel", "error", *inputs, *af, "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "medium",
-         "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-t", f"{target:.3f}",
-         "-movflags", "+faststart", out_path])
-    fd = probe(out_path)
-    if abs(fd - target) > 0.6:
-        sys.exit(f"FAIL: final video is {fd:.2f} s but must be {target:.2f} s")
-
-    # ---- subtitle files (NOT burned into the picture)
+    # ---- captions (also used for the files)
     cues = build_captions(plan, tl)
-    with open(os.path.join(out_dir, "subtitles.srt"), "w", encoding="utf-8") as f:
+    srt_path = os.path.join(out_dir, "subtitles.srt")
+    with open(srt_path, "w", encoding="utf-8") as f:
         for i, (s, e, c) in enumerate(cues, start=1):
             f.write(f"{i}\n{srt_time(s)} --> {srt_time(e)}\n{c}\n\n")
     with open(os.path.join(out_dir, "subtitles.vtt"), "w", encoding="utf-8") as f:
@@ -140,20 +135,62 @@ def main():
         for s, e, c in cues:
             f.write(f"{srt_time(s, '.')} --> {srt_time(e, '.')}\n{c}\n\n")
 
+    # ---- video + audio
+    def encode(burn):
+        vf = []
+        if a.upscale:
+            w, h = a.upscale.split("x")
+            vf.append(f"scale={w}:{h}:flags=lanczos")
+        vf.append(f"fps={a.out_fps}")
+        if burn:
+            shutil.copy(srt_path, os.path.join(work, "cap.srt"))
+            vf.append("subtitles=cap.srt:force_style='Alignment=2,Bold=1,FontSize=11,Outline=3,Shadow=0,MarginV=95,"
+                      "PrimaryColour=&H00FFFFFF&,OutlineColour=&H00000000&'")
+        if a.fades:
+            vf += ["fade=t=in:st=0:d=0.3", f"fade=t=out:st={target - 0.5:.2f}:d=0.5"]
+        inputs = ["-i", os.path.abspath(a.video), "-i", narr]
+        music = os.path.abspath(a.music) if a.music else ""
+        tail = f"afade=t=out:st={target - 0.25:.2f}:d=0.25"
+        if music and os.path.exists(music):
+            inputs += ["-stream_loop", "-1", "-i", music]
+            fc = (f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,asplit=2[v][vs];"
+                  f"[2:a]volume={a.music_level},afade=t=in:d=1.5[m0];"
+                  f"[m0][vs]sidechaincompress=threshold=0.02:ratio=10:attack=20:release=500[md];"
+                  f"[v][md]amix=inputs=2:duration=first:normalize=0,{tail}[a]")
+        else:
+            fc = f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,{tail}[a]"
+        cmd = ["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", fc, "-map", "0:v", "-map", "[a]",
+               "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
+               "-c:a", "aac", "-b:a", "192k", "-t", f"{target:.3f}", "-movflags", "+faststart", out_path]
+        run(cmd, cwd=work if burn else None)
+
+    if a.burn_captions:
+        try:
+            encode(True)
+        except subprocess.CalledProcessError:
+            print("WARNING: burning captions failed (ffmpeg without libass or font?), making the video without them.")
+            encode(False)
+    else:
+        encode(False)
+    fd = probe(out_path)
+    if abs(fd - target) > 0.6:
+        sys.exit(f"FAIL: final video is {fd:.2f} s but must be {target:.2f} s")
+
     # ---- thumbnail and upload data
     th = next((t for t in tl["shots"] if t.get("thumb")), tl["shots"][len(tl["shots"]) // 2])
     run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{th['start_time'] + th['duration'] / 2:.2f}", "-i", out_path,
          "-frames:v", "1", "-q:v", "2", os.path.join(out_dir, "thumbnail.jpg")])
     desc = "\n\n".join(x for x in [plan.get("description", ""), plan.get("disclaimer", ""), plan.get("credits", "")] if x)
     tags = list(plan.get("tags") or [])
-    meta = {"title": plan["title"][:100], "description": desc + "\n\n#Shorts #MoneyLessons #FinancialLiteracy",
-            "tags": tags, "categoryId": "27", "language": "en" if plan.get("language") == "English" else "hi",
-            "privacyStatus": "private", "selfDeclaredMadeForKids": False,
+    kids = a.made_for_kids or ("yes" if plan.get("made_for_kids", True) else "no")
+    meta = {"title": plan["title"][:100], "description": desc + "\n\n#Shorts #AnimalStories #CartoonStories #StoriesForKids",
+            "tags": tags, "categoryId": a.category, "language": "en" if plan.get("language") == "English" else "hi",
+            "privacyStatus": "private", "selfDeclaredMadeForKids": kids == "yes",
             "containsSyntheticMedia": True, "captionFile": "subtitles.srt", "thumbnail": "thumbnail.jpg",
             "durationSeconds": round(fd, 2)}
     json.dump(meta, open(os.path.join(out_dir, "youtube_meta.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     shutil.rmtree(work, ignore_errors=True)
-    print(f"DONE: {out_path} ({fd:.2f} s), {len(cues)} caption cues")
+    print(f"DONE: {out_path} ({fd:.2f} s), {len(cues)} caption cues, made-for-kids: {kids}")
 
 
 if __name__ == "__main__":
