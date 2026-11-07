@@ -238,16 +238,19 @@ def build_world(look):
     nt.nodes.clear()
     out = nt.nodes.new("ShaderNodeOutputWorld")
     bg = nt.nodes.new("ShaderNodeBackground")
-    try:
-        sky = nt.nodes.new("ShaderNodeTexSky")
-        sky.sky_type = "NISHITA"
-        sky.sun_elevation = math.radians(-6 if look["night"] else look["elev"])
-        sky.sun_rotation = math.radians(look["az"])
-        sky.sun_disc = False
-        sky.dust_density = look["dust"]
-        nt.links.new(sky.outputs["Color"], bg.inputs["Color"])
-    except Exception:
-        bg.inputs["Color"].default_value = (0.12, 0.16, 0.30, 1) if look["night"] else (0.55, 0.72, 0.95, 1)
+    if look["night"]:
+        bg.inputs["Color"].default_value = (0.045, 0.075, 0.17, 1)          # deep blue night sky, not black
+    else:
+        try:
+            sky = nt.nodes.new("ShaderNodeTexSky")
+            sky.sky_type = "NISHITA"
+            sky.sun_elevation = math.radians(look["elev"])
+            sky.sun_rotation = math.radians(look["az"])
+            sky.sun_disc = False
+            sky.dust_density = look["dust"]
+            nt.links.new(sky.outputs["Color"], bg.inputs["Color"])
+        except Exception:
+            bg.inputs["Color"].default_value = (0.55, 0.72, 0.95, 1)
     bg.inputs["Strength"].default_value = look["world"]
     nt.links.new(bg.outputs["Background"], out.inputs["Surface"])
     sc.world = w
@@ -306,7 +309,7 @@ def build_env(look_name):
     sun.rotation_euler = (math.radians(90 - look["elev"]), 0, math.radians(look["az"]))
     if look["night"]:                                    # warm firefly glow so the animals stay readable
         lamp = bpy.data.lights.new("Glow", "POINT")
-        lamp.energy = 900
+        lamp.energy = 1800
         lamp.color = (1.0, 0.8, 0.5)
         lamp.shadow_soft_size = 1.5
         lo = bpy.data.objects.new("Glow", lamp)
