@@ -450,7 +450,8 @@ def clear_sightlines(shot, chars, dur):
     at any moment of the shot, and everything that is very close to the camera."""
     cdesc = [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars]
     times = [dur * k / 6.0 for k in range(7)]
-    cams = [core.camera_state(shot.get("camera", {}), cdesc, t, dur, HFOV, VFOV)["cam"] for t in times]
+    times = sorted(set(times + [sp["at"] * dur + 0.1 for sp in shot.get("speakers", [])]))
+    cams = [core.camera_state(core.cut_camera(shot, t, dur), cdesc, t, dur, HFOV, VFOV)["cam"] for t in times]
     targets = []
     for c in chars:
         hw = 0.4 * c["height"] + 0.25
@@ -543,7 +544,7 @@ def pose_frame(sc, cam, target, chars, shot, t_sec, dur):
         a.wrap.location = (pos[0], pos[1], a.z)
         a.wrap.rotation_euler.z = math.radians(heading + MODEL_FORWARD_OFFSET)
         a.wrap.scale = (sx, sy, sz)
-    cs = core.camera_state(shot.get("camera", {}), [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars],
+    cs = core.camera_state(core.cut_camera(shot, t_sec, dur), [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars],
                            t_sec, dur, HFOV, VFOV)
     cam.location = Vector(cs["cam"])
     target.location = Vector(cs["target"])
