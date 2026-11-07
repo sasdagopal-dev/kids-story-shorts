@@ -1,0 +1,1126 @@
+{
+ "version": 3,
+ "language": "Hindi",
+ "title": "नदी का जाल और आपातकालीन बचत | Blackwood Money Tales",
+ "description": "जब उफनती नदी पर ड्रैकन ने लक्ष्मी को घेरा, तब क्या माइलो अपनी आपातकालीन बचत से उसे बचा पाएगा? देखिए कैसे एक छोटी सी आपातकालीन बचत बुरे दिनों में सबसे बड़ी ढाल बनती है।",
+ "tags": [
+  "blackwoodmoneytales",
+  "emergencyfund",
+  "moneytips",
+  "animation",
+  "hindicartoon",
+  "financialliteracy",
+  "moralstories",
+  "savings",
+  "anchoredstory",
+  "storiesforfamilies"
+ ],
+ "recap": "माइलो ने आपातकालीन कोष (Emergency Fund) का इस्तेमाल करके लक्ष्मी को ड्रैकन के कर्ज़ जाल और नदी के खतरे से बचाया।",
+ "cliffhanger": "कल देखिए कैसे चालाक लोमड़ी चिंटू ने दुगुने पैसों के लालच का नया जाल बिछाया!",
+ "disclaimer": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।",
+ "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech. Story and images are AI generated.",
+ "target_seconds": 150,
+ "cast": [
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind cow, Milo's friend, a careful saver"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "black wolf, cruel moneylender who runs the Fang Lending Den"
+  },
+  {
+   "id": "pack1",
+   "name": "Fang",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "Drakon's black wolf collector"
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Deer",
+   "role": "brave young deer, the hero; loves his missing mother; learns to save"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "role": "grey wolf, last guardian of the forest, wise and gruff mentor"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The River Ambush",
+   "look": "riverbank_dawn",
+   "narration": "नदी का पानी उफान पर था और ड्रैकन के खूंखार भेड़िये बेबस लक्ष्मी को घेर रहे थे!",
+   "visual": "Raging river currents overflow as Drakon and Pack1 corner Lakshmi near the edge.",
+   "camera": {
+    "framing": "wide",
+    "angle": "high",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.8,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "pack1",
+     "model": "Wolf",
+     "pos": [
+      1.5,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Drakon's Threat",
+   "look": "riverbank_dawn",
+   "narration": "\"अगर सूरज ढलने से पहले सौ सिक्के नहीं दिए, तो तेरा घर मेरा होगा,\" ड्रैकन गुर्राया।",
+   "visual": "Drakon stands tall on a rock, looming over Lakshmi with a cold stare.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "lakshmi",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ],
+     "z": 0.97
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.8,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.4
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.0,
+      3.5
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.0
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "The Broken Bridge",
+   "look": "riverbank_dawn",
+   "narration": "अचानक आई इस बाढ़ ने लक्ष्मी की पूरी फसल और रास्ते का पुल तबाह कर दिया था।",
+   "visual": "Lakshmi looks at the broken wooden bridge floating away in the swollen river.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Milo Arrives",
+   "look": "storm_dusk",
+   "narration": "माइलो भागते हुए वहां पहुंचा और बोला, \"लक्ष्मी मौसी, घबराओ मत, मैं मदद करूंगा!\"",
+   "visual": "Milo runs in from the side, stepping between Drakon and Lakshmi.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      -2.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.5,
+        2.0
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.5
+      }
+     ]
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.4,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.45
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Drakon's Mockery",
+   "look": "storm_dusk",
+   "narration": "पैंतरा बदलते हुए ड्रैकन हंसा, \"छोटे हिरण, तेरे पास खुद खाने को सिक्के नहीं हैं!\"",
+   "visual": "Drakon laughs mockingly at young Milo.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.36
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      1.4,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.36
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "The Debt Offer",
+   "look": "storm_dusk",
+   "narration": "ड्रैकन ने अपना कर्ज़ जाल बिछाया, \"मुझसे दो सौ सिक्के ब्याज पर ले लो, वरना डूब जाओ!\"",
+   "visual": "Drakon steps closer offering a heavy leather bag of coins with high interest.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.38
+      }
+     ],
+     "face": "lakshmi",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.4,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.38
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Ragnar Steps In",
+   "look": "storm_dusk",
+   "narration": "तभी राग्नार वहां आया और चिल्लाया, \"रुक जाओ माइलो! ड्रैकन के कर्ज़ जाल में मत फंसना!\"",
+   "visual": "Ragnar walks out from the forest shadows onto a high ledge overlooking the scene.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -1.2,
+        3.2
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.6
+      }
+     ]
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.0,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.6
+      }
+     ],
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      1.0,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "size": 1.8
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.39
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "The Wise Rule",
+   "look": "storm_dusk",
+   "narration": "राग्नार ने कहा, \"मुसीबत बिना बताए आती है, इसीलिए आपातकालीन कोष बनाना जरूरी है।\"",
+   "visual": "Ragnar addresses the animals firmly about sudden emergencies.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.21
+      }
+     ],
+     "face": "lakshmi",
+     "z": 1.16
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.8,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "size": 1.8
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.21
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "The Rule of 20 Percent",
+   "look": "storm_dusk",
+   "narration": "अगर तुम हर सौ रुपये में से बीस रुपये आपातकालीन बचत में रखोगे, तो मुसीबत में बचोगे।",
+   "visual": "Ragnar explains the financial calculation clearly.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Lakshmi's Regret",
+   "look": "storm_dusk",
+   "narration": "लक्ष्मी रोते हुए बोली, \"मैंने कभी बुरे दिनों के लिए अलग से कोई बचत नहीं रखी थी!\"",
+   "visual": "Lakshmi lowers her head in deep regret and sorrow.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.5,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.28
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "The Hidden Reserve",
+   "look": "storm_dusk",
+   "narration": "लेकिन ड्रैकन को नहीं पता था कि माइलो ने पहले ही आपातकालीन थैली तैयार की थी!",
+   "visual": "Milo remembers his secret savings pouch hidden in his satchel.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      0.0,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.5,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Milo's Emergency Fund",
+   "look": "storm_dusk",
+   "narration": "माइलो ने थैली निकाली और कहा, \"मेरे पास आपातकालीन कोष के पचास सिक्के सुरक्षित हैं!\"",
+   "visual": "Milo pulls out a pouch filled with 50 emergency acorn coins.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "static",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      0.5,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.34
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.4
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "thumb": true,
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.34
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "The Rescue Payoff",
+   "look": "storm_dusk",
+   "narration": "माइलो ने नाविक को पचास सिक्के दिए और लक्ष्मी को सुरक्षित किनारे पर खींच लिया।",
+   "visual": "Milo hands the coins to pay for raft rescue gear and pulls Lakshmi to safety.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      -0.8,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        0.2,
+        2.2
+       ]
+      }
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Drakon Defeated",
+   "look": "storm_dusk",
+   "narration": "ड्रैकन गुस्से से घूरता रह गया, उसका खौफनाक कर्ज़ जाल एक बार फिर टूट चुका था!",
+   "visual": "Drakon snarls in anger as his predatory loan plan fails completely.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "pull_out",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "pack1",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Ragnar's Lesson Validated",
+   "look": "forest_day",
+   "narration": "राग्नार मुस्कुराया और बोला, \"शाबाश माइलो! आपातकालीन बचत ही मुसीबत में बचाती है।\"",
+   "visual": "Ragnar walks down to congratulate Milo on the safe riverbank.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.34
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      1.0,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.34
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Lakshmi's Vow",
+   "look": "forest_day",
+   "narration": "लक्ष्मी ने माइलो को धन्यवाद दिया, \"आज से मैं भी अपनी कमाई से आपातकालीन बचत करूंगी।\"",
+   "visual": "Lakshmi smiles warmly at Milo with deep gratitude.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.8,
+      1.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.39
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      -1.4,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.39
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Safety and Peace",
+   "look": "forest_day",
+   "narration": "सुरक्षित किनारे पर खड़े होकर सबने समझा कि आपातकालीन कोष ही परिवार की ढाल है।",
+   "visual": "The forest scene turns calm as sunlight breaks through the trees.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.2,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      -0.6,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Victory Over Debt",
+   "look": "forest_day",
+   "narration": "माइलो की समझदारी ने बिना कर्ज़ लिए लक्ष्मी को एक बड़ी मुसीबत से बचा लिया!",
+   "visual": "Lakshmi walks safely alongside Milo back into the quiet woods.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.5,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        1.2,
+        2.5
+       ]
+      }
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      -2.6,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Recap and Teaser",
+   "look": "forest_day",
+   "narration": "नियम: १. बचत करो २. आपातकालीन कोष बनाओ ३. कर्ज़ से बचो। कल देखिए चिंटू का नया जाल!",
+   "visual": "Milo stands proud in the forest clearing looking towards tomorrow.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Subscribe and Disclaimer",
+   "look": "forest_day",
+   "narration": "अगले अंक के लिए सब्सक्राइब करें! यह वीडियो केवल शिक्षा के लिए है, वित्तीय सलाह नहीं।",
+   "visual": "Milo smiles towards the viewer with educational notice text.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Deer",
+     "pos": [
+      0.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ]
+  }
+ ],
+ "topic": "Emergency fund: why every family needs one before a bad day comes",
+ "genre": "an ambush at the river and a daring rescue",
+ "director_model": "gemini-3.6-flash"
+}

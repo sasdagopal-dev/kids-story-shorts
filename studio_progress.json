@@ -1,5 +1,5 @@
 {
- "next_topic": 2,
+ "next_topic": 3,
  "history": [
   {
    "date": "2026-11-07",
@@ -16,6 +16,14 @@
    "file": "plans/episode_2026-11-07_2.json",
    "recap": "Milo was dragged before Elder Dev by Drakon for an unpaid debt, but proved he saved twenty coins out of every hundred first.",
    "cliffhanger": "Tomorrow, beware Chintu the fox and his cunning coin-doubling trap in the clearing!"
+  },
+  {
+   "date": "2026-11-07",
+   "title": "नदी का जाल और आपातकालीन बचत | Blackwood Money Tales",
+   "topic": "Emergency fund: why every family needs one before a bad day comes",
+   "file": "plans/episode_2026-11-07_3.json",
+   "recap": "माइलो ने आपातकालीन कोष (Emergency Fund) का इस्तेमाल करके लक्ष्मी को ड्रैकन के कर्ज़ जाल और नदी के खतरे से बचाया।",
+   "cliffhanger": "कल देखिए कैसे चालाक लोमड़ी चिंटू ने दुगुने पैसों के लालच का नया जाल बिछाया!"
   }
  ]
 }
