@@ -11,18 +11,95 @@
     "bible": "A warm green valley with a river, a meadow and a dark pine forest. Animals speak, but they live like real animals: herds, packs, dens, storms, droughts, hunters. Milo is a small, clever, brave young fox who is often underestimated. Ragnar is the old white wolf who watches from a boulder and gives short wise rules. Drakon is the proud black wolf rival who bullies others but is not purely evil. Lakshmi is the kind, strong cow who protects the young. Bholu is the funny, clumsy donkey. Keep the same personalities in every episode."
   },
   "cast": [
-    {"id": "milo",    "name": "Milo",    "model": "Fox",         "role": "hero, small clever young fox, brave but sometimes impatient"},
-    {"id": "ragnar",  "name": "Ragnar",  "model": "Wolf",        "tint": [2.3, 2.3, 2.5], "role": "old white wolf, calm and wise, gives short rules"},
-    {"id": "drakon",  "name": "Drakon",  "model": "Wolf",        "tint": [0.15, 0.14, 0.16], "role": "proud black wolf rival, bully with a hidden fear"},
-    {"id": "lakshmi", "name": "Lakshmi", "model": "Cow",         "role": "kind strong cow, protects the young, loves everyone"},
-    {"id": "bholu",   "name": "Bholu",   "model": "Donkey",      "role": "funny clumsy donkey, loyal friend, comic relief"},
-    {"id": "veer",    "name": "Veer",    "model": "Stag",        "role": "noble stag, guardian of the forest, speaks little"}
+    {
+      "id": "milo",
+      "name": "Milo",
+      "model": "Fox",
+      "role": "hero, small clever young fox, brave but sometimes impatient",
+      "voice_style": "quick, eager, a little cheeky",
+      "catchphrase": "But I have a plan!"
+    },
+    {
+      "id": "ragnar",
+      "name": "Ragnar",
+      "model": "Wolf",
+      "tint": [
+        2.3,
+        2.3,
+        2.5
+      ],
+      "role": "old white wolf, calm and wise, gives short rules",
+      "voice_style": "slow, calm, one short wise sentence",
+      "catchphrase": "Patience is also a path."
+    },
+    {
+      "id": "drakon",
+      "name": "Drakon",
+      "model": "Wolf",
+      "tint": [
+        0.15,
+        0.14,
+        0.16
+      ],
+      "role": "proud black wolf rival, bully with a hidden fear",
+      "voice_style": "loud, proud, sneering, hides fear",
+      "catchphrase": "Nobody beats Drakon!"
+    },
+    {
+      "id": "lakshmi",
+      "name": "Lakshmi",
+      "model": "Cow",
+      "role": "kind strong cow, protects the young, loves everyone",
+      "voice_style": "warm, motherly, gentle",
+      "catchphrase": "Come here, little one."
+    },
+    {
+      "id": "bholu",
+      "name": "Bholu",
+      "model": "Donkey",
+      "role": "funny clumsy donkey, loyal friend, comic relief",
+      "voice_style": "funny, mixes up words, cheerful",
+      "catchphrase": "Oh my whiskers... I mean, oh my ears!"
+    },
+    {
+      "id": "veer",
+      "name": "Veer",
+      "model": "Stag",
+      "role": "noble stag, guardian of the forest, speaks little",
+      "voice_style": "few words, deep and noble",
+      "catchphrase": "The forest listens."
+    }
   ],
   "targets": {
-    "English": {"unit": "words", "shot": [11, 21], "total": [290, 360], "rate": 2.2},
-    "Hindi":   {"unit": "chars", "shot": [55, 105], "total": [1250, 1650], "rate": 9.5}
+    "English": {
+      "unit": "words",
+      "shot": [
+        11,
+        21
+      ],
+      "total": [
+        290,
+        360
+      ],
+      "rate": 2.2
+    },
+    "Hindi": {
+      "unit": "chars",
+      "shot": [
+        55,
+        105
+      ],
+      "total": [
+        1250,
+        1650
+      ],
+      "rate": 9.5
+    }
   },
-  "disclaimer": {"English": "", "Hindi": ""},
+  "disclaimer": {
+    "English": "",
+    "Hindi": ""
+  },
   "genres": [
     "a rescue adventure with a ticking clock",
     "a mystery in the forest with a twist",
