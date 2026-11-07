@@ -1,16 +1,17 @@
-"""shorts_render.py - renders one shard of the vertical animal Short with Blender (headless).
+"""shorts_render.py (v4) - renders one shard of the vertical animal Short with Blender (headless).
 
 blender -b -P shorts_render.py -- --timeline timeline.json --story scene_plan_timed.json \
     --assets . --out out --shard 0 --shards 6 [--sample-only]
 
-* vertical 9:16 picture, natural looks only (meadow, forest, sunset, riverbank, storm, night)
-* every animal is measured and scaled to a realistic height, so sizes always match
-* each animal follows its beats (walk/run at natural speed, then idle), turns smoothly to face
-  who it talks to, and plays the clip of the right kind of animal
-* black / white wolves (cast tints), boulders to stand on, calmer light, lens 30
-* the camera is DIRECTED per shot (framing, angle, movement, focus), all calculated by shorts_core.py
-* --sample-only renders 3 pictures per shot (start, middle, end) for a quick check
-Models are found BY NAME anywhere under --assets (.glb/.gltf preferred, .fbx fallback).
+New in v4
+* NOTHING hides an animal: trees, bushes, grass and boulders that stand between the camera and an animal
+  (checked along the whole camera move) are switched off for that shot, and so is everything very near the camera
+* animations are placed on the NLA timeline per beat: every clip starts exactly when its beat starts
+  (hit-reactions play once, walk/run/idle loop), with soft cross-fades
+* the animal that talks gets a small speaking nod, listeners stay calm
+* a soft fill light so faces/bodies stay readable
+Tuning (environment variables): MODEL_FORWARD_OFFSET (deg), WALK_ANIM_SCALE / RUN_ANIM_SCALE (>1 = slower legs),
+TALK_CUE=0 to switch the speaking nod off.
 """
 import argparse
 import json
@@ -30,9 +31,10 @@ for _p in (_here, os.getcwd()):
         sys.path.insert(0, _p)
 import shorts_core as core  # noqa: E402
 
-# If animals walk backwards or sideways in the preview pictures, change this (degrees), or set the
-# environment variable MODEL_FORWARD_OFFSET (the preview workflow has a box for it).
 MODEL_FORWARD_OFFSET = float(os.environ.get("MODEL_FORWARD_OFFSET", "0") or 0)
+TALK_CUE = os.environ.get("TALK_CUE", "1") != "0"
+CLIP_SCALE = {"walk": float(os.environ.get("WALK_ANIM_SCALE", "1") or 1), "run": float(os.environ.get("RUN_ANIM_SCALE", "1") or 1)}
+OVERLAP = 4.0          # frames of cross-fade between two clips
 
 argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
 ap = argparse.ArgumentParser(allow_abbrev=False)
@@ -48,8 +50,6 @@ try:
 except SystemExit:
     print("shorts_render.py did not receive --timeline and --story.")
     print("The command line Blender received was:", sys.argv)
-    print("The workflow must call: blender -b -P shorts_render.py -- --timeline timeline.json "
-          "--story scene_plan_timed.json --assets . --out out --shard N --shards 6")
     raise
 
 TL = json.load(open(args.timeline, encoding="utf-8"))
@@ -60,7 +60,6 @@ W, H = TL["width"], TL["height"]
 HFOV, VFOV = core.fovs(W, H)
 os.makedirs(args.out, exist_ok=True)
 
-# ---------------------------------------------------------------- asset index
 PREF = {".glb": 0, ".gltf": 1, ".fbx": 2}
 INDEX = {}
 for dp, _dn, fns in os.walk(args.assets):
@@ -76,10 +75,11 @@ for dp, _dn, fns in os.walk(args.assets):
 if not INDEX:
     raise SystemExit(f"No 3D models found under '{args.assets}'. Download the asset packs first.")
 MISSING, ANIM_PROBLEMS, ANIM_USED, SCALE_REPORT = set(), set(), {}, {}
+ENV = []   # everything that could stand in the way of the camera: {"obj","x","y","r","kind"}
+CLEARED = {"n": 0}
 
 
 def norm_anim(n):
-    """'Walk_AnimalArmature' -> 'walk', 'CharacterArmature|Walk' -> 'walk', 'Walk.001' -> 'walk'"""
     n = n.split("|")[-1]
     n = re.sub(r"\.\d+$", "", n)
     n = re.sub(r"_?(animal|character)?armature$", "", n, flags=re.I)
@@ -88,6 +88,16 @@ def norm_anim(n):
 
 def link(obj):
     bpy.context.scene.collection.objects.link(obj)
+
+
+def register(obj, x, y, r, kind):
+    ENV.append({"obj": obj, "x": x, "y": y, "r": r, "kind": kind})
+
+
+def hide_item(obj):
+    for o in [obj] + list(obj.children_recursive):
+        o.hide_render = True
+        o.hide_viewport = True
 
 
 def load_model(name):
@@ -142,15 +152,7 @@ def measure_height(objs):
     return (zmax - zmin) if zmax > zmin else None
 
 
-def add_cycles(action):
-    for fc in action.fcurves:
-        if not any(m.type == "CYCLES" for m in fc.modifiers):
-            fc.modifiers.new("CYCLES")
-
-
-
 def apply_tint(objs, tint):
-    """Multiply the colours of an animal's materials (black wolf = [0.15,0.14,0.16], white = [2.3,2.3,2.5])."""
     copies = {}
     for o in objs:
         if o.type != "MESH":
@@ -181,6 +183,15 @@ def apply_tint(objs, tint):
             slot.material = copies[m.name]
 
 
+def make_material(color, rough=1.0):
+    m = bpy.data.materials.new("mat")
+    m.use_nodes = True
+    b = m.node_tree.nodes["Principled BSDF"]
+    b.inputs["Base Color"].default_value = (*color, 1)
+    b.inputs["Roughness"].default_value = rough
+    return m
+
+
 def make_rock(x, y, size, seed=1):
     """A lumpy boulder. Its top is at about 0.7 * size, so an animal can stand on it."""
     bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=size, location=(x, y, 0))
@@ -197,18 +208,8 @@ def make_rock(x, y, size, seed=1):
     r.data.materials.append(make_material((0.42, 0.40, 0.38), 0.95))
     return r
 
-# ---------------------------------------------------------------- natural looks
-def make_material(color, rough=1.0):
-    m = bpy.data.materials.new("mat")
-    m.use_nodes = True
-    b = m.node_tree.nodes["Principled BSDF"]
-    b.inputs["Base Color"].default_value = (*color, 1)
-    b.inputs["Roughness"].default_value = rough
-    return m
-
 
 def ground_material(c0, c1):
-    """Grass colour that varies in patches (noise between two greens)."""
     m = bpy.data.materials.new("ground")
     m.use_nodes = True
     nt = m.node_tree
@@ -239,7 +240,7 @@ def build_world(look):
     out = nt.nodes.new("ShaderNodeOutputWorld")
     bg = nt.nodes.new("ShaderNodeBackground")
     if look["night"]:
-        bg.inputs["Color"].default_value = (0.045, 0.075, 0.17, 1)          # deep blue night sky, not black
+        bg.inputs["Color"].default_value = (0.045, 0.075, 0.17, 1)
     else:
         try:
             sky = nt.nodes.new("ShaderNodeTexSky")
@@ -256,7 +257,10 @@ def build_world(look):
     sc.world = w
 
 
-def scatter(names, count, rng, decor=False):
+def scatter(names, count, rng, kind):
+    """kind: tree / extra / decor. Everything is registered so the camera can later clear its view."""
+    decor = kind == "decor"
+    base_r = {"tree": 1.0, "extra": 0.8, "decor": 0.3}[kind]
     cache, placed, tries = {}, 0, 0
     names = list(names)
     while placed < count and tries < count * 25 and names:
@@ -265,7 +269,7 @@ def scatter(names, count, rng, decor=False):
             x, y = rng.uniform(-7, 7), rng.uniform(-3, 9)
         else:
             x, y = rng.uniform(-32, 32), rng.uniform(-1.5, 42)
-            if -6.0 < x < 6.0 and -3.5 < y < 8.0:        # keep the action area free
+            if -9.0 < x < 9.0 and -4.0 < y < 9.0:        # keep the action area free
                 continue
         name = rng.choice(names)
         if name.lower() not in INDEX:
@@ -284,12 +288,13 @@ def scatter(names, count, rng, decor=False):
         w.rotation_euler.z = rng.uniform(0, math.tau)
         s = rng.uniform(0.85, 1.35) if not decor else rng.uniform(0.9, 1.2)
         w.scale = (s, s, s)
+        low = name in core.SMALL_DECOR
+        register(w, x, y, base_r * s, "low" if low else kind)
         placed += 1
 
 
 def build_env(look_name):
     look = core.LOOKS.get(look_name, core.LOOKS["meadow_day"])
-    sc = bpy.context.scene
     build_world(look)
     bpy.ops.mesh.primitive_plane_add(size=320, location=(0, 20, 0))
     ground = bpy.context.active_object
@@ -298,8 +303,7 @@ def build_env(look_name):
         bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 10.5, 0.05))
         water = bpy.context.active_object
         water.scale = (320, 4.0, 1)
-        mat = make_material((0.08, 0.28, 0.42), 0.05)
-        water.data.materials.append(mat)
+        water.data.materials.append(make_material((0.08, 0.28, 0.42), 0.05))
     sun_data = bpy.data.lights.new("Sun", "SUN")
     sun_data.energy = look["sun"]
     sun_data.color = look["sun_col"]
@@ -307,7 +311,14 @@ def build_env(look_name):
     sun = bpy.data.objects.new("Sun", sun_data)
     link(sun)
     sun.rotation_euler = (math.radians(90 - look["elev"]), 0, math.radians(look["az"]))
-    if look["night"]:                                    # warm firefly glow so the animals stay readable
+    fill_data = bpy.data.lights.new("Fill", "SUN")          # soft fill from the other side, keeps shadows readable
+    fill_data.energy = look["sun"] * 0.22
+    fill_data.color = (0.85, 0.9, 1.0)
+    fill_data.angle = math.radians(40)
+    fill = bpy.data.objects.new("Fill", fill_data)
+    link(fill)
+    fill.rotation_euler = (math.radians(62), 0, math.radians(look["az"] + 180))
+    if look["night"]:
         lamp = bpy.data.lights.new("Glow", "POINT")
         lamp.energy = 1800
         lamp.color = (1.0, 0.8, 0.5)
@@ -315,16 +326,17 @@ def build_env(look_name):
         lo = bpy.data.objects.new("Glow", lamp)
         link(lo)
         lo.location = (0.5, -1.5, 3.0)
-    rng = random.Random(sum(ord(c) for c in look_name) * 7919)   # same place for every shot of this look
-    scatter(look["trees"], look["n_trees"], rng)
-    scatter(look["extras"], look["n_extras"], rng)
-    scatter(look["decor"], look["n_decor"], rng, decor=True)
-    for k in range(7):                                   # a few big boulders far from the action
+    rng = random.Random(sum(ord(c) for c in look_name) * 7919)
+    scatter(look["trees"], look["n_trees"], rng, "tree")
+    scatter(look["extras"], look["n_extras"], rng, "extra")
+    scatter(look["decor"], look["n_decor"], rng, "decor")
+    for k in range(7):
         x = rng.choice([-1, 1]) * rng.uniform(8, 26)
-        make_rock(x, rng.uniform(4, 36), rng.uniform(1.0, 2.6), seed=k + 11)
+        size = rng.uniform(1.0, 2.6)
+        y = rng.uniform(4, 36)
+        register(make_rock(x, y, size, seed=k + 11), x, y, size * 0.9, "rock")
 
 
-# ---------------------------------------------------------------- render setup
 def setup_render():
     sc = bpy.context.scene
     r = sc.render
@@ -358,6 +370,11 @@ def setup_render():
     return sc
 
 
+def is_one_shot(anim):
+    a = anim.lower()
+    return a.startswith(("idle_hitreact", "jump", "gallop_jump", "death"))
+
+
 class Actor:
     def __init__(self, ch):
         self.id = ch["id"]
@@ -380,44 +397,119 @@ class Actor:
         if h and h > 0.01:
             self.base_scale = max(0.05, min(20.0, want / h))
             SCALE_REPORT[self.model] = f"{h:.2f} m -> {want:.2f} m (x{self.base_scale:.2f})"
-        for arm in self.arms:
-            ad = arm.animation_data_create()
-            for t in list(ad.nla_tracks):
-                ad.nla_tracks.remove(t)
-        self.used = set()
 
     def pick(self, anim):
         a = self.actions.get(anim.lower())
         if a is None:
             a = self.actions.get("idle") or (next(iter(self.actions.values())) if self.actions else None)
             ANIM_PROBLEMS.add(f"{self.model}: '{anim}' not found, used '{a.name if a else 'nothing'}'")
-        if a is not None and a.name not in self.used:
-            add_cycles(a)
-            self.used.add(a.name)
         ANIM_USED[f"{self.model}:{anim}"] = a.name if a else "-"
         return a
 
-    def update(self, segs):
+    def build_nla(self, segs):
+        """One clip per beat, placed exactly when the beat starts. Two NLA tracks alternate so neighbours cross-fade."""
         if not self.ok:
             return
-        pass
+        for arm in self.arms:
+            ad = arm.animation_data_create()
+            ad.action = None
+            for t in list(ad.nla_tracks):
+                ad.nla_tracks.remove(t)
+            tracks = [ad.nla_tracks.new(), ad.nla_tracks.new()]
+            for i, s in enumerate(segs):
+                act = self.pick(s["anim"])
+                if act is None:
+                    continue
+                lo, hi = act.frame_range
+                length = max(1.0, hi - lo)
+                begin = 1.0 + s["t0"] * 24.0 - (OVERLAP if i > 0 else 0.0)
+                end = 1.0 + s["t1"] * 24.0
+                span = max(3.0, end - begin)
+                try:
+                    st = tracks[i % 2].strips.new(f"{i}_{act.name}", int(round(begin)), act)
+                except Exception:
+                    continue
+                if st is None:
+                    continue
+                one = is_one_shot(s["anim"])
+                sc_ = CLIP_SCALE.get(s["action"], 1.0)
+                try:
+                    st.scale = sc_
+                    if not one:
+                        st.repeat = max(0.05, span / (length * sc_))
+                    slen = st.frame_end - st.frame_start
+                    st.blend_in = min(OVERLAP, 0.4 * slen) if i > 0 else 0.0
+                    st.blend_out = min(OVERLAP, 0.4 * slen) if i < len(segs) - 1 else 0.0
+                    st.extrapolation = "HOLD" if i == 0 else ("HOLD_FORWARD" if one else "NOTHING")
+                except Exception as e:
+                    ANIM_PROBLEMS.add(f"{self.model}: NLA setting failed ({str(e)[:60]})")
+
+
+def clear_sightlines(shot, chars, dur):
+    """Switch off every tree, bush, grass tuft or boulder that would stand between the camera and an animal
+    at any moment of the shot, and everything that is very close to the camera."""
+    cdesc = [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars]
+    times = [dur * k / 6.0 for k in range(7)]
+    cams = [core.camera_state(shot.get("camera", {}), cdesc, t, dur, HFOV, VFOV)["cam"] for t in times]
+    targets = []
+    for c in chars:
+        hw = 0.4 * c["height"] + 0.25
+        for t in times:
+            p = core.state_at(c["segs"], t)[0]
+            targets.append((p[0], p[1], hw))
+    stand = [core.state_at(c["segs"], 0)[0] for c in chars]
+    for it in ENV:
+        if it["obj"].hide_render:
+            continue
+        x, y, r, kind = it["x"], it["y"], it["r"], it["kind"]
+        # a prop boulder an animal stands on stays
+        if kind == "prop" and any(math.hypot(p[0] - x, p[1] - y) < r for p in stand):
+            continue
+        hide = False
+        for cam in cams:
+            near = 2.5 if kind == "low" else 2.0 + r
+            if math.hypot(x - cam[0], y - cam[1]) < near:
+                hide = True
+                break
+            if kind == "low":
+                continue                                     # small things on the ground do not hide an animal
+            for tx, ty, hw in targets:
+                vx, vy = tx - cam[0], ty - cam[1]
+                L2 = vx * vx + vy * vy
+                if L2 < 1e-6:
+                    continue
+                L = math.sqrt(L2)
+                u = ((x - cam[0]) * vx + (y - cam[1]) * vy) / L2
+                if u <= 0.0 or u * L > L + 0.3:
+                    continue
+                if math.hypot(cam[0] + vx * u - x, cam[1] + vy * u - y) < r + hw:
+                    hide = True
+                    break
+            if hide:
+                break
+        if hide:
+            hide_item(it["obj"])
+            CLEARED["n"] += 1
 
 
 def build_shot(shot, dur):
     bpy.ops.wm.read_factory_settings(use_empty=True)
+    ENV.clear()
     sc = setup_render()
     build_env(shot.get("look", "meadow_day"))
     for pr in shot.get("props", []):
         if pr.get("type") == "rock":
-            make_rock(pr["pos"][0], pr["pos"][1], pr.get("size", 1.5), seed=int(pr["pos"][0] * 10 + pr["pos"][1]))
+            x, y, size = pr["pos"][0], pr["pos"][1], pr.get("size", 1.5)
+            rock = make_rock(x, y, size, seed=int(x * 10 + y))
+            register(rock, x, y, size * 0.9, "prop")
     chars = core.shot_setup(shot, dur)
-    actors = {}
     for c in chars:
         a = Actor(c)
-        actors[c["id"]] = a
         c["actor"] = a
+        a.build_nla(c["segs"])
     cam_data = bpy.data.cameras.new("Cam")
     cam_data.lens = 30
+    cam_data.clip_end = 500
     cam_data.dof.use_dof = True
     cam_data.dof.aperture_fstop = 4.0
     cam = bpy.data.objects.new("Cam", cam_data)
@@ -430,6 +522,7 @@ def build_shot(shot, dur):
     con.target = target
     con.track_axis = "TRACK_NEGATIVE_Z"
     con.up_axis = "UP_Y"
+    clear_sightlines(shot, chars, dur)
     return sc, cam, target, chars
 
 
@@ -438,15 +531,18 @@ def pose_frame(sc, cam, target, chars, shot, t_sec, dur):
         a = c["actor"]
         if not a.ok:
             continue
-        pos, heading, anim, _action = core.state_at(c["segs"], t_sec)
+        pos, heading, anim, action = core.state_at(c["segs"], t_sec)
+        s = a.base_scale
+        sx = sy = sz = s
+        if TALK_CUE and action == "talk":                     # a small speaking nod, only for the animal that talks
+            env = 0.5 * (math.sin(2 * math.pi * 3.1 * t_sec) + 0.6 * math.sin(2 * math.pi * 5.3 * t_sec + 1.0))
+            bob = 0.03 * max(0.0, env)
+            sx = sy = s * (1.0 - 0.4 * bob)
+            sz = s * (1.0 + bob)
+            heading += 2.0 * math.sin(2 * math.pi * 1.3 * t_sec)
         a.wrap.location = (pos[0], pos[1], a.z)
         a.wrap.rotation_euler.z = math.radians(heading + MODEL_FORWARD_OFFSET)
-        s = a.base_scale
-        a.wrap.scale = (s, s, s)
-        act = a.pick(anim)
-        if act is not None:
-            for arm in a.arms:
-                arm.animation_data.action = act
+        a.wrap.scale = (sx, sy, sz)
     cs = core.camera_state(shot.get("camera", {}), [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars],
                            t_sec, dur, HFOV, VFOV)
     cam.location = Vector(cs["cam"])
@@ -497,6 +593,7 @@ def main():
                     el = time.time() - t_start
                     print(f"  {done}/{b - a} frames, {el / done:.1f}s per frame", flush=True)
     print(f"Finished {done} frames in {(time.time() - t_start) / 60:.1f} min")
+    print(f"Objects switched off because they hid an animal or the camera: {CLEARED['n']}")
     if SCALE_REPORT:
         print("SCALES:", "; ".join(f"{k} {v}" for k, v in sorted(SCALE_REPORT.items())))
     if ANIM_USED:
