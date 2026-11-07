@@ -1,5 +1,5 @@
 {
- "next_topic": 1,
+ "next_topic": 2,
  "history": [
   {
    "date": "2026-11-07",
@@ -8,6 +8,14 @@
    "file": "plans/episode_2026-11-07.json",
    "recap": "माइलो ड्रैकन के भारी ब्याज वाले कर्ज के जाल में फंस गया था, जिसे राग्नार ने सही वित्तीय नियम समझाकर बचाया।",
    "cliffhanger": "कल देखिए कैसे चालाक लोमड़ी चिंटू ने दुगुने पैसों के लालच में पूरा जंगल ठगा!"
+  },
+  {
+   "date": "2026-11-07",
+   "title": "The Trial of the Empty Purse | Blackwood Money Tales",
+   "topic": "Pay yourself first: save a part of every income before spending",
+   "file": "plans/episode_2026-11-07_2.json",
+   "recap": "Milo was dragged before Elder Dev by Drakon for an unpaid debt, but proved he saved twenty coins out of every hundred first.",
+   "cliffhanger": "Tomorrow, beware Chintu the fox and his cunning coin-doubling trap in the clearing!"
   }
  ]
 }
