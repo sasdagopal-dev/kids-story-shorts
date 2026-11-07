@@ -1,0 +1,1038 @@
+{
+ "version": 4,
+ "language": "Hindi",
+ "title": "तूफ़ान की चुनौती: क्या माइलो दुश्मन ड्रैकन को बचाएगा? #shorts",
+ "description": "चीड़ के जंगल में भारी तूफ़ान के बीच ढलान पर ड्रैकन की गुफा बंद हो गई। माइलो को अब अपनी पुरानी दुश्मनी भुलाकर एक साहसी फैसला लेना होगा!",
+ "tags": [
+  "JungleHeartTales",
+  "HindiStories",
+  "MoralStories",
+  "AnimatedShorts",
+  "FoxAndWolf",
+  "KidsStory",
+  "SurvivalRace",
+  "ShortsHindi",
+  "JungleTales",
+  "PanchatantraModern"
+ ],
+ "twist": "गुफा की दरार में माइलो ने देखा कि ड्रैकन खुद नहीं छिपा था, बल्कि अपनी पीठ पर भारी चीड़ का पेड़ रोककर छोटे पिल्लों की जान बचा रहा था।",
+ "recap": "माइलो की समझदारी और भोलू की ताकत से ड्रैकन और नन्हें पिल्ले सुरक्षित बाहर आ गए, जिससे पुरानी दुश्मनी मिसाल में बदल गई।",
+ "cliffhanger": "तूफ़ान तो शांत हुआ, पर क्या पहाड़ी के पीछे फिर से कोई कड़कड़ाती आवाज़ गूँजी?",
+ "disclaimer": "",
+ "credits": "3D models by Quaternius (CC0).",
+ "target_seconds": 171,
+ "flexible_length": true,
+ "estimated_voice_seconds": 146.9,
+ "cast": [
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf rival, bully with a hidden fear",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!"
+  },
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny clumsy donkey, loyal friend, comic relief",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!"
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, small clever young fox, brave but sometimes impatient",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!"
+  },
+  {
+   "id": "veer",
+   "name": "Veer",
+   "model": "Stag",
+   "role": "noble stag, guardian of the forest, speaks little",
+   "voice_style": "few words, deep and noble",
+   "catchphrase": "The forest listens."
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, calm and wise, gives short rules",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path."
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind strong cow, protects the young, loves everyone",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one."
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "Storm at Cave",
+   "look": "storm_dusk",
+   "narration": "धड़ाम! बिजली कड़की, लाल मिट्टी धंसी और ड्रैकन की गुफा बंद हो गई।",
+   "tone": "tense fast urgent",
+   "visual": "A massive storm strikes near the cave entrance, mudslides sealing it off as Drakon gets trapped.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Bholu Panic",
+   "look": "storm_dusk",
+   "narration": "\"अरे दया रे! दुष्ट भेड़िया अंदर दब गया!\" भोलू गधा डर के मारे ढेंचूँ-ढेंचूँ चिल्लाया।",
+   "tone": "panicked worried funny",
+   "visual": "Bholu the donkey panics in front of Milo as rain pours down.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.0
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Milo Hesitates",
+   "look": "storm_dusk",
+   "narration": "चालाक लोमड़ी माइलो रुका। \"उस घमंडी ने कल मेरी पूँछ खींची थी, आज भुगते!\"",
+   "tone": "thoughtful conflicted sharp",
+   "visual": "Milo stops and looks angry, remembering Drakon pulling his tail yesterday.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.35
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.35
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Veer Warning",
+   "look": "storm_dusk",
+   "narration": "तभी वीर चील ऊपर से चीखा, \"नीचे कीचड़ में नन्हे पिल्लों की चीखें गूँज रही हैं!\"",
+   "tone": "dramatic suspenseful fast",
+   "visual": "Veer calls out from the high rocks above the valley about the pups inside.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "veer",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      1.2,
+      3.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "milo",
+     "z": 0.97
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      1.2,
+      3.8
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.31
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Ragnar Wisdom",
+   "look": "storm_dusk",
+   "narration": "बूढ़ा कछुआ राग्नार धीमे से बोला, \"ग़ुस्सा अंधा करता है माइलो, धर्म नहीं।\"",
+   "tone": "calm slow wise",
+   "visual": "Ragnar the old white wolf speaks calmly from a boulder.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.39
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.03
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.2,
+      3.6
+     ],
+     "size": 1.6
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.39
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Milo Decides",
+   "look": "storm_dusk",
+   "narration": "\"अच्छा बाबा! मैं उन छोटे पिल्लों को मरने नहीं दूँगा!\" माइलो तुरंत बोला।",
+   "tone": "eager clever confident",
+   "visual": "Milo's eyes ignite with determination as he decides to save the pups.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.0
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Sprint to Cave",
+   "look": "storm_dusk",
+   "narration": "तेज़ आंधी से टकराता हुआ माइलो चट्टानों की ओर किसी तीर की तरह झपटा।",
+   "tone": "determined fast energetic",
+   "visual": "Milo dashes through the storm toward the rocky cave entrance.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        1.0,
+        3.5
+       ]
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Lakshmi Blessing",
+   "look": "storm_dusk",
+   "narration": "लक्ष्मी गाय ममता से रंभाते हुए बोली, \"सँभल कर जाना मेरे प्यारे बच्चे!\"",
+   "tone": "warm protective motherly",
+   "visual": "Lakshmi the cow calls out warmly to Milo as he runs past.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.46
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.46
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Mud Jump",
+   "look": "storm_dusk",
+   "narration": "\"मैं हवा से भी तेज़ भागूँगा!\" माइलो ने गहरी कीचड़ में छलांग लगा दी।",
+   "tone": "brave rushed eager",
+   "visual": "Milo leaps into the thick mud near the fallen rocks.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.53
+      }
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.53
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Blocked Entrance",
+   "look": "storm_dusk",
+   "narration": "गुफा के मुहाने पर विशाल चीड़ का पेड़ गिरा था और भारी पत्थर अड़े थे।",
+   "tone": "dark dangerous tense",
+   "visual": "A massive pine tree and rocks wedge tightly in front of the cave opening.",
+   "camera": {
+    "framing": "wide",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Milo Peeks Inside",
+   "look": "storm_dusk",
+   "narration": "माइलो ने दरार से अंदर देखा तो उसकी आँखें हैरानी से फटी की फटी रह गईं।",
+   "tone": "shocked surprised slow",
+   "visual": "Milo peeks through the narrow rock crack and gasps in shock.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Drakon Sacrifice",
+   "look": "storm_dusk",
+   "narration": "दुष्ट ड्रैकन खुद नहीं छिपा था, वह अपनी पीठ पर भारी पेड़ टांगे खड़ा था!",
+   "tone": "emotional intense heroic",
+   "visual": "Inside the cave crack, Drakon holds up a heavy fallen tree on his back to protect his pups.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "hurt"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "thumb": true
+  },
+  {
+   "id": 13,
+   "title": "Drakon Cry",
+   "look": "storm_dusk",
+   "narration": "\"भागो मत, मैं बच्चों पर पेड़ नहीं गिरने दूँगा!\" ड्रैकन दर्द से गुर्राया।",
+   "tone": "proud struggling fearful",
+   "visual": "Drakon snarls in pain while keeping the tree off the scared wolf pups.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.0
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Milo Lever Plan",
+   "look": "storm_dusk",
+   "narration": "माइलो ने तुरंत सूखी लकड़ी का लट्ठा उठाकर पत्थर के नीचे अड़ा दिया।",
+   "tone": "clever quick focused",
+   "visual": "Milo rushes over and jams a sturdy wooden log under the heavy rock as a lever.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.5,
+        3.2
+       ]
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Call Bholu",
+   "look": "storm_dusk",
+   "narration": "\"भोलू, अपनी ढेंचूँ ताकत लगाओ और पीछे से धक्का दो!\" माइलो चिल्लाया।",
+   "tone": "shouting energetic commanding",
+   "visual": "Milo turns around and shouts out to Bholu to push from behind.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.0
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Bholu Push",
+   "look": "storm_dusk",
+   "narration": "\"अरे मेरे कान, मेरी पूँछ... लो मार दिया धक्का!\" भोलू ज़ोर से बोला।",
+   "tone": "funny struggling loud",
+   "visual": "Bholu runs up and pushes the log lever with all his donkey strength.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "bholu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.6,
+        3.2
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.05
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.05
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Pups Rescue",
+   "look": "storm_dusk",
+   "narration": "कर्र-कर्र! लट्ठा उठते ही ड्रैकन सभी बच्चों को अपनी गोद में लेकर बाहर आया।",
+   "tone": "relieved powerful triumphant",
+   "visual": "The log lifts the boulder, and Drakon carries the little wolf pups out safely.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        0.0,
+        3.0
+       ]
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Drakon Gratitude",
+   "look": "storm_dusk",
+   "narration": "घमंडी भेड़िया माइलो के सामने झुका और उसकी आँखों से आँसू छलक पड़े।",
+   "tone": "humbled quiet gentle",
+   "visual": "Proud Drakon bows before Milo, tears welling in his eyes with quiet gratitude.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Veer Lesson",
+   "look": "storm_dusk",
+   "narration": "वीर चील ऊपर से चिल्लाया, \"असली हीरो वही है जो दुष्ट में भी अच्छाई देखे!\"",
+   "tone": "warm wise mysterious",
+   "visual": "Veer watches from above as calm returns, delivering the story's core wisdom.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "veer",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      1.2,
+      3.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.33
+      }
+     ],
+     "face": "milo",
+     "z": 0.97
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      1.2,
+      3.8
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.33
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Cliffhanger Sound",
+   "look": "night_moon",
+   "narration": "लेकिन सुनो, क्या बिजली कड़कते ही दूर उसी गुफा में फिर से धड़ाम हुआ?",
+   "tone": "inviting energetic looping",
+   "visual": "As night falls, a sudden loud crash echoes from another cave in the distance.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  }
+ ],
+ "topic": "Drakon's pack is trapped by a storm and Milo has to decide whether to help the rival who bullied him",
+ "genre": "a survival race against the weather",
+ "director_model": "gemini-3.6-flash"
+}
