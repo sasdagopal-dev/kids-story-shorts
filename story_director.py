@@ -283,6 +283,12 @@ def repair_plan(raw, cfg, strict=True):
     for sh in shots:
         dialogue_choreo(sh, cfg, notes, sh.pop("_hint", None), sh.pop("_given", None))
 
+    cuts = 0
+    for sh in shots:                                     # conversations: the camera cuts to whoever speaks
+        ids = [x["id"] for x in sh.get("speakers", [])]
+        if len(set(ids)) >= 2 and len(ids) >= 2 and cuts < 6 and len(sh["characters"]) >= 2:
+            sh["cuts"] = True
+            cuts += 1
     # ---- animals must not overlap, walk through each other, or hide each other from the camera
     for sh in shots:
         az = core.az_of(sh["camera"]["side"])
@@ -372,7 +378,7 @@ def repair_plan(raw, cfg, strict=True):
                 used_ids.append(c["id"])
     plan = {"version": 4, "language": language, "title": title + suffix,
             "description": str(raw.get("description") or "").strip(), "tags": tags,
-            "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
+            "twist": str(raw.get("twist") or "")[:200], "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
             "disclaimer": disc, "credits": cfg.get("credits", ""),
             "target_seconds": target, "flexible_length": True, "estimated_voice_seconds": round(est, 1),
             "cast": [cast_by_id[i] for i in used_ids], "shots": shots}
@@ -570,7 +576,7 @@ def dialogue_choreo(sh, cfg, notes, hint, given=None):
 
 
 # ------------------------------------------------------------------ prompt
-def build_prompt(cfg, topic, genre, history, feedback):
+def build_prompt(cfg, topic, genre, history, feedback, story=None):
     language = cfg.get("language", "English")
     tg = cfg["targets"][language]
     unit = tg["unit"]
@@ -596,7 +602,7 @@ def build_prompt(cfg, topic, genre, history, feedback):
             {"id": other["id"], "pos": [-1.0, 3.6], "face": hero["id"], "beats": [{"action": "talk"}]},
             {"id": hero["id"], "pos": [1.2, 3.0], "face": other["id"], "beats": [{"action": "sad", "at": 0.5}]}]}
     closing = (f"Shot {n}: a warm closing image, a friendly 'follow for the next adventure' line" + (f" and this sentence: {disc}" if disc else "") + ".")
-    return f"""You are an award-winning animation director and a gripping storyteller for families.
+    full = f"""You are an award-winning animation director and a gripping storyteller for families.
 Make a vertical (9:16) YouTube Short of about {int(cfg.get('target_seconds', 150))} seconds (the real length follows the story, a little shorter or longer is fine). It is episode {len(history) + 1} of the series "{series.get('name', '')}": a dramatic, funny and touching ANIMAL ADVENTURE, like a mini movie. The animals live like animals in nature (herd, pack, den, river, drought, storm, hunters, rivals, rescue, migration, lost young ones) and the story secretly carries ONE gentle life lesson (courage, friendship, honesty, teamwork, patience, kindness ...). It must feel like a story people cannot stop watching, never like a lecture.
 Audience: families and children in India and the US. Narration language: {language}.
 Story idea of today: {topic}
@@ -645,6 +651,123 @@ Return ONLY JSON:
 One shot looks like this:
 {json.dumps(example, ensure_ascii=False)}
 """
+    if story:
+        i, j = full.index("MAKE IT GRIPPING"), full.index("CAST (use ONLY")
+        brief = [{"id": s["id"], "narration": s["narration"], "quote_speakers": s["quote_speakers"], "tone": s.get("tone", "")}
+                 for s in story["shots"]]
+        full = (full[:i] + "THE STORY IS FINISHED AND LOCKED. Do NOT change a single word of the narration. You are only the DIRECTOR now.\n"
+                "For every shot copy id, narration (exactly), quote_speakers, tone and speaker, and add look, visual, camera, props, characters, thumb. "
+                "Make the picture show what the words say, put the emotional peak shots in close-ups, and use wide shots for places and danger.\n"
+                "FINISHED STORY:\n" + json.dumps(brief, ensure_ascii=False) + "\n\n" + full[j:])
+    return full
+
+
+# ------------------------------------------------------------------ pass 1 and 2: the story itself
+def build_story_prompt(cfg, topic, genre, history, feedback):
+    language = cfg.get("language", "English")
+    tg = cfg["targets"][language]
+    unit = tg["unit"]
+    series = cfg.get("series", {})
+    n = cfg.get("shots", 20)
+    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} ({c['model']}): {c['role']}. Speaks: {c.get('voice_style', 'natural')}. Catchphrase: {c.get('catchphrase', '-')}"
+                     for c in cfg["cast"])
+    past = "\n".join(f"- {h.get('title', '')}" + (f" | {h['recap']}" if h.get("recap") else "") for h in history[-6:]) or "- (episode 1)"
+    twists = "\n".join(f"- {h['twist']}" for h in history[-12:] if h.get("twist")) or "- (none yet)"
+    dmap = cfg.get("disclaimer") or {}
+    disc = dmap.get(language, "") if isinstance(dmap, dict) else ""
+    fix = ("FIX THIS PROBLEM FROM YOUR LAST ANSWER: " + feedback) if feedback else ""
+    end_extra = (" and this sentence: " + disc) if disc else ""
+    return f"""You are a master children's-film writer. Write ONLY the story (no camera, no positions) of a vertical YouTube Short, {n} shots, language {language}.
+Series "{series.get('name', '')}". World: {series.get('bible', '')}
+Story idea: {topic}
+Style: {genre}
+Earlier episodes (do not repeat):
+{past}
+Twists already used (invent a DIFFERENT one):
+{twists}
+{fix}
+
+CAST (use only these ids; each animal speaks in its own style and may use its catchphrase at most once):
+{cast}
+
+CRAFT RULES
+1. HOOK: shot 1 must raise a question in the first 3 seconds (danger, secret, missing friend, ticking clock). No calm description.
+2. WANT AND OBSTACLE: the hero wants something specific, something stands in the way, and the stakes are clear and emotional.
+3. OPEN LOOPS: every 4 shots, open a new small question or raise the danger, so nobody swipes away. Pay them off later.
+4. TWIST around shots 11-13 that the viewer does not expect but that is fair (hinted earlier).
+5. DIALOGUE: at least 8 of the {n} shots contain a spoken line in double quotes with the speaker named next to it ("said Ragnar"). Short, funny or touching lines in each animal's own voice. Do not let a narrator explain what a line already shows.
+6. EMOTION: show fear, pride, shock, laughter, relief through actions and short lines, not by naming the feeling.
+7. LESSON: one gentle life lesson, shown by events and one short wise line, never a speech.
+8. ENDING: shot {n - 1} = the heart of the story in one simple line + a one-line teaser. Shot {n} = a warm, funny or surprising last line that echoes shot 1 (so the video loops){end_extra}, plus a friendly 'follow for the next adventure'.
+9. Simple vivid words, short sentences, storyteller rhythm. Family friendly, no blood, no real brands.
+10. LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. Count carefully.
+
+GOOD STYLE (only the style, do not copy):
+"Tiny Milo stared at the dry riverbed. Behind him, the whole herd was already leaving." / Ragnar did not even turn his head. "Water does not run away, little fox," said Ragnar. "It hides. Like courage." / "Then I will find it," whispered Milo, and his voice shook.
+
+Return ONLY JSON: {{"title": "<gripping honest {language} title, max 60 characters>", "description": "<2-3 sentences>", "tags": ["<10 short tags>"], "logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<one sentence teaser>",
+"shots": [{{"id": 1, "narration": "...", "quote_speakers": ["<id of each quoted line in order>"], "speaker": "<id or null>", "tone": "<2-4 words for the voice actor>"}}, ... {n} shots ...]}}
+"""
+
+
+def check_story(story, cfg, strict=True):
+    language = cfg.get("language", "English")
+    tg = cfg["targets"][language]
+    unit = tg["unit"]
+    n = int(cfg.get("shots", 20))
+    if not isinstance(story, dict) or not isinstance(story.get("shots"), list):
+        raise Reject("the JSON must be an object with a 'shots' list")
+    if len(story["shots"]) != n:
+        raise Reject(f"you wrote {len(story['shots'])} shots, I need exactly {n}")
+    cid = {c["id"].lower(): c["id"] for c in cfg["cast"]}
+    cid.update({c["name"].lower(): c["id"] for c in cfg["cast"]})
+    total, talking = 0, 0
+    for i, s in enumerate(story["shots"], start=1):
+        if not isinstance(s, dict) or not str(s.get("narration") or "").strip():
+            raise Reject(f"shot {i} has no narration")
+        s["id"] = i
+        s["narration"] = s["narration"].strip()
+        if lang_ratio(s["narration"], language) < 0.75:
+            raise Reject(f"shot {i} narration must be written in {language}")
+        u = count_units(s["narration"], unit)
+        lo, hi = tg["shot"]
+        if strict and not (lo - 2 <= u <= hi + 4):
+            raise Reject(f"shot {i} narration has {u} {unit}, each shot must have {lo} to {hi} {unit}")
+        total += u
+        nq = len(QUOTE_RE.findall(s["narration"]))
+        raw_q = s.get("quote_speakers") if isinstance(s.get("quote_speakers"), list) else []
+        qs = [cid.get(str(x).lower()) for x in raw_q]
+        if nq != len(qs) or any(x is None for x in qs):
+            raise Reject(f"shot {i}: it has {nq} quoted line(s) but quote_speakers lists {len(qs)} valid id(s); list the speaker id of every quoted line, in order")
+        s["quote_speakers"] = qs
+        talking += 1 if nq else 0
+    tlo, thi = tg["total"]
+    if strict and not (tlo <= total <= thi):
+        raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi}")
+    if strict and talking < 6:
+        raise Reject(f"only {talking} shots have spoken lines in quotes, I need at least 8: more dialogue, less narrator")
+    return story
+
+
+def polish_story(story, cfg, models, key, state):
+    """Pass 2: a strict editor scores the story and rewrites the weak shots."""
+    language = cfg.get("language", "English")
+    tg = cfg["targets"][language]
+    prompt = f"""You are a ruthless story editor for children's animation. Read this {language} story (JSON).
+Score 1-10: hook (first 3 seconds), emotion, humor, surprise of the twist, clarity, ending that echoes the start.
+Then REWRITE every weak part so each score is at least 8: sharper hook, funnier or more touching dialogue in each animal's own voice, fewer explaining narrator sentences, a fair twist, a warm looping ending.
+KEEP: the same number of shots and ids, each shot {tg['shot'][0]} to {tg['shot'][1]} {tg['unit']}, total {tg['total'][0]} to {tg['total'][1]} {tg['unit']}, spoken lines in double quotes with the speaker named next to them, and "quote_speakers" (one id per quoted line, in order) for every shot, only these ids: {', '.join(c['id'] for c in cfg['cast'])}.
+Return ONLY the full improved story as JSON in exactly the same format (title, description, tags, logline, twist, recap, cliffhanger, shots with id, narration, quote_speakers, speaker, tone).
+
+STORY:
+{json.dumps(story, ensure_ascii=False)}
+"""
+    try:
+        better = ask_json(prompt, models, key, state, temperature=0.6)
+        return check_story(better, cfg, strict=True)
+    except (Reject, RuntimeError) as e:
+        print("  editor pass skipped:", str(e)[:140])
+        return story
 
 
 # ------------------------------------------------------------------ continuity pass
@@ -752,11 +875,27 @@ def main():
     models = pick_models(key, a.models)
     print("Gemini models:", ", ".join(models))
     state = {"dead": set(), "model": ""}
-    feedback, plan, notes, total = "", None, [], 0
+    feedback, dir_feedback, story, plan, notes, total = "", "", None, None, [], 0
     for attempt in range(1, a.attempts + 1):
         print(f"Director attempt {attempt}/{a.attempts}", flush=True)
+        stage = "story"
         try:
-            raw = ask_json(build_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state)
+            if story is None:
+                print("  pass 1: writing the story", flush=True)
+                story = check_story(ask_json(build_story_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state), cfg)
+                print("  pass 2: editing the story", flush=True)
+                story = polish_story(story, cfg, models, key, state)
+            stage = "direction"
+            print("  pass 3: directing the story", flush=True)
+            raw = ask_json(build_prompt(cfg, topic, genre, prog["history"], dir_feedback, story), models, key, state)
+            if not isinstance(raw, dict) or not isinstance(raw.get("shots"), list) or len(raw["shots"]) != len(story["shots"]):
+                raise Reject(f"return exactly {len(story['shots'])} shots, one for every shot of the finished story")
+            for rs, ss in zip(raw["shots"], story["shots"]):          # the words are locked
+                rs["narration"], rs["quote_speakers"], rs["tone"] = ss["narration"], ss["quote_speakers"], ss.get("tone", "")
+                if ss.get("speaker"):
+                    rs["speaker"] = ss["speaker"]
+            for k in ("title", "description", "tags", "twist", "recap", "cliffhanger"):
+                raw[k] = story.get(k, raw.get(k))
             plan, notes, total = repair_plan(raw, cfg, strict=True)
             fixed_raw, fixed = critic_pass(plan, cfg, models, key, state)
             if fixed:
@@ -768,14 +907,18 @@ def main():
                     print("  continuity fixes were not usable, kept the first version:", e)
             break
         except Reject as e:
-            feedback = str(e)
-            print("  rejected:", feedback, flush=True)
+            print("  rejected:", e, flush=True)
+            if stage == "story":
+                feedback, story = str(e), None
+            else:
+                dir_feedback = str(e)
             plan = None
         except RuntimeError as e:
             print("  ", e, flush=True)
             if attempt == a.attempts:
                 break
             SLEEP(30)
+    feedback = feedback or dir_feedback
     if plan is None:
         sys.exit(f"FAIL: no usable story after {a.attempts} attempts. Last problem: {feedback}")
 
@@ -792,7 +935,7 @@ def main():
         if not a.topic and prog["next_topic"] < len(topics):
             prog["next_topic"] += 1
         prog["history"].append({"date": date, "title": plan["title"], "topic": topic, "file": path,
-                                "recap": plan.get("recap", ""), "cliffhanger": plan.get("cliffhanger", "")})
+                                "recap": plan.get("recap", ""), "cliffhanger": plan.get("cliffhanger", ""), "twist": plan.get("twist", "")})
         json.dump(prog, open(a.progress, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     md = report_md(plan, topic, genre, state["model"], total, unit, notes, path)
     open("director_report.md", "w", encoding="utf-8").write(md)
