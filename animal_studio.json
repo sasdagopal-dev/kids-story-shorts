@@ -1,6 +1,6 @@
 {
   "language": "English",
-  "title_suffix": " | Money Kingdom Stories",
+  "title_suffix": " | Blackwood Money Tales",
   "target_seconds": 150,
   "shots": 20,
   "targets": {
@@ -12,40 +12,46 @@
     "Hindi": "यह वीडियो केवल शिक्षा के लिए है। यह निवेश या वित्तीय सलाह नहीं है।"
   },
   "credits": "3D models: Quaternius (CC0). Voice: Google Gemini text-to-speech. Story and images are AI generated.",
+  "series": {
+    "name": "Blackwood Money Tales",
+    "bible": "Blackwood is a vast jungle where animals trade and save with acorn coins (Rs). Drakon, a black wolf with scarred eyes, runs the Fang Lending Den: he lends coins at cruel interest and sends his pack to collect. Ragnar, a grey wolf and the last guardian of the forest, teaches everyone to save and spend wisely. Milo, a young brave deer, is the hero: his mother has gone missing and he owes Drakon coins. Elder Dev, an old stag, guards the forest's Savings Tree. Chintu the fox sells 'double your coins' tricks. Every episode is a complete story with its own money lesson, but the fight between the Fang Den and the guardians continues from day to day."
+  },
   "cast": [
-    {"id": "lakshmi", "name": "Lakshmi", "model": "Cow", "role": "gentle, hard-working cow, the hero who learns to save"},
-    {"id": "ashwa", "name": "King Ashwa", "model": "Horse_White", "role": "wise white horse king who teaches by asking questions"},
-    {"id": "bhola", "name": "Bhola", "model": "Donkey", "role": "cheerful donkey who spends everything and learns the hard way"},
+    {"id": "milo", "name": "Milo", "model": "Deer", "role": "brave young deer, the hero; loves his missing mother; learns to save"},
+    {"id": "ragnar", "name": "Ragnar", "model": "Wolf", "role": "grey wolf, last guardian of the forest, wise and gruff mentor"},
+    {"id": "drakon", "name": "Drakon", "model": "Wolf", "tint": [0.15, 0.14, 0.16], "role": "black wolf, cruel moneylender who runs the Fang Lending Den"},
+    {"id": "pack1", "name": "Fang", "model": "Wolf", "tint": [0.15, 0.14, 0.16], "role": "Drakon's black wolf collector"},
+    {"id": "pack2", "name": "Claw", "model": "Wolf", "tint": [0.15, 0.14, 0.16], "role": "Drakon's second black wolf collector"},
+    {"id": "arkon", "name": "Arkon", "model": "Wolf", "tint": [2.3, 2.3, 2.5], "role": "legendary white wolf, the first guardian, seen only in memories and legends"},
+    {"id": "dev", "name": "Elder Dev", "model": "Stag", "role": "old stag who guards the forest Savings Tree"},
     {"id": "chintu", "name": "Chintu", "model": "Fox", "role": "smooth-talking fox who sells get-rich-quick tricks"},
-    {"id": "seth", "name": "Seth Bhediya", "model": "Wolf", "role": "greedy wolf moneylender with huge interest"},
-    {"id": "mohan", "name": "Mohan", "model": "Bull", "role": "strong, honest bull who works in the fields"},
-    {"id": "meera", "name": "Meera", "model": "Deer", "role": "young curious deer who asks good questions"},
-    {"id": "dev", "name": "Elder Dev", "model": "Stag", "role": "old stag who keeps the village savings box"},
-    {"id": "gudiya", "name": "Gudiya", "model": "Alpaca", "role": "cheerful alpaca trader in the market clearing"},
-    {"id": "moti", "name": "Moti", "model": "ShibaInu", "role": "small loyal dog, shopkeeper's helper and messenger"},
-    {"id": "tuffy", "name": "Tuffy", "model": "Husky", "role": "playful husky, Bhola's friend"},
-    {"id": "tej", "name": "Tej", "model": "Horse", "role": "fast brown horse who carries news"}
+    {"id": "lakshmi", "name": "Lakshmi", "model": "Cow", "role": "kind cow, Milo's friend, a careful saver"},
+    {"id": "bhola", "name": "Bhola", "model": "Donkey", "role": "cheerful donkey who spends everything"},
+    {"id": "ashwa", "name": "King Ashwa", "model": "Horse_White", "role": "white horse, king of the open plains, fair judge"},
+    {"id": "mohan", "name": "Mohan", "model": "Bull", "role": "strong honest bull, field worker"},
+    {"id": "gudiya", "name": "Gudiya", "model": "Alpaca", "role": "cheerful alpaca trader"},
+    {"id": "moti", "name": "Moti", "model": "ShibaInu", "role": "small loyal dog, messenger"}
   ],
   "topics": [
+    "Debt trap: why borrowing at very high interest keeps growing and how to escape it",
     "Pay yourself first: save a part of every income before spending",
     "Emergency fund: why every family needs one before a bad day comes",
-    "Compound interest: a small seed becomes a big tree with time",
     "Get-rich-quick scams: the red flags of 'double your money' promises",
-    "Good debt versus bad debt: why very high interest traps people",
+    "Compound interest: a small seed becomes a big tree with time",
+    "Good debt versus bad debt, and asking the real cost before you borrow",
     "Needs versus wants: festival spending and simple budgeting",
-    "Inflation: why money kept idle slowly buys less",
     "Insurance: protecting the family from one bad day",
+    "Inflation: why money kept idle slowly buys less",
     "Start early: two friends who began saving at different ages",
-    "Small regular investing and patience (education only, no product names)",
-    "The minimum-due trap: why paying only a little on a loan or card costs more",
-    "Do not put all your savings in one basket"
+    "Do not put all your savings in one basket",
+    "The minimum-due trap: paying only a little on a loan costs far more later"
   ],
   "genres": [
-    "a fable in the Panchatantra style with a clever twist",
-    "a drama in the king's court where the king tests two friends",
-    "a market-day adventure with a trader, a trickster fox and a crowd",
-    "a journey story: a messenger crosses forest, river and storm to deliver a warning",
-    "a festival story that ends happily after one costly mistake",
-    "a rescue story: a flood or storm shows who saved and who did not"
+    "a tense dusk chase through the forest that ends with a clever rule",
+    "a trial in the forest clearing where the elder judges an unfair debt",
+    "an ambush at the river and a daring rescue",
+    "a storm that tests whose family saved and whose did not",
+    "a market-day trick by Chintu the fox, exposed at the end",
+    "a night journey to carry the savings to safety"
   ]
 }
