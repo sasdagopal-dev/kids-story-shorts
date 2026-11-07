@@ -7,6 +7,7 @@ blender -b -P shorts_render.py -- --timeline timeline.json --story scene_plan_ti
 * every animal is measured and scaled to a realistic height, so sizes always match
 * each animal follows its beats (walk/run at natural speed, then idle), turns smoothly to face
   who it talks to, and plays the clip of the right kind of animal
+* black / white wolves (cast tints), boulders to stand on, calmer light, lens 30
 * the camera is DIRECTED per shot (framing, angle, movement, focus), all calculated by shorts_core.py
 * --sample-only renders 3 pictures per shot (start, middle, end) for a quick check
 Models are found BY NAME anywhere under --assets (.glb/.gltf preferred, .fbx fallback).
@@ -147,6 +148,55 @@ def add_cycles(action):
             fc.modifiers.new("CYCLES")
 
 
+
+def apply_tint(objs, tint):
+    """Multiply the colours of an animal's materials (black wolf = [0.15,0.14,0.16], white = [2.3,2.3,2.5])."""
+    copies = {}
+    for o in objs:
+        if o.type != "MESH":
+            continue
+        for slot in o.material_slots:
+            m = slot.material
+            if m is None:
+                continue
+            if m.name not in copies:
+                m2 = m.copy()
+                copies[m.name] = m2
+                if m2.use_nodes:
+                    for node in m2.node_tree.nodes:
+                        if node.type != "BSDF_PRINCIPLED":
+                            continue
+                        inp = node.inputs["Base Color"]
+                        if inp.is_linked:
+                            src = inp.links[0].from_socket
+                            mix = m2.node_tree.nodes.new("ShaderNodeMixRGB")
+                            mix.blend_type = "MULTIPLY"
+                            mix.inputs["Fac"].default_value = 1.0
+                            mix.inputs["Color2"].default_value = (tint[0], tint[1], tint[2], 1.0)
+                            m2.node_tree.links.new(src, mix.inputs["Color1"])
+                            m2.node_tree.links.new(mix.outputs["Color"], inp)
+                        else:
+                            c = inp.default_value
+                            inp.default_value = (c[0] * tint[0], c[1] * tint[1], c[2] * tint[2], 1.0)
+            slot.material = copies[m.name]
+
+
+def make_rock(x, y, size, seed=1):
+    """A lumpy boulder. Its top is at about 0.7 * size, so an animal can stand on it."""
+    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=size, location=(x, y, 0))
+    r = bpy.context.active_object
+    rng = random.Random(seed)
+    for v in r.data.vertices:
+        k = 1.0 + rng.uniform(-0.12, 0.12)
+        v.co.x *= k
+        v.co.y *= k
+        v.co.z *= k
+    r.scale = (1.0, 0.85, 0.7)
+    for pl in r.data.polygons:
+        pl.use_smooth = True
+    r.data.materials.append(make_material((0.42, 0.40, 0.38), 0.95))
+    return r
+
 # ---------------------------------------------------------------- natural looks
 def make_material(color, rough=1.0):
     m = bpy.data.materials.new("mat")
@@ -266,6 +316,9 @@ def build_env(look_name):
     scatter(look["trees"], look["n_trees"], rng)
     scatter(look["extras"], look["n_extras"], rng)
     scatter(look["decor"], look["n_decor"], rng, decor=True)
+    for k in range(7):                                   # a few big boulders far from the action
+        x = rng.choice([-1, 1]) * rng.uniform(8, 26)
+        make_rock(x, rng.uniform(4, 36), rng.uniform(1.0, 2.6), seed=k + 11)
 
 
 # ---------------------------------------------------------------- render setup
@@ -296,6 +349,7 @@ def setup_render():
     try:
         sc.view_settings.view_transform = "Filmic"
         sc.view_settings.look = "Medium High Contrast"
+        sc.view_settings.exposure = -0.3
     except Exception:
         pass
     return sc
@@ -315,6 +369,9 @@ class Actor:
         for a in acts:
             self.actions.setdefault(norm_anim(a.name), a)
         self.base_scale = 1.0
+        self.z = float(ch.get("z") or 0.0)
+        if ch.get("tint"):
+            apply_tint(new, ch["tint"])
         h = measure_height(new)
         want = core.TARGET_HEIGHT.get(self.model, 1.5)
         if h and h > 0.01:
@@ -347,6 +404,9 @@ def build_shot(shot, dur):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     sc = setup_render()
     build_env(shot.get("look", "meadow_day"))
+    for pr in shot.get("props", []):
+        if pr.get("type") == "rock":
+            make_rock(pr["pos"][0], pr["pos"][1], pr.get("size", 1.5), seed=int(pr["pos"][0] * 10 + pr["pos"][1]))
     chars = core.shot_setup(shot, dur)
     actors = {}
     for c in chars:
@@ -354,7 +414,7 @@ def build_shot(shot, dur):
         actors[c["id"]] = a
         c["actor"] = a
     cam_data = bpy.data.cameras.new("Cam")
-    cam_data.lens = 35
+    cam_data.lens = 30
     cam_data.dof.use_dof = True
     cam_data.dof.aperture_fstop = 4.0
     cam = bpy.data.objects.new("Cam", cam_data)
@@ -376,7 +436,7 @@ def pose_frame(sc, cam, target, chars, shot, t_sec, dur):
         if not a.ok:
             continue
         pos, heading, anim, _action = core.state_at(c["segs"], t_sec)
-        a.wrap.location = (pos[0], pos[1], 0)
+        a.wrap.location = (pos[0], pos[1], a.z)
         a.wrap.rotation_euler.z = math.radians(heading + MODEL_FORWARD_OFFSET)
         s = a.base_scale
         a.wrap.scale = (s, s, s)
