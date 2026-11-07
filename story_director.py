@@ -257,7 +257,8 @@ def repair_plan(raw, cfg, strict=True):
                "move": cam_in.get("move") if cam_in.get("move") in core.MOVES else "static",
                "focus": focus,
                "side": cam_in.get("side") if cam_in.get("side") in core.SIDES else "center"}
-        shot = {"id": n, "title": (s.get("title") if isinstance(s.get("title"), str) and 2 <= len(s["title"]) <= 40 else f"Shot {n}"),
+        hint = s.get("speaker") if s.get("speaker") in cast_by_id else None
+        shot = {"_hint": hint, "id": n, "title": (s.get("title") if isinstance(s.get("title"), str) and 2 <= len(s["title"]) <= 40 else f"Shot {n}"),
                 "look": look, "narration": text, "visual": str(s.get("visual") or "")[:220],
                 "camera": cam, "characters": chars}
         if props:
@@ -265,6 +266,15 @@ def repair_plan(raw, cfg, strict=True):
         if s.get("thumb"):
             shot["thumb"] = True
         shots.append(shot)
+
+    # ---- the verbs of the narration must be visible (English only)
+    if language == "English":
+        for sh in shots:
+            fix_actions(sh, cfg, notes)
+
+    for sh in shots:
+        dialogue_choreo(sh, cfg, notes, sh.get("_hint"))
+        sh.pop("_hint", None)
 
     # ---- animals must not overlap or walk through each other (real body sizes, depth first)
     for sh in shots:
@@ -276,11 +286,6 @@ def repair_plan(raw, cfg, strict=True):
                 if pr["type"] == "rock" and math.hypot(c["pos"][0] - pr["pos"][0], c["pos"][1] - pr["pos"][1]) < 0.9 * pr["size"] \
                         and not any(core.ACTIONS[b["action"]]["speed"] > 0 for b in c["beats"]):
                     c["z"] = round(0.7 * pr["size"] * 0.92, 2)
-
-    # ---- the verbs of the narration must be visible (English only)
-    if language == "English":
-        for sh in shots:
-            fix_actions(sh, cfg, notes)
 
     # ---- calm direction: few close-ups, "follow" only when the focus animal really moves
     closeups = 0
@@ -387,18 +392,126 @@ def fix_actions(sh, cfg, notes):
                 c["beats"] = [{"action": action}]
                 notes.append(f"shot {sh['id']}: the story says {c['id']} is '{action}', action set")
             break
-        # who speaks
-        if TALK_RE.search(sent) and named:
-            spk = named[0][1]["id"]
-            for p, e in named:
-                if re.search(re.escape(e["name"]) + r"\W+(\w+\W+){0,2}(said|asked|replied|shouted|whispered|called|explained|declared|told|answered|warned)", sent, re.I):
-                    spk = e["id"]
-                    break
-            c = chars.get(spk)
-            if c and not has_move(c) and not any(b["action"] in ("talk", "shock", "sad", "eat", "celebrate", "fight", "kick") for b in c["beats"]):
-                c["beats"] = [{"action": "talk"}]
-                notes.append(f"shot {sh['id']}: {spk} speaks, action set to talk")
 
+
+
+# ------------------------------------------------------------------ who speaks, and when
+SPEECH = r"(said|asked|replied|shouted|whispered|growled|snarled|called|cried|explained|declared|told|answered|warned|roared|yelled|pleaded|begged|muttered|sighed|gasped|announced|added|continued|cheered|laughed|barked)"
+QUOTE_RE = re.compile(r'["\u201c](.+?)["\u201d]')
+
+
+def quote_speakers(text, cast, hint=None, default=None):
+    """[(start_char, end_char, speaker_id)] for every quoted line. The speaker is the animal named with a
+    speech verb next to the quote: 'Drakon snarled, "..."', '"..." said Drakon', '"..." Ragnar growled'."""
+    quotes = [(m.start(), m.end()) for m in QUOTE_RE.finditer(text)]
+    verb_end = re.compile(r"\b" + SPEECH + r"\b(\s+\S+){0,3}[\s,:\-]*$", re.I)     # 'told Milo,' is allowed
+    verb_any = re.compile(r"\b" + SPEECH + r"\b", re.I)
+    before_txt, before_full, speakers, gap_used = [], [], [None] * len(quotes), set()
+    prev_end = 0
+    for i, (st, en) in enumerate(quotes):
+        seg = text[prev_end:st]
+        k = max(seg.rfind(". "), seg.rfind("! "), seg.rfind("? "))
+        sent = seg[k + 2:] if k >= 0 else seg
+        before_txt.append(sent)
+        before_full.append(seg)
+        m = verb_end.search(sent.rstrip() + " ")
+        if m:
+            named = [e for p_, e in names_in(sent, cast) if p_ < m.start()]
+            if named:
+                speakers[i] = named[-1]["id"]
+                gap_used.add(i)
+        prev_end = en
+    for i, (st, en) in enumerate(quotes):
+        if speakers[i] is not None:
+            continue
+        nxt = quotes[i + 1][0] if i + 1 < len(quotes) else len(text)
+        after = text[en:min(nxt, en + 70)]
+        k = min([x for x in (after.find(". "), after.find("! "), after.find("? ")) if x >= 0] or [len(after)])
+        after = after[:k]
+        if (i + 1) not in gap_used and (verb_any.search(after) or False):
+            named = names_in(after, cast)
+            vm = verb_any.search(after)
+            if named and vm:
+                before_v = [e for p_, e in named if p_ < vm.start()]
+                speakers[i] = (before_v[-1] if before_v else named[0][1])["id"]
+                continue
+        named = names_in(before_full[i], cast)              # e.g. 'Milo gasped. "Who are you?"'
+        if named:
+            speakers[i] = named[-1][1]["id"]
+    last = None
+    out = []
+    for i, (st, en) in enumerate(quotes):
+        spk = speakers[i] or hint or last or default
+        last = spk
+        out.append((st, en, spk))
+    # reported speech without quotes: 'Ragnar explained the rule: ...', 'Dev told them to save'
+    plain = re.compile(r"\b(said|asked|replied|explained|declared|told|answered|warned|announced|whispered|shouted|called|pleaded|begged|added|continued)\b", re.I)
+    pos = 0
+    for sent in re.split(r"(?<=[.!?])\s+", text):
+        st = text.find(sent, pos)
+        pos = st + len(sent)
+        if not sent or any(q[0] <= st < q[1] or st <= q[0] < pos for q in quotes):
+            continue
+        m = plain.search(sent)
+        if not m:
+            continue
+        before = [e for p_, e in names_in(sent, cast) if p_ < m.start()]
+        if before and len(sent[sent.rfind(before[-1]["name"]):m.start()].split()) <= 4:
+            out.append((st, pos, before[-1]["id"]))
+    return sorted(out, key=lambda x: x[0])
+
+
+def dialogue_choreo(sh, cfg, notes, hint):
+    """Every quoted line is spoken by the animal that the story names. That animal gets action talk exactly
+    while its line is read, the others listen, and the camera looks at the main speaker."""
+    text = sh["narration"]
+    qs = quote_speakers(text, cfg["cast"], hint, sh["camera"]["focus"])
+    if not qs:                                  # nobody speaks: only the narrator, so nobody talks on screen
+        for c in sh["characters"]:
+            if all(b["action"] in ("idle", "listen", "talk") for b in c["beats"]):
+                c["beats"] = [{"action": "listen"}]
+        return
+    total = max(1, len(text))
+    segs = []
+    for st, en, spk in qs:
+        frac = 0.0 if st / total < 0.04 else 0.03 + 0.88 * st / total
+        segs.append((frac, spk, en - st))
+    cast_by_id = {c["id"]: c for c in cfg["cast"]}
+    chars = sh["characters"]
+    for _, spk, _ in segs:
+        if spk in cast_by_id and all(c["id"] != spk for c in chars) and len(chars) < 4:
+            e = cast_by_id[spk]
+            chars.append({"id": spk, "model": e["model"], "pos": free_spot(chars, chars[0]["pos"], 1.6),
+                          "beats": [{"action": "listen"}], **({"tint": e["tint"]} if e.get("tint") else {})})
+            notes.append(f"shot {sh['id']}: {e['name']} speaks in this shot, added to the picture")
+    neutral = {"idle", "listen", "talk"}
+    for c in chars:
+        if any(b["action"] not in neutral for b in c["beats"]):
+            continue                                        # keep movement and feelings the director chose
+        events = [(0.0, "listen")]
+        for frac, spk, _ in segs:
+            act = "talk" if spk == c["id"] else "listen"
+            if events and abs(events[-1][0] - frac) < 1e-6:
+                events[-1] = (frac, act)
+            else:
+                events.append((frac, act))
+        comp = []
+        for fr, act in events:
+            if comp and comp[-1][1] == act:
+                continue
+            comp.append((fr, act))
+        if len(comp) > 3:
+            comp = [comp[0], comp[1], comp[-1]]
+        new = [{"action": act, **({"at": round(fr, 2)} if fr > 0 else {})} for fr, act in comp]
+        if [b["action"] for b in new] != [b["action"] for b in c["beats"]]:
+            c["beats"] = new
+    weight = {}
+    for _, spk, ln in segs:
+        weight[spk] = weight.get(spk, 0) + ln
+    main = max(weight, key=weight.get)
+    if any(c["id"] == main for c in chars):
+        sh["camera"]["focus"] = main
+    sh["speakers"] = [{"id": spk, "at": round(fr, 2)} for fr, spk, _ in segs]
 
 # ------------------------------------------------------------------ prompt
 def build_prompt(cfg, topic, genre, history, feedback):
@@ -457,6 +570,7 @@ DIRECTION RULES (the renderer follows them exactly)
 - Each animal has 1 to 3 "beats" in time order. "at" = when the beat starts as a fraction of the shot (0 = when the narration starts, 0.5 = half way). Start every action when the narration mentions it.
 - The frame is VERTICAL and narrow. Keep every animal at x from -2.4 to 2.4 and y from 0 to 5.5 (y = distance from the camera). Animals are BIG: a horse is 2.4 m long. Never place two animals closer than their body lengths: put them diagonally (one nearer the camera, one farther, y at least 2 m apart) instead of side by side. At most 3 animals in a shot (4 only for a wolf pack scene). An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
 - props: optional boulder {{"type":"rock","pos":[x,y],"size":1.0-2.5}}. An animal standing at the same spot stands on top of it (good for Ragnar, Drakon or a legend watching from above).
+- WHO SPEAKS: every quoted line must say who speaks right next to it, with a speech verb ("said Drakon", "Milo whispered"). Only that animal talks while the line is read; the others listen. Give each shot "speaker": the id of the animal that speaks the first quoted line (null if nobody speaks). Never let a different animal talk while Milo (or anyone else) is the one speaking.
 - "face": the id of the animal this one looks at.
 - camera = {{"framing": one of {core.FRAMINGS}, "angle": one of {core.ANGLES}, "move": one of {core.MOVES}, "focus": id of the animal the camera is about, "side": one of {core.SIDES}}}.
   Direct like a film: open with a wide shot; most shots wide or medium (at least 12 of {n}); close or extreme_close only for the strongest emotion (at most 4 shots in the whole story); low angle for powerful animals (Drakon, Ragnar), high angle for small or scared ones (Milo); push_in slowly on dramatic lines, pull_out for the consequence, follow ONLY when the focus animal walks or runs; static otherwise. Never repeat the same framing and move three times in a row.
@@ -478,7 +592,7 @@ def critic_pass(plan, cfg, models, key, state):
               "characters": [{"id": c["id"], "pos": c["pos"], "beats": c["beats"]} for c in s["characters"]]}
              for s in plan["shots"]]
     prompt = f"""You are the continuity checker of an animated story. Compare each shot's NARRATION with what the animals DO.
-A shot is WRONG if the narration says an animal does something (runs, walks in, speaks, is shocked, eats, is sad, celebrates, fights ...) but that animal's beats show something else, if a speaking animal is not the one with action talk, or if an animal that acts in the narration is missing.
+A shot is WRONG if a quoted line is spoken by one animal (look at the name next to the speech verb) but another animal is the one with action talk, or if the narration says an animal does something (runs, walks in, speaks, is shocked, eats, is sad, celebrates, fights ...) but that animal's beats show something else, if a speaking animal is not the one with action talk, or if an animal that acts in the narration is missing.
 Actions allowed: {', '.join(core.ACTIONS)}. walk and run need "to":[x,y]. Allowed ids: {', '.join(c['id'] for c in cfg['cast'])}. At most 4 characters per shot, x -2.4..2.4, y 0..5, animals at least 1.3 m apart, beats in time order with "at" 0..0.95.
 Return ONLY JSON: {{"fixes": [{{"id": <shot id>, "characters": [{{"id": "...", "pos": [x, y], "beats": [{{"action": "...", "to": [x, y], "at": 0.0}}]}}]}}]}}
 Include ONLY shots that must change. If everything matches, return {{"fixes": []}}.
@@ -513,6 +627,8 @@ def report_md(plan, topic, genre, model, total, unit, notes, path):
     for s in plan["shots"]:
         cam = s["camera"]
         who = "; ".join(f"{c['id']}: " + ">".join(b["action"] for b in c["beats"]) for c in s["characters"])
+        if s.get("speakers"):
+            who += " | SPEAKS: " + ", ".join(f"{x['id']}@{x['at']}" for x in s["speakers"])
         md += (f"| {s['id']} | {s['look']} | {cam['framing']}/{cam['angle']}/{cam['move']} on {cam['focus']} | "
                f"{who} | {s['narration'].replace('|', '/')} |\n")
     if notes:
