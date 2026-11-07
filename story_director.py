@@ -231,18 +231,25 @@ def repair_plan(raw, cfg, strict=True):
             py = core.clamp(num((c.get("pos") or [0, 2])[1] if len(c.get("pos") or []) > 1 else 2, 2), 0.0, 5.5)
             chars.append({"id": entry["id"], "model": entry["model"], "pos": [round(px, 2), round(py, 2)],
                           "beats": beats or [{"action": "idle"}],
-                          **({"face": c["face"]} if c.get("face") in cast_by_id else {})})
+                          **({"face": c["face"]} if c.get("face") in cast_by_id else {}),
+                          **({"tint": entry["tint"]} if entry.get("tint") else {})})
         # an animal named in the narration must be in the picture
         for _, entry in names_in(text, cfg["cast"]):
             if len(chars) < 4 and all(x["id"] != entry["id"] for x in chars):
                 near = chars[0]["pos"] if chars else [0, 2]
                 chars.append({"id": entry["id"], "model": entry["model"], "pos": free_spot(chars, near, 1.6),
-                              "beats": [{"action": "listen"}]})
+                              "beats": [{"action": "listen"}], **({"tint": entry["tint"]} if entry.get("tint") else {})})
                 notes.append(f"shot {n}: {entry['name']} is named in the story, added to the picture")
         if not chars:
             raise Reject(f"shot {n} has no valid characters (use only the cast ids)")
         chars = chars[:4]
 
+        props = []
+        for p in (s.get("props") or [])[:3]:
+            if isinstance(p, dict) and p.get("type") == "rock":
+                pp = p.get("pos") if isinstance(p.get("pos"), (list, tuple)) and len(p["pos"]) >= 2 else [0, 4]
+                props.append({"type": "rock", "pos": [round(core.clamp(num(pp[0], 0), -5, 5), 2), round(core.clamp(num(pp[1], 4), 0, 9), 2)],
+                              "size": round(core.clamp(num(p.get("size"), 1.5), 0.6, 3.0), 2)})
         cam_in = s.get("camera") if isinstance(s.get("camera"), dict) else {}
         focus = cam_in.get("focus") if cam_in.get("focus") in [c["id"] for c in chars] else chars[0]["id"]
         cam = {"framing": cam_in.get("framing") if cam_in.get("framing") in core.FRAMINGS else "medium",
@@ -253,33 +260,54 @@ def repair_plan(raw, cfg, strict=True):
         shot = {"id": n, "title": (s.get("title") if isinstance(s.get("title"), str) and 2 <= len(s["title"]) <= 40 else f"Shot {n}"),
                 "look": look, "narration": text, "visual": str(s.get("visual") or "")[:220],
                 "camera": cam, "characters": chars}
+        if props:
+            shot["props"] = props
         if s.get("thumb"):
             shot["thumb"] = True
         shots.append(shot)
 
-    # ---- separation of standing characters (vertical frame: stack them in depth, keep them close)
+    # ---- animals must not overlap or walk through each other (real body sizes, depth first)
     for sh in shots:
-        placed = []
-        for c in sh["characters"]:
-            tries = 0
-            while tries < 8 and any(math.hypot(c["pos"][0] - p[0], c["pos"][1] - p[1]) < 1.3 for p in placed):
-                c["pos"][1] = round(c["pos"][1] + 1.0, 2)
-                tries += 1
-            placed.append(c["pos"])
+        if not core.fix_collisions(sh["characters"], 6.5):
+            notes.append(f"shot {sh['id']}: animals are very close, check the picture")
+        for c in sh["characters"]:                       # standing on a rock?
+            c.pop("z", None)
+            for pr in sh.get("props", []):
+                if pr["type"] == "rock" and math.hypot(c["pos"][0] - pr["pos"][0], c["pos"][1] - pr["pos"][1]) < 0.9 * pr["size"] \
+                        and not any(core.ACTIONS[b["action"]]["speed"] > 0 for b in c["beats"]):
+                    c["z"] = round(0.7 * pr["size"] * 0.92, 2)
 
     # ---- the verbs of the narration must be visible (English only)
     if language == "English":
         for sh in shots:
             fix_actions(sh, cfg, notes)
 
+    # ---- calm direction: few close-ups, "follow" only when the focus animal really moves
+    closeups = 0
+    for sh in shots:
+        cam = sh["camera"]
+        if cam["framing"] in ("close", "extreme_close"):
+            closeups += 1
+            if closeups > 4:
+                cam["framing"] = "medium"
+                notes.append(f"shot {sh['id']}: too many close-ups in one story, framing changed to medium")
+        fchar = next(c for c in sh["characters"] if c["id"] == cam["focus"])
+        if cam["move"] == "follow" and not any(core.ACTIONS[b["action"]]["speed"] > 0 and "to" in b for b in fchar["beats"]):
+            cam["move"] = "push_in"
+    moving_shots = sum(1 for sh in shots if any(core.ACTIONS[b["action"]]["speed"] > 0 and "to" in b
+                                                 for c in sh["characters"] for b in c["beats"]))
+    if strict and moving_shots > 9:
+        raise Reject(f"{moving_shots} shots have walking or running animals. Too much movement: at most 8 shots may move, "
+                     f"in all other shots the animals stand still and the story is told by the narration and the camera")
+
     # ---- camera variety
     framings = {sh["camera"]["framing"] for sh in shots}
     if strict and len(framings) < 3:
-        raise Reject("use more camera variety: at least 3 different framings (extreme_close, close, medium, wide)")
+        raise Reject("use more camera variety: at least 3 different framings (close, medium, wide)")
     for i in range(2, len(shots)):
         a, b, c = (shots[i - 2]["camera"], shots[i - 1]["camera"], shots[i]["camera"])
         if (a["framing"], a["move"]) == (b["framing"], b["move"]) == (c["framing"], c["move"]):
-            c["move"] = "push_in" if c["move"] != "push_in" else "pan"
+            c["move"] = "push_in" if c["move"] != "push_in" else "pull_out"
             notes.append(f"shot {i + 1}: three equal camera setups in a row, camera move changed")
 
     # ---- last shot: disclaimer
@@ -318,6 +346,7 @@ def repair_plan(raw, cfg, strict=True):
                 used_ids.append(c["id"])
     plan = {"version": 3, "language": language, "title": title + cfg.get("title_suffix", ""),
             "description": str(raw.get("description") or "").strip(), "tags": tags,
+            "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
             "disclaimer": disc, "credits": cfg["credits"], "target_seconds": cfg.get("target_seconds", 150),
             "cast": [cast_by_id[i] for i in used_ids], "shots": shots}
     return plan, notes, total
@@ -376,51 +405,68 @@ def build_prompt(cfg, topic, genre, history, feedback):
     language = cfg.get("language", "English")
     tg = cfg["targets"][language]
     unit = tg["unit"]
-    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} (model {c['model']}): {c['role']}" for c in cfg["cast"])
-    past = "\n".join(f"- {h.get('title', '')}" for h in history[-15:]) or "- (none yet)"
+    series = cfg.get("series", {})
+    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} (model {c['model']}{', black fur' if c.get('tint') and c['tint'][0] < 1 else (', white fur' if c.get('tint') else '')}): {c['role']}"
+                     for c in cfg["cast"])
+    past = "\n".join(f"- {h.get('title', '')}" + (f" | what happened: {h['recap']}" if h.get("recap") else "") +
+                     (f" | ended with: {h['cliffhanger']}" if h.get("cliffhanger") else "") for h in history[-6:]) or "- (this is episode 1)"
     n = cfg.get("shots", 20)
     example = {
-        "id": 9, "title": "The costly bargain", "look": "meadow_day",
-        "visual": "Bhola proudly shows a shiny bell. Lakshmi looks at his empty coin bag with worry.",
-        "narration": "Bhola jingled his new golden bell proudly, but his coin bag was completely empty." if language == "English"
-        else "भोला ने अपनी नई सुनहरी घंटी बजाई, पर उसकी थैली खाली थी।",
-        "camera": {"framing": "medium", "angle": "eye", "move": "push_in", "focus": "bhola", "side": "left"},
+        "id": 9, "title": "The Fang Den", "look": "ember_sky",
+        "visual": "Drakon smiles coldly in front of the Fang Lending Den while Milo stands small and worried below him.",
+        "narration": "Drakon smiled coldly. \"One hundred coins today, Milo, and two hundred by the next full moon.\"" if language == "English"
+        else "ड्रैकन ठंडी मुस्कान के साथ बोला, आज सौ सिक्के, और अगले पूर्णिमा तक दो सौ।",
+        "camera": {"framing": "medium", "angle": "low", "move": "push_in", "focus": "drakon", "side": "left"},
+        "props": [{"type": "rock", "pos": [-1.0, 3.6], "size": 1.4}],
         "characters": [
-            {"id": "bhola", "pos": [-1.0, 2.0], "beats": [{"action": "celebrate", "at": 0.0}, {"action": "sad", "at": 0.6}]},
-            {"id": "lakshmi", "pos": [1.0, 2.6], "face": "bhola", "beats": [{"action": "walk", "to": [0.7, 2.4], "at": 0.0}, {"action": "listen"}]}]}
-    return f"""You are an award-winning animation director, a children's storyteller and a money-awareness teacher, all in one.
-Make a {cfg.get('target_seconds', 150)}-second vertical (9:16) YouTube Short. The heroes are ANIMALS in a natural world (meadow, forest, riverbank, storm, night). It is a real STORY with feeling and humour that secretly teaches one money lesson. It is NOT a lecture.
-Audience: families and first-time earners in India. Language of the narration: {language}.
-Lesson to teach: {topic}
+            {"id": "drakon", "pos": [-1.0, 3.6], "face": "milo", "beats": [{"action": "talk"}]},
+            {"id": "milo", "pos": [1.0, 1.6], "face": "drakon", "beats": [{"action": "sad", "at": 0.5}]}]}
+    return f"""You are an award-winning animation director and a gripping storyteller who also teaches money awareness.
+Make a {cfg.get('target_seconds', 150)}-second vertical (9:16) YouTube Short. It is episode {len(history) + 1} of the series "{series.get('name', '')}": a dramatic ANIMAL JUNGLE story, like a mini movie, that secretly teaches ONE money lesson. It must feel like a story people cannot stop watching, never like a lecture.
+Audience: families and first-time earners in India. Narration language: {language}.
+Lesson of today: {topic}
 Story style today: {genre}
 
-STORY RULES
-1. Exactly {n} shots. Each shot is ONE clear visible moment of 4 to 9 seconds, told by 1 or 2 short sentences ({tg['shot'][0]} to {tg['shot'][1]} {unit}). The WHOLE narration must be {tg['total'][0]} to {tg['total'][1]} {unit} in total, because the voice must fill 2.5 minutes. Count carefully.
-2. Structure: shots 1-2 hook (something surprising happens at once); 3-5 meet the hero and the wish; 6-8 temptation or trick; 9-12 the mistake and its painful, funny consequence; 13-16 the wise animal shows the rule with small rupee numbers the viewer can follow; 17-18 the hero applies it and things get better; 19 three-point recap in simple words; 20 education-only disclaimer and a friendly "subscribe for more stories".
-3. Use 3 to 5 cast animals. Same animal = same role in every shot. Give them feeling (worry, pride, shock, joy). Short spoken lines in quotes are welcome.
-4. Teach only the lesson of today. Never name real banks, apps, brands, stocks or funds. Never promise returns. Never tell people to buy anything. Money amounts are small and simple (Rs 100, Rs 20).
-5. Do not repeat these earlier stories:
-{past}
-{('6. FIX THIS PROBLEM FROM YOUR LAST ANSWER: ' + feedback) if feedback else ''}
+THE WORLD (series bible, keep it consistent)
+{series.get('bible', '')}
 
-CAST (use ONLY these ids)
+STORY SO FAR (do not repeat these; you may refer to them briefly so the series feels alive):
+{past}
+{('FIX THIS PROBLEM FROM YOUR LAST ANSWER: ' + feedback) if feedback else ''}
+
+MAKE IT GRIPPING
+1. First shot: a dramatic hook that raises a question (danger, a secret, a threat, a ticking clock). Never start with calm description.
+2. A clear hero (usually Milo or a friend), a villain or danger with a clear goal, real stakes (what will be lost), a ticking clock (e.g. "by the next full moon").
+3. Open a question early and pay it off late. Use a twist around shots 11-13: something the hero did not expect. Use curiosity lines such as "But Milo did not know that ...".
+4. Feelings: fear, pride, shock, relief. Short spoken lines in quotes. Simple vivid words, short sentences, a storyteller's rhythm.
+5. The lesson appears through events and one wise character's short rule with small rupee numbers (Rs 100, Rs 20) the viewer can follow. Only shot 19 is a three-point recap, in plain words.
+6. Shot 19 also gives a one-line teaser for tomorrow. Shot 20: friendly "subscribe for the next episode" and the education-only disclaimer.
+7. Structure for {n} shots: 1-2 hook; 3-5 the world, hero and the problem; 6-8 pressure and temptation; 9-12 the mistake and the painful consequence; 13-16 the wise rule applied with numbers, the twist; 17-18 the hero wins in a clever, believable way; 19 recap and teaser; 20 disclaimer and subscribe.
+8. Teach only today's lesson. Never name real banks, apps, brands, stocks or funds. Never promise returns. Never tell people to buy anything.
+
+LENGTH (the voice must fill 2.5 minutes)
+- Exactly {n} shots. Each shot is ONE visible moment of 4 to 9 seconds told by 1 or 2 short sentences ({tg['shot'][0]} to {tg['shot'][1]} {unit}). The whole narration must be {tg['total'][0]} to {tg['total'][1]} {unit} in total. Count carefully.
+
+CAST (use ONLY these ids; 2 to 5 different animals in the whole story, same animal = same role every time)
 {cast}
 
-DIRECTION RULES (the renderer follows them exactly, so be precise)
-- Every verb in the narration that an animal does must be visible. "ran" = action run with a destination "to". "walked in" = walk with "to". "said" = that animal's action talk, the others listen. Surprise = shock. Sadness or worry = sad. Eating = eat. Joy = celebrate. Hit = kick or fight. Hurt = hurt.
-- Actions allowed: {', '.join(core.ACTIONS)}. Only walk and run move; they REQUIRE "to":[x,y]. Walking speed is 1.4 m/s, running 5.5 m/s, so a 6 second shot allows at most about 8 m of walking.
-- Each character has 1 to 3 "beats" in time order. "at" is when the beat starts as a fraction of the shot (0 = at the start of the narration, 0.5 = half way). Start every important action at the moment the narration mentions it.
-- The frame is VERTICAL and narrow. Keep every character at x from -2.4 to 2.4 and y from 0 to 5 (y = distance from the camera; use depth to separate animals, at least 1.3 m apart). Use at most 2 characters in close or extreme_close shots, at most 4 in any shot. An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
-- "face": the id of the animal this character looks at (default: the camera focus).
+DIRECTION RULES (the renderer follows them exactly)
+- Every verb in the narration that an animal does must be visible. "ran" = run with a destination "to". "walked in" = walk with "to". "said" = that animal's action is talk and the others listen. Surprise = shock. Sadness or worry = sad. Eating = eat. Hit = kick or fight, hurt = hurt.
+- Actions allowed: {', '.join(core.ACTIONS)}. Only walk and run move; they REQUIRE "to":[x,y]. Walking is 1.4 m/s and running 5.5 m/s.
+- CALM MOVEMENT: at most 8 of the {n} shots may have a walking or running animal. In all other shots the animals stand still (talk, listen, shock, sad ...). No pacing, no wandering, no movement without a story reason.
+- Each animal has 1 to 3 "beats" in time order. "at" = when the beat starts as a fraction of the shot (0 = when the narration starts, 0.5 = half way). Start every action when the narration mentions it.
+- The frame is VERTICAL and narrow. Keep every animal at x from -2.4 to 2.4 and y from 0 to 5.5 (y = distance from the camera). Animals are BIG: a horse is 2.4 m long. Never place two animals closer than their body lengths: put them diagonally (one nearer the camera, one farther, y at least 2 m apart) instead of side by side. At most 3 animals in a shot (4 only for a wolf pack scene). An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
+- props: optional boulder {{"type":"rock","pos":[x,y],"size":1.0-2.5}}. An animal standing at the same spot stands on top of it (good for Ragnar, Drakon or a legend watching from above).
+- "face": the id of the animal this one looks at.
 - camera = {{"framing": one of {core.FRAMINGS}, "angle": one of {core.ANGLES}, "move": one of {core.MOVES}, "focus": id of the animal the camera is about, "side": one of {core.SIDES}}}.
-  Think like a director: open with a wide establishing shot; use close or extreme_close for emotion and the key lesson line; use medium for conversations; push_in on important lines; pull_out for consequences; follow for walking or running; low angle for a proud or powerful animal, high angle for a small or sad one; orbit or crane_up for the big moment. Never repeat the same framing and move 3 times in a row. Use at least 3 different framings.
-- look = one of {list(core.LOOKS)}. Change the look only when the story moves to a new place or time (meadow_day, forest_day, golden_sunset, riverbank_dawn, storm_dusk, night_moon).
-- Put "thumb": true on the single most eye-catching shot.
+  Direct like a film: open with a wide shot; most shots wide or medium (at least 12 of {n}); close or extreme_close only for the strongest emotion (at most 4 shots in the whole story); low angle for powerful animals (Drakon, Ragnar), high angle for small or scared ones (Milo); push_in slowly on dramatic lines, pull_out for the consequence, follow ONLY when the focus animal walks or runs; static otherwise. Never repeat the same framing and move three times in a row.
+- look = one of {list(core.LOOKS)}. Change the look only when the story moves to a new place or time (forest_day, golden_sunset, riverbank_dawn, storm_dusk, night_moon, ember_sky = fiery red sky for danger, meadow_day).
+- Put "thumb": true on the single most dramatic shot.
 
-SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal appears in that shot's characters; every walk/run has "to"; no animal is outside the allowed area; last shot has the disclaimer idea ({cfg['disclaimer'][language]}).
+SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal is in that shot's characters; every walk/run has "to"; at most 8 moving shots; at most 4 close-ups; animals far enough apart; last shot has the disclaimer idea ({cfg['disclaimer'][language]}).
 
 Return ONLY JSON:
-{{"title": "<catchy honest {language} title, max 60 characters>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags>"], "shots": [ ... {n} shots ... ]}}
+{{"title": "<gripping honest {language} title, max 60 characters>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags>"], "recap": "<one sentence: what happened in this episode>", "cliffhanger": "<one sentence teaser for the next episode>", "shots": [ ... {n} shots ... ]}}
 One shot looks like this:
 {json.dumps(example, ensure_ascii=False)}
 """
@@ -567,7 +613,8 @@ def main():
     if not a.no_progress:
         if not a.topic and prog["next_topic"] < len(topics):
             prog["next_topic"] += 1
-        prog["history"].append({"date": date, "title": plan["title"], "topic": topic, "file": path})
+        prog["history"].append({"date": date, "title": plan["title"], "topic": topic, "file": path,
+                                    "recap": plan.get("recap", ""), "cliffhanger": plan.get("cliffhanger", "")})
         json.dump(prog, open(a.progress, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     md = report_md(plan, topic, genre, state["model"], total, unit, notes, path)
     open("director_report.md", "w", encoding="utf-8").write(md)
