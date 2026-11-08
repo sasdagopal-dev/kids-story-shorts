@@ -1,5 +1,5 @@
 {
- "next_topic": 8,
+ "next_topic": 9,
  "history": [
   {
    "date": "2026-11-05",
@@ -48,6 +48,12 @@
    "title": "राजा की परीक्षा और बीमे की ताक़त: बुरे दिन की ढाल",
    "topic": "Insurance: protecting the family from one bad day",
    "file": "plans/plan_2026-11-07.json"
+  },
+  {
+   "date": "2026-11-08",
+   "title": "बाज़ार का मेला और जादुई थैली का सच: छोटी बचत का कमाल",
+   "topic": "Regular small investing and patience (education only, no product names)",
+   "file": "plans/plan_2026-11-08.json"
   }
  ]
 }
