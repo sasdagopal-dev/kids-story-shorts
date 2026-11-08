@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""shorts_assemble.py (v4) - final video, subtitle FILES, optional burned-in captions, and upload data.
+"""shorts_assemble.py (v5) - final video, subtitle FILES, optional burned-in captions, and upload data.
 
   python3 shorts_assemble.py --plan scene_plan_timed.json --timeline timeline.json \
       --video out/video_all.mp4 --out out/final_shorts.mp4 [--music music/bg.mp3] [--burn-captions]
@@ -9,6 +9,8 @@ Makes in the output folder:
   subtitles.srt / .vtt subtitle files for YouTube (upload them with the video as captions)
   youtube_meta.json    title, description, tags, flags for the later upload step
   thumbnail.jpg        frame from the most eye-catching shot
+
+v5: money stories get finance hashtags and the Education category; story mode and the kids setting come from the plan
 
 v4 changes
 * voice is loudness-normalised (-16 LUFS) and the music DUCKS (gets quieter) while someone speaks
@@ -82,7 +84,7 @@ def main():
     ap.add_argument("--burn-captions", action="store_true", help="burn big captions into the picture")
     ap.add_argument("--made-for-kids", choices=["yes", "no"], default="",
                     help="YouTube 'made for kids' declaration; default: plan['made_for_kids'] or yes")
-    ap.add_argument("--category", default="1", help="YouTube category id: 1 Film & Animation, 24 Entertainment")
+    ap.add_argument("--category", default="", help="YouTube category id; default: 27 Education for money stories, 1 Film & Animation otherwise")
     a = ap.parse_args()
 
     plan = json.load(open(a.plan, encoding="utf-8"))
@@ -183,14 +185,18 @@ def main():
     desc = "\n\n".join(x for x in [plan.get("description", ""), plan.get("disclaimer", ""), plan.get("credits", "")] if x)
     tags = list(plan.get("tags") or [])
     kids = a.made_for_kids or ("yes" if plan.get("made_for_kids", True) else "no")
-    meta = {"title": plan["title"][:100], "description": desc + "\n\n#Shorts #AnimalStories #CartoonStories #StoriesForKids",
-            "tags": tags, "categoryId": a.category, "language": "en" if plan.get("language") == "English" else "hi",
+    money = plan.get("story_mode") == "money"
+    hashtags = ("#Shorts #MoneyLessons #FinancialLiteracy #AnimalStories #StoriesForKids" if money
+                else "#Shorts #AnimalStories #CartoonStories #StoriesForKids")
+    category = a.category or ("27" if money else "1")
+    meta = {"title": plan["title"][:100], "description": desc + "\n\n" + hashtags,
+            "tags": tags, "categoryId": category, "language": "en" if plan.get("language") == "English" else "hi",
             "privacyStatus": "private", "selfDeclaredMadeForKids": kids == "yes",
             "containsSyntheticMedia": True, "captionFile": "subtitles.srt", "thumbnail": "thumbnail.jpg",
             "durationSeconds": round(fd, 2)}
     json.dump(meta, open(os.path.join(out_dir, "youtube_meta.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     shutil.rmtree(work, ignore_errors=True)
-    print(f"DONE: {out_path} ({fd:.2f} s), {len(cues)} caption cues, made-for-kids: {kids}")
+    print(f"DONE: {out_path} ({fd:.2f} s), {len(cues)} caption cues, made-for-kids: {kids}, mode: {plan.get('story_mode', 'adventure')}")
 
 
 if __name__ == "__main__":
