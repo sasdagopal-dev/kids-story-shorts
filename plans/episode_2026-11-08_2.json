@@ -1,0 +1,1406 @@
+{
+ "version": 4,
+ "language": "Hindi",
+ "title": "दो छत्तों का रहस्य: माइलो और बर्फीला तूफान #shorts",
+ "description": "बर्फीले तूफान से पहले नन्हीं गिलहरियों को शहद की सख्त जरूरत है। भोलू बड़े खजाने के इंतजार में खाली हाथ बैठा रहा, जबकि माइलो की छोटी-छोटी साप्ताहिक बचत ने एक बड़ा चमत्कार कर दिया।",
+ "tags": [
+  "JungleMoneyTales",
+  "HindiKahaniya",
+  "MoralStoriesHindi",
+  "KidsStory",
+  "FinancialLiteracy",
+  "Shorts",
+  "AnimationHindi",
+  "BachonKiKahani",
+  "StoryInHindi",
+  "PatiencePays"
+ ],
+ "twist": "माइलो की नियमित दो बूंदों की मीठी महक से आकर्षित होकर रानी मधुमक्खी ने उसी खोखले पेड़ में अपना स्थायी छत्ता बना लिया था, जिससे नन्ही बचत पचास गुना बढ़ गई।",
+ "recap": "भोलू बड़े मौके के इंतज़ार में खाली हाथ रहा, जबकि माइलो की हर हफ्ते की छोटी बचत ने समय पर सबको बचा लिया।",
+ "cliffhanger": "क्या भोलू का नया छत्ता आने वाली भयंकर ठंड को झेल पाएगा?",
+ "disclaimer": "यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।",
+ "credits": "3D models by Quaternius (CC0).",
+ "story_mode": "money",
+ "made_for_kids": true,
+ "target_seconds": 178,
+ "flexible_length": true,
+ "estimated_voice_seconds": 172.0,
+ "cast": [
+  {
+   "id": "veer",
+   "name": "Veer",
+   "model": "Stag",
+   "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
+   "voice_style": "few words, deep and noble",
+   "catchphrase": "The forest listens.",
+   "behaviour": "stands tall and still, arrives fast to protect, serious",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind honest cow, saves a little every day, protects the young",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one.",
+   "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+   "voice_name": "Sulafat"
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  },
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+   "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "Shot 1",
+   "look": "snow_pines",
+   "narration": "बर्फीला तूफान घाटी में दहाड़ा और सूरज ढलने लगा, \"भागो सब!\" वीर चिल्लाया।",
+   "tone": "urgent and cinematic",
+   "visual": "बर्फीली हवा के थपेड़ों के बीच वीर हिरण घाटी की ओर भागता हुआ चिल्लाता है, जबकि माइलो और लक्ष्मी ठंड से कांपते हैं।",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "veer",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -3.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -1.0,
+        3.2
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.09
+      },
+      {
+       "action": "talk",
+       "at": 0.51
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.0,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.9,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.51
+    }
+   ],
+   "quotes": [
+    {
+     "start": 48,
+     "end": 58,
+     "id": "veer"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Shot 2",
+   "look": "snow_pines",
+   "narration": "वीर ने चट्टान पर खुर पटका, \"ठंड जमने से पहले बच्चों को शहद दो!\" वीर बोला।",
+   "tone": "alarming and authoritative",
+   "visual": "वीर चट्टान के ऊपर खड़ा होकर खुर पटकता है और चेतावनी देता है, जबकि नीचे खड़ा माइलो उसे गंभीरता से सुनता है।",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "veer",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "milo",
+     "z": 0.97
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 27,
+     "end": 63,
+     "id": "veer"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Shot 3",
+   "look": "snow_pines",
+   "narration": "भूखी नन्हीं गिलहरियां ठिठुर कर रो पड़ीं, बर्फीली हवा से उनकी सांसें थमने लगीं।",
+   "tone": "poignant and tense",
+   "visual": "लक्ष्मी अकेली बर्फ में बैठी ठंड से ठिठुरती है और बच्चों की बेबसी पर उसकी आंखों में गहरी उदासी छा जाती है।",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Shot 4",
+   "look": "snow_pines",
+   "narration": "ड्रैकन घमंड से फुंकारा, \"शहद चाहिए, तो अपनी पूरी मांद मेरे नाम करो!\" ड्रैकन हंसा।",
+   "tone": "cruel and taunting",
+   "visual": "काला भेड़िया ड्रैकन अपनी बर्फ से ढकी चट्टान पर घमंड से खड़ा होकर हंसता है।",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.26
+      }
+     ],
+     "face": "drakon",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ],
+     "z": 1.03
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "size": 1.6
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.26
+    }
+   ],
+   "quotes": [
+    {
+     "start": 24,
+     "end": 68,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Shot 5",
+   "look": "storm_dusk",
+   "narration": "भोलू कान पकड़कर रोने लगा, \"हाय! मेरे बड़े छत्ते में तो कुछ भी नहीं है!\" भोलू चीखा।",
+   "tone": "comic despair",
+   "visual": "भोलू गधा खाली छत्ते के पास कान पकड़कर मुंह बाए फूट-फूट कर रोता है।",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.26
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.26
+    }
+   ],
+   "quotes": [
+    {
+     "start": 26,
+     "end": 71,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Shot 6",
+   "look": "storm_dusk",
+   "narration": "भोलू डींगें हांकता रहा कि वह एक ही दिन में सौ बूंद लाकर पूरा छत्ता भर देगा।",
+   "tone": "ironic reflection",
+   "visual": "भोलू शर्मिंदा सिर झुकाए खड़ा है और पास खड़ा माइलो उसे सिर हिलाकर देखता है।",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.9,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Shot 7",
+   "look": "storm_dusk",
+   "narration": "माइलो तेजी से फुदका, \"ड्रैकन की चाल नहीं चलेगी, सब मेरे पीछे आओ!\" माइलो बोला।",
+   "tone": "spunky and determined",
+   "visual": "माइलो फुदककर आगे बढ़ता है और ड्रैकन की ओर इशारा करते हुए सबको अपने पीछे आने का इशारा करता है।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        0.2,
+        2.5
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.08
+      },
+      {
+       "action": "talk",
+       "at": 0.24
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.24
+    }
+   ],
+   "quotes": [
+    {
+     "start": 21,
+     "end": 65,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Shot 8",
+   "look": "storm_dusk",
+   "narration": "लक्ष्मी ने बच्चों को समेटा, \"डरो मत, माइलो पर पूरा भरोसा रखो।\" लक्ष्मी बोली।",
+   "tone": "tender and protective",
+   "visual": "लक्ष्मी स्नेह से सिर झुकाकर तसल्ली देती है जबकि भोलू पीछे खड़ा उसकी बात सुनता है।",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.8,
+      2.7
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.3
+    }
+   ],
+   "quotes": [
+    {
+     "start": 28,
+     "end": 62,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Shot 9",
+   "look": "night_moon",
+   "narration": "माइलो पेड़ की ओर दौड़ा, \"मैं हर हफ्ते यहां दो-दो बूंद शहद बचाता था!\" माइलो बोला।",
+   "tone": "eager and hopeful",
+   "visual": "माइलो रात के साए में पुराने खोखले पेड़ की तरफ दौड़कर पहुंचता है और मुड़कर आत्मविश्वास से बोलता है।",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.6,
+        2.6
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.08
+      },
+      {
+       "action": "talk",
+       "at": 0.27
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.27
+    }
+   ],
+   "quotes": [
+    {
+     "start": 24,
+     "end": 68,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Shot 10",
+   "look": "night_moon",
+   "narration": "भोलू ने सिर पीटा, \"दो बूंद से इन बच्चों का पेट कैसे भरेगा?\" भोलू रो पड़ा।",
+   "tone": "baffled and dramatic",
+   "visual": "भोलू नाटक करते हुए सिर पीटता है, माइलो उसे देखता है और दूर खड़ा ड्रैकन कुटिलता से ताकता है।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.9,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.23
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.23
+    }
+   ],
+   "quotes": [
+    {
+     "start": 18,
+     "end": 59,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Shot 11",
+   "look": "night_moon",
+   "narration": "ड्रैकन हंसा, \"दो बूंद का भिखारी इन बच्चों को ठंड से क्या बचाएगा!\" ड्रैकन गुर्राया।",
+   "tone": "mocking and sneering",
+   "visual": "ड्रैकन का खौफनाक चेहरा, नुकीले दांत दिखाते हुए वह घमंड से गुर्राता है।",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.17
+      }
+     ],
+     "face": "drakon",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.17
+    }
+   ],
+   "quotes": [
+    {
+     "start": 13,
+     "end": 65,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Shot 12",
+   "look": "night_moon",
+   "narration": "माइलो ने तना हटाया, अंदर सुनहरे शहद का विशाल खजाना देख सब हैरान रह गए!",
+   "tone": "astonished wonder",
+   "visual": "माइलो पेड़ का छाल हटाता है, अंदर से बहता हुआ चमकदार सुनहरा शहद देखकर भोलू और लक्ष्मी की आंखें फटी की फटी रह जाती हैं।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.1
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.0,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.3
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.35
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "thumb": true
+  },
+  {
+   "id": 13,
+   "title": "Shot 13",
+   "look": "night_moon",
+   "narration": "नियमित मीठी महक से खिंचकर रानी मक्खी ने वहीं अपना पूरा छत्ता बना लिया था।",
+   "tone": "revealing and magical",
+   "visual": "पेड़ के अंदर मधुमक्खियों का सुनहरी रोशनी बिखेरता बड़ा छत्ता दिखाई देता है, जिसके सामने माइलो और लक्ष्मी विस्मय से खड़े हैं।",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      2.7
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Shot 14",
+   "look": "night_moon",
+   "narration": "माइलो उछला, \"देखो, नियम की दो बूंदों ने शहद का बड़ा सागर बना दिया!\" माइलो हंसा।",
+   "tone": "jubilant and proud",
+   "visual": "माइलो खुशी से उछलकर हंसता है, जबकि भोलू और लक्ष्मी प्रसन्न होकर उसे देखते हैं।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.6,
+      2.9
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.2,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.16
+    }
+   ],
+   "quotes": [
+    {
+     "start": 12,
+     "end": 67,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Shot 15",
+   "look": "autumn_gold",
+   "narration": "ड्रैकन झपटा, पर मधुमक्खियों की सेना ने डंक मारकर उसे जंगल पार खदेड़ दिया।",
+   "tone": "action-packed and funny",
+   "visual": "ड्रैकन शहद छीनने झपटता है पर मधुमक्खियों के हमले से दर्द से बिलबिलाता हुआ जंगल की ओर भाग खड़ा होता है।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "hurt",
+       "at": 0.0
+      },
+      {
+       "action": "run",
+       "at": 0.35,
+       "to": [
+        2.6,
+        2.8
+       ]
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.4
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Shot 16",
+   "look": "autumn_gold",
+   "narration": "राग्नार ने दहाड़ लगाई, \"धैर्य और छोटी बचत ही सबसे बड़ी ढाल है।\" राग्नार बोला।",
+   "tone": "stately and wise",
+   "visual": "सफेद बुजुर्ग भेड़िया राग्नार ऊंची चट्टान पर शान से खड़ा होकर गंभीर आवाज में जंगल को सीख देता है।",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.27
+      }
+     ],
+     "face": "ragnar",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.09
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "size": 1.7
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.27
+    }
+   ],
+   "quotes": [
+    {
+     "start": 23,
+     "end": 63,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Shot 17",
+   "look": "autumn_gold",
+   "narration": "लक्ष्मी ने मीठा शहद खिलाया, \"अब हमारे बच्चे बिलकुल सुरक्षित हैं।\" लक्ष्मी बोली।",
+   "tone": "loving and relieved",
+   "visual": "लक्ष्मी प्रेम से शहद खिलाती है और राहत की सांस लेती है, पास खड़े माइलो और भोलू मुस्कुराते हैं।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.6,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.3
+    }
+   ],
+   "quotes": [
+    {
+     "start": 28,
+     "end": 65,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Shot 18",
+   "look": "golden_sunset",
+   "narration": "भोलू मुस्कुराया, \"अब मैं आलस छोड़ हर हफ्ते पक्की बचत करूंगा!\" भोलू बोला।",
+   "tone": "heartwarming and funny",
+   "visual": "भोलू खुशी से कान हिलाकर माइलो के सामने प्रतिज्ञा लेता है।",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.8,
+      2.7
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.22
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.22
+    }
+   ],
+   "quotes": [
+    {
+     "start": 17,
+     "end": 61,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Shot 19",
+   "look": "golden_sunset",
+   "narration": "सीख: १. छोटी शुरुआत करो, २. पक्का नियम रखो, ३. सही वक्त पर बचत बचाती है।",
+   "tone": "direct and clear",
+   "visual": "माइलो और राग्नार घाटी की ढलान पर एक साथ खड़े होकर पूरे जंगल को गहरी सीख देते हैं।",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.9,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 0.9
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.9,
+      3.2
+     ],
+     "size": 1.4
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Shot 20",
+   "look": "golden_sunset",
+   "narration": "बर्फीला तूफान थमा और सूरज की गुनगुनी धूप ने पूरी घाटी को खुशियों से भर दिया। अगर कहानी पसंद आई, तो अगली कहानी के लिए सब्सक्राइब करें! यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।",
+   "tone": "warm and serene loop",
+   "visual": "सुनहरी शाम में माइलो, भोलू, लक्ष्मी और राग्नार घाटी में एक साथ खड़े होकर सुरक्षित और शांत घाटी को देखते हैं।",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -2.0,
+      3.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.6,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.7,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.2
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.3
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  }
+ ],
+ "topic": "Two honey hives: one adds a little every week, one waits for a big amount (start small, be regular)",
+ "genre": "a rescue adventure with a ticking clock",
+ "director_model": "gemini-3.8-flash"
+}
