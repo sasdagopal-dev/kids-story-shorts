@@ -6,8 +6,13 @@ on:
   workflow_dispatch:
     inputs:
       topic:
-        description: "Optional: your own lesson topic (empty = the next topic from animal_studio.json)"
+        description: "Optional: your own story idea (empty = the next idea from animal_studio.json)"
         default: ""
+      story_mode:
+        description: "money = money awareness told with animals, adventure = pure animal adventure, config = use animal_studio.json"
+        type: choice
+        default: config
+        options: [config, money, adventure]
       language:
         description: "Narration language"
         type: choice
@@ -41,7 +46,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Gemini writes and directs today's story (with retry)
         id: plan
@@ -49,14 +54,14 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TOPIC: ${{ inputs.topic }}
           LANGUAGE: ${{ inputs.language || 'English' }}
+          STORY_MODE: ${{ inputs.story_mode || 'config' }}
         run: |
+          ARGS=(--language "$LANGUAGE")
+          [ "$STORY_MODE" != "config" ] && ARGS+=(--story-mode "$STORY_MODE")
+          [ -n "$TOPIC" ] && ARGS+=(--topic "$TOPIC")
           ok=0
           for i in 1 2 3; do
-            if [ -n "$TOPIC" ]; then
-              python3 story_director.py --language "$LANGUAGE" --topic "$TOPIC" && ok=1 && break
-            else
-              python3 story_director.py --language "$LANGUAGE" && ok=1 && break
-            fi
+            python3 story_director.py "${ARGS[@]}" && ok=1 && break
             echo "Director attempt $i failed, waiting 90 s"; sleep 90
           done
           [ "$ok" = 1 ] || { echo "Director failed 3 times"; exit 1; }
