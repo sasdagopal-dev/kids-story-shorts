@@ -11,11 +11,6 @@ on:
         type: choice
         default: male
         options: [male, female]
-      voice_mode:
-        description: "auto = one call, then smaller groups only if a cut is doubtful (recommended)"
-        type: choice
-        default: auto
-        options: [auto, single, chunks, per_shot]
       quality:
         description: "high = 720x1280, 32 samples. ultra = 1080x1920. balanced/fast = quicker"
         type: choice
@@ -24,17 +19,20 @@ on:
       fps:
         description: "Animation frames per second (15 = smooth, 24 = smoothest but about 1.6x slower)"
         default: "15"
+      scene_density:
+        description: "How full the background is (1.6 = rich, 1.0 = lighter and faster)"
+        default: "1.6"
       forward_offset:
         description: "Only if animals face the wrong way in the preview: degrees to add (try 180, 90 or -90)"
         default: "0"
 
 jobs:
-  # ------------------------------------------------------------ 1) voice and the exact timeline
+  # ------------------------------------------------------------ 1) voice and the timeline (length follows the voice)
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Choose the plan
         id: plan
@@ -62,20 +60,19 @@ jobs:
             [ -f "$f" ] || { echo "ERROR: $f is missing from the repo root."; exit 1; }
           done
 
-      - name: Make the narration and the exact 2.5 minute timeline (with retry)
+      - name: Make the narration and the timeline (with retry, finished shots are kept)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PLAN: ${{ steps.plan.outputs.plan }}
           GENDER: ${{ inputs.voice_gender }}
-          MODE: ${{ inputs.voice_mode }}
           FPS: ${{ inputs.fps }}
           QUALITY: ${{ inputs.quality }}
         run: |
           ok=0
           for i in 1 2 3; do
-            python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --mode "$MODE" --fps "$FPS" --quality "$QUALITY" \
+            python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --fps "$FPS" --quality "$QUALITY" \
               && ok=1 && break
-            echo "Voice step failed (attempt $i). Finished shots are kept. Waiting 120 s."; sleep 120
+            echo "Voice step failed (attempt $i). Finished shots are kept. Waiting 60 s."; sleep 60
           done
           [ "$ok" = 1 ] || exit 1
 
@@ -86,7 +83,7 @@ jobs:
 
       - name: Save plan and audio
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: plan
           path: |
@@ -94,6 +91,7 @@ jobs:
             timeline.json
             voice_report.md
             audio/
+            !audio/*.raw.wav
           if-no-files-found: warn
 
   # ------------------------------------------------------------ 2) six parallel renders
@@ -106,9 +104,9 @@ jobs:
       matrix:
         shard: [0, 1, 2, 3, 4, 5]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: plan
 
@@ -144,7 +142,7 @@ jobs:
           done
 
       - name: Keep Blender between runs
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/blender
           key: blender-3.6.5-linux
@@ -158,6 +156,7 @@ jobs:
         env:
           SHARD: ${{ matrix.shard }}
           MODEL_FORWARD_OFFSET: ${{ inputs.forward_offset }}
+          SCENE_DENSITY: ${{ inputs.scene_density }}
         run: |
           mkdir -p out
           ok=0
@@ -181,12 +180,12 @@ jobs:
           ffmpeg -y -loglevel error -framerate "$FPS" -start_number "$START" -i out/f_%06d.png \
             -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p "out/segment_${SHARD}.mp4"
           echo "Shard $SHARD: frames from $START, total $TOTAL" > "out/render_summary_${SHARD}.md"
-          grep -E "SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|Finished" "render_log_${SHARD}.txt" >> "out/render_summary_${SHARD}.md" || true
+          grep -E "LENGTHS|SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|switched off|Finished" "render_log_${SHARD}.txt" >> "out/render_summary_${SHARD}.md" || true
           rm -f out/f_*.png
 
       - name: Save this part
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: segment-${{ matrix.shard }}
           path: |
@@ -199,13 +198,13 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: plan
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           pattern: segment-*
           merge-multiple: true
@@ -246,7 +245,7 @@ jobs:
           done
 
       - name: Save the Short
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: shorts-final
           path: |
