@@ -11,6 +11,9 @@ on:
         type: choice
         default: fast
         options: [fast, balanced, high]
+      scene_density:
+        description: "How full the background is (1.6 = rich, 1.0 = lighter and faster)"
+        default: "1.6"
       forward_offset:
         description: "If animals face the wrong way: degrees to add (try 180, 90 or -90)"
         default: "0"
@@ -20,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Choose the plan and make a timeline without voice
         env:
@@ -59,7 +62,7 @@ jobs:
             sleep $((i*10))
           done
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: ~/blender
           key: blender-3.6.5-linux
@@ -72,6 +75,7 @@ jobs:
       - name: Render 3 pictures per shot (with retry)
         env:
           MODEL_FORWARD_OFFSET: ${{ inputs.forward_offset }}
+          SCENE_DENSITY: ${{ inputs.scene_density }}
         run: |
           mkdir -p out
           ok=0
@@ -85,12 +89,12 @@ jobs:
           [ "$ok" = 1 ] || exit 1
           {
             echo "### Render report"
-            grep -E "SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS" render_log.txt || echo "no problems reported"
+            grep -E "LENGTHS|SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|switched off" render_log.txt || echo "no problems reported"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save the pictures
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: preview-pictures
           path: |
