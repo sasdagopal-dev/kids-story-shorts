@@ -1,427 +1,345 @@
 #!/usr/bin/env python3
-"""voice_maker.py - narration for the whole story with Gemini TTS, and the exact timeline.
+"""voice_maker.py (v5) - one clean voice per shot, a different voice for every talking animal,
+and the video length follows the real voice (no fixed length, no more "too long / too short" failures).
 
-  python3 voice_maker.py --plan plans/episode_x.json --gender male --fps 15 --quality high
+  python3 voice_maker.py --plan plans/episode_x.json --gender male --mode auto --fps 15 --quality high
 
-Voice modes (--mode):
-  auto       (default) ONE call for the whole story. After cutting it into shots at the pauses, every cut
-             is checked. If any cut is doubtful, those shots are voiced again in smaller groups (about 4
-             calls), and if still doubtful one call per shot. So you get the smooth single voice when it is
-             reliable, and perfect alignment when it is not.
-  single / chunks / per_shot   force one level.
-Free-tier safety: waits --min-interval seconds between calls to one model (3 per minute = 22 s), obeys
-retry-after, treats "per day" limits by switching to the next Gemini model, retries the odd
-"model tried to generate text" error with another prompt, keeps finished shots (re-run = only missing).
+Writes: scene_plan_timed.json, timeline.json, audio/shot_NN.wav, voice_report.md
 
-The timeline makes the video EXACTLY --target seconds (default 150): the voice speed is changed by at
-most +-8% and the pauses are stretched, never more. If the story is too short or too long for that, it
-stops with a clear message so the director can write it again.
-
-Writes: scene_plan_timed.json, timeline.json, voice_report.md, audio/shot_XX.mp3
+What is different from the old version
+* every shot is voiced on its own (no big groups that must be cut apart afterwards)
+* the style hint is only a tiny "Say ...:" prefix; every shot is checked against its expected reading time, and
+  if the voice speaks much longer (it read the instruction aloud) the shot is voiced again WITHOUT any instruction
+* the same TTS model is used for the whole video, so the voice does not change between shots
+* quoted lines are spoken by the animal that says them (voice_name in the cast, default voices below)
+* the ending (lesson, subscribe line, disclaimer) is part of the last shots and is spoken like everything else
+* silence at the start and end of every clip is trimmed, then a fixed pause is added: the video length is
+  the sum of the shots, whatever it turns out to be
 """
-import argparse, asyncio, base64, hashlib, json, math, os, re, subprocess, sys, time, urllib.error, urllib.request
+import argparse, base64, hashlib, json, math, os, re, shutil, statistics, subprocess, sys, time, urllib.error, urllib.request, wave
 
 BASE = "https://generativelanguage.googleapis.com/v1beta"
-MODEL_ORDER = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts", "gemini-3.8-flash-tts",
-               "gemini-3.8-flash-lite-tts", "gemini-2.5-pro-preview-tts"]
-GEMINI_VOICES = {"male": "Charon", "female": "Kore"}
-EDGE_VOICES = {("English", "male"): "en-IN-PrabhatNeural", ("English", "female"): "en-IN-NeerjaNeural",
-               ("Hindi", "male"): "hi-IN-MadhurNeural", ("Hindi", "female"): "hi-IN-SwaraNeural"}
+MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts", "gemini-3.8-flash-tts",
+          "gemini-3.8-flash-lite-tts", "gemini-2.5-pro-preview-tts"]
 QUALITY = {"fast": (540, 960, 8), "balanced": (720, 1280, 16), "high": (720, 1280, 32), "ultra": (1080, 1920, 28)}
-LEAD = 0.25
-
+NARRATOR = {"male": "Charon", "female": "Kore"}
+DEFAULT_VOICES = {"milo": "Puck", "ragnar": "Gacrux", "drakon": "Algenib", "lakshmi": "Sulafat", "bholu": "Fenrir", "veer": "Orus"}
+SPARE = ["Zephyr", "Iapetus", "Umbriel", "Achird", "Leda", "Enceladus"]
+QUOTE_RE = re.compile(r'["\u201c](.+?)["\u201d]')
 SLEEP = time.sleep
-LAST_CALL = {}
-DEAD = set()
 
 
-class GErr(Exception):
-    def __init__(self, msg, code=None, retryable=True, wait=None, text=""):
+class TTSError(Exception):
+    def __init__(self, msg, code=None, wait=None, text=""):
         super().__init__(msg)
-        self.code, self.retryable, self.wait, self.text = code, retryable, wait, text
+        self.code, self.wait, self.text = code, wait, text
 
 
-class Fatal(Exception):
-    pass
+# ------------------------------------------------------------------ helpers
+def units_of(text, language):
+    if language == "Hindi":
+        return len(re.sub(r"[\s\W]", "", text))
+    return len(re.findall(r"[A-Za-z0-9][A-Za-z0-9'\u2019\-]*", text))
 
 
-# ------------------------------------------------------------------ audio helpers
-def probe(path):
-    return float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration",
-                                          "-of", "csv=p=0", path]).decode().strip())
+def pauses_in(text):
+    return sum(text.count(c) for c in ".!?\u2026\u0964")
 
 
-def trim_edges(src, dst):
-    """Cut the silence at the start and end (keeps a short natural margin)."""
-    af = ("silenceremove=start_periods=1:start_silence=0.08:start_threshold=-45dB,areverse,"
-          "silenceremove=start_periods=1:start_silence=0.12:start_threshold=-45dB,areverse")
-    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-af", af,
-                           "-ar", "24000", "-ac", "1", "-codec:a", "libmp3lame", "-q:a", "2", dst])
-    if os.path.getsize(dst) < 1000 or probe(dst) < 0.3:       # trimming removed everything: keep the original
-        subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-ar", "24000", "-ac", "1",
-                               "-codec:a", "libmp3lame", "-q:a", "2", dst])
+def write_wav(path, pcm, rate):
+    with wave.open(path, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(rate)
+        w.writeframes(pcm)
 
 
-def find_silences(path, noise="-35dB", dmin=0.2):
-    p = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-af", f"silencedetect=noise={noise}:d={dmin}",
-                        "-f", "null", "-"], capture_output=True, text=True)
-    starts = [float(x) for x in re.findall(r"silence_start:\s*(-?[\d.]+)", p.stderr)]
-    ends = [(float(x), float(y)) for x, y in re.findall(r"silence_end:\s*(-?[\d.]+)\s*\|\s*silence_duration:\s*([\d.]+)", p.stderr)]
-    return [(max(st, 0.0), en, ln) for st, (en, ln) in zip(starts, ends)]
+def wav_seconds(path):
+    with wave.open(path, "rb") as w:
+        return w.getnframes() / float(w.getframerate())
 
 
-def choose_cuts(dur, silences, counts):
-    """counts = characters per shot in the group. Returns (cuts, quality) quality = list of 'ok' or a reason."""
-    n = len(counts)
-    if n <= 1:
-        return [], []
-    total_sil = sum(s[2] for s in silences)
-    speech_total = max(dur - total_sil, 0.1)
-    tot = float(sum(counts))
-    cands, before = [], 0.0
-    for st, en, ln in silences:
-        cands.append({"t": (st + en) / 2, "len": ln, "sp": (st + en) / 2 - before - ln / 2})
-        before += ln
-    window = max(1.8, 0.25 * speech_total / n)
-    cuts, quality, prev, cum = [], [], 0.0, 0.0
-    for k in range(1, n):
-        cum += counts[k - 1]
-        exp_sp = speech_total * cum / tot
-        best, bs = None, None
-        for c in cands:
-            if c["t"] <= prev + 0.8 or abs(c["sp"] - exp_sp) > window:
-                continue
-            score = abs(c["sp"] - exp_sp) - 6.0 * min(c["len"], 1.0)
-            if bs is None or score < bs:
-                best, bs = c, score
-        if best is None:
-            quality.append("no pause near the expected place")
-            t = max(prev + 0.8, min(dur - 0.8 * (n - k), dur * cum / tot))
-            cuts.append(t)
-            prev = t
-        else:
-            quality.append("ok" if best["len"] >= 0.30 else f"weak pause {best['len']:.2f}s")
-            cuts.append(best["t"])
-            prev = best["t"]
-    return cuts, quality
-
-
-def cut_audio(src, start, end, dst):
-    subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-ss", f"{start:.3f}", "-to", f"{end:.3f}",
-                           "-ar", "24000", "-ac", "1", "-codec:a", "libmp3lame", "-q:a", "2", dst])
+def trim_silence(src, dst):
+    af = ("silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,areverse,"
+          "silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.05,areverse")
+    try:
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", src, "-af", af, "-ar", "24000", "-ac", "1", dst], check=True)
+        if wav_seconds(dst) < 0.2:
+            raise RuntimeError("trimmed to nothing")
+    except Exception:
+        shutil.copy(src, dst)
 
 
 # ------------------------------------------------------------------ Gemini TTS
-def gcall(model, body, key):
+def tts_request(model, text, speech_cfg, key):
+    body = {"contents": [{"parts": [{"text": text}]}],
+            "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": speech_cfg}}
     req = urllib.request.Request(f"{BASE}/models/{model}:generateContent", data=json.dumps(body).encode("utf-8"),
                                  headers={"Content-Type": "application/json", "x-goog-api-key": key})
     try:
         with urllib.request.urlopen(req, timeout=300) as r:
-            return json.load(r)
+            out = json.load(r)
     except urllib.error.HTTPError as e:
-        text = e.read().decode("utf-8", "replace")
-        wait = None
-        m = re.search(r'"retryDelay":\s*"(\d+(?:\.\d+)?)s"', text)
-        if m:
-            wait = float(m.group(1))
-        retry = e.code in (408, 429, 500, 502, 503, 504) or (e.code == 400 and "generate text" in text)
-        raise GErr(f"HTTP {e.code}: {text[:250]}", e.code, retry, wait, text)
+        t = e.read().decode("utf-8", "replace")
+        m = re.search(r'"retryDelay":\s*"(\d+(?:\.\d+)?)s"', t)
+        raise TTSError(f"HTTP {e.code}: {t[:200]}", e.code, float(m.group(1)) if m else None, t)
     except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
-        raise GErr(f"network: {e}", None, True, None, "")
+        raise TTSError(f"network: {e}", None)
+    for cand in out.get("candidates") or []:
+        for p in (cand.get("content") or {}).get("parts") or []:
+            inl = p.get("inlineData") or p.get("inline_data")
+            if inl and inl.get("data"):
+                mt = inl.get("mimeType") or inl.get("mime_type") or ""
+                m = re.search(r"rate=(\d+)", mt)
+                return base64.b64decode(inl["data"]), int(m.group(1)) if m else 24000
+    raise TTSError("no audio in the answer", 200)
 
 
-def model_chain(key, override):
-    if override:
-        return [m.strip() for m in override.split(",") if m.strip()]
-    seen = []
-    try:
-        req = urllib.request.Request(f"{BASE}/models?pageSize=200", headers={"x-goog-api-key": key})
-        with urllib.request.urlopen(req, timeout=60) as r:
-            seen = [m["name"].split("/")[-1] for m in json.load(r).get("models", []) if "tts" in m["name"].lower()]
-    except Exception as e:
-        print(f"  could not list Gemini models: {e}", file=sys.stderr)
-    if not seen:
-        return MODEL_ORDER[:4]
-    chain = [m for m in MODEL_ORDER if m in seen]
-    return chain + [m for m in seen if m not in chain]
-
-
-def prompts(text, language, multi):
-    if language == "Hindi":
-        style = "Read this Hindi story slowly and warmly, like a storyteller"
-    else:
-        style = "Read this story aloud warmly and expressively, like a children's storyteller, at a calm natural pace"
-    if multi:
-        return [f"{style}, with a clear short pause between paragraphs:\n\n{text}",
-                f"Say with a short pause between paragraphs:\n\n{text}", text]
-    return [f"{style}: {text}", f"Say: {text}", text]
-
-
-def synth(text, voice, language, multi, chain, a, path):
-    key = os.environ.get("GEMINI_API_KEY", "").strip()
-    if not key:
-        raise Fatal("GEMINI_API_KEY is empty. Add it under Settings > Secrets > Actions.")
+def speak(text, speech_cfg, key, state):
+    """Returns (pcm, rate, model). Keeps the same model for the whole video; switches only if it is not usable."""
     last = None
-    tries = min(a.retries, 3) if multi else a.retries
-    for model in chain:
-        if model in DEAD:
-            continue
-        for attempt in range(1, tries + 1):
-            body = {"contents": [{"parts": [{"text": prompts(text, language, multi)[(attempt - 1) % 3]}]}],
-                    "generationConfig": {"responseModalities": ["AUDIO"], "speechConfig": {
-                        "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}}}
-            gap = a.min_interval - (time.time() - LAST_CALL.get(model, 0))
-            if gap > 0:
-                SLEEP(gap)
+    order = [m for m in ([state["model"]] if state["model"] else []) + state["models"] if m not in state["dead"]]
+    seen = set()
+    for model in [m for m in order if not (m in seen or seen.add(m))]:
+        for attempt in range(1, 4):
             try:
-                out = gcall(model, body, key)
-                LAST_CALL[model] = time.time()
-                cands = out.get("candidates") or []
-                parts = ((cands[0].get("content") or {}).get("parts") or []) if cands else []
-                inline = next((p["inlineData"] for p in parts if "inlineData" in p), None)
-                if not inline:
-                    raise GErr("no audio in the answer", 200, True)
-                pcm = base64.b64decode(inline["data"])
-                if len(pcm) < 4000:
-                    raise GErr("audio too short", 200, True)
-                rate = re.search(r"rate=(\d+)", inline.get("mimeType", ""))
-                raw = path + ".pcm"
-                open(raw, "wb").write(pcm)
-                subprocess.check_call(["ffmpeg", "-y", "-loglevel", "error", "-f", "s16le", "-ar", rate.group(1) if rate else "24000",
-                                       "-ac", "1", "-i", raw, "-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", "24000",
-                                       "-codec:a", "libmp3lame", "-q:a", "2", path])
-                os.remove(raw)
-                words = max(1, len(text.split()))
-                cps = len(text) / max(probe(path), 0.1)
-                if multi and not (4.0 <= cps <= 30.0):
-                    raise GErr(f"audio length looks wrong ({cps:.1f} characters per second)", 200, True)
-                return model
-            except GErr as e:
-                LAST_CALL[model] = time.time()
+                pcm, rate = tts_request(model, text, speech_cfg, key)
+                state["model"] = model
+                return pcm, rate, model
+            except TTSError as e:
                 last = e
-                t = (e.text or str(e))
-                if "API key not valid" in t or e.code in (401, 403):
-                    raise Fatal(f"Gemini rejected the key or access: {str(e)[:200]}")
-                if e.code == 404 or (e.code == 429 and re.search(r"per ?day", t, re.I)):
-                    DEAD.add(model)
-                    print(f"  {model}: not usable now (404 or daily limit), next model", file=sys.stderr)
+                t = (e.text or str(e)).lower()
+                if e.code in (401, 403) or "api key not valid" in t:
+                    sys.exit(f"FAIL: Gemini rejected the key or access: {str(e)[:200]}")
+                if e.code == 404 or (e.code == 429 and ("perday" in t or "per day" in t)):
+                    state["dead"].add(model)
+                    print(f"  {model}: not usable now, trying the next model", flush=True)
                     break
-                if not e.retryable:
-                    break
-                wait = min(90, max(e.wait or 0, a.min_interval) + 2) if e.code == 429 else min(60, 4 * attempt * attempt)
-                print(f"  {model}: attempt {attempt}/{tries} failed ({str(e)[:90]}), waiting {wait:.0f}s", file=sys.stderr)
-                if attempt < tries:
+                wait = min(90, (e.wait or 0) + 3) if e.code == 429 else 6 * attempt
+                print(f"  {model}: attempt {attempt}/3 failed ({str(e)[:90]}), waiting {wait:.0f}s", flush=True)
+                if attempt < 3:
                     SLEEP(wait)
-    raise RuntimeError(f"all Gemini models failed: {last}")
+    raise RuntimeError(f"no TTS model answered: {last}")
 
 
-async def _edge(text, voice, path):
-    import edge_tts
-    last = None
-    for attempt in range(4):
-        try:
-            await edge_tts.Communicate(text, voice, rate="-4%").save(path)
-            if os.path.getsize(path) > 1000:
-                return
-        except Exception as e:
-            last = e
-        await asyncio.sleep(2 + attempt * 3)
-    raise RuntimeError(f"Edge TTS failed: {last}")
+def single_cfg(voice):
+    return {"voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}}
 
 
-# ------------------------------------------------------------------ plan helpers
-def fingerprint(text, voice, language):
-    return hashlib.sha1(f"{text}|{voice}|{language}".encode("utf-8")).hexdigest()
+def multi_cfg(pairs):
+    return {"multiSpeakerVoiceConfig": {"speakerVoiceConfigs": [
+        {"speaker": label, "voiceConfig": {"prebuiltVoiceConfig": {"voiceName": voice}}} for label, voice in pairs]}}
 
 
-def chunk(items, g):
-    g = max(1, min(g, len(items)))
-    total = sum(len(t) for _, t in items)
-    target, groups, cur, acc = total / g, [], [], 0
-    for it in items:
-        cur.append(it)
-        acc += len(it[1])
-        if acc >= target and len(groups) < g - 1:
-            groups.append(cur)
-            cur, acc = [], 0
-    if cur:
-        groups.append(cur)
-    return groups
+# ------------------------------------------------------------------ what is spoken, by whom
+def segments(shot):
+    """[(speaker_id, text)] in reading order. Quoted lines belong to the animal that says them."""
+    text = shot["narration"].strip()
+    ms = list(QUOTE_RE.finditer(text))
+    ids = None
+    if ms and shot.get("quotes") and len(shot["quotes"]) == len(ms):
+        ids = [q["id"] for q in shot["quotes"]]
+    elif ms and shot.get("speakers") and len(shot["speakers"]) == len(ms):
+        ids = [q["id"] for q in shot["speakers"]]
+    if not ms or ids is None:
+        return [("narrator", text)]
+    segs, pos = [], 0
+    for i, m in enumerate(ms):
+        pre = text[pos:m.start()].strip()
+        if pre:
+            segs.append(("narrator", pre))
+        segs.append((ids[i], m.group(1).strip()))
+        pos = m.end()
+    tail = text[pos:].strip()
+    if tail:
+        segs.append(("narrator", tail))
+    merged = []
+    for spk, t in segs:
+        if merged and merged[-1][0] == spk:
+            merged[-1] = (spk, merged[-1][1] + " " + t)
+        else:
+            merged.append((spk, t))
+    return merged
 
 
+def style_phrase(shot, idx, n):
+    tone = (shot.get("tone") or "").strip().lower()
+    if idx == n - 1:
+        tone = tone or "cheerful, friendly"
+    if tone and re.fullmatch(r"[a-z ,\-]{3,40}", tone):
+        return f"in a {tone} voice"
+    return "in a clear, lively storytelling voice"
+
+
+# ------------------------------------------------------------------ one shot
+def voice_shot(idx, n, shot, ctx):
+    language, voices, names, key, state = ctx["language"], ctx["voices"], ctx["names"], ctx["key"], ctx["state"]
+    segs = segments(shot)
+    full = " ".join(t for _, t in segs)
+    exp = units_of(full, language) / ctx["rate"] + 0.2 + 0.15 * pauses_in(full)
+    cache_key = hashlib.sha1(json.dumps([segs, style_phrase(shot, idx, n), [voices[s] for s, _ in segs]], ensure_ascii=False).encode()).hexdigest()[:10]
+    raw_path = os.path.join(ctx["dir"], f"shot_{shot['id']:02d}_{cache_key}.raw.wav")
+    final = os.path.join(ctx["dir"], f"shot_{shot['id']:02d}.wav")
+    if os.path.exists(raw_path):
+        trim_silence(raw_path, final)
+        return final, wav_seconds(final), "cached", 0
+    if ctx["fake"]:
+        secs = exp
+        rate = 24000
+        pcm = b"".join(int(8000 * math.sin(2 * math.pi * 220 * k / rate)).to_bytes(2, "little", signed=True) for k in range(int(rate * secs)))
+        write_wav(raw_path, pcm, rate)
+        trim_silence(raw_path, final)
+        return final, wav_seconds(final), "fake", 0
+
+    voices_used = []
+    for spk, _ in segs:
+        if spk not in voices_used:
+            voices_used.append(spk)
+    calls = 0
+
+    def one_call(group, plain):
+        """group = [(speaker, text)] using at most 2 voices."""
+        nonlocal calls
+        vs = []
+        for spk, _ in group:
+            if spk not in vs:
+                vs.append(spk)
+        if len(vs) == 1:
+            text = " ".join(t for _, t in group)
+            prompt = text if plain else f"Say {style_phrase(shot, idx, n)}: {text}"
+            cfg = single_cfg(voices[vs[0]])
+        else:
+            a, b = vs[0], vs[1]
+            la, lb = names[a], names[b]
+            prompt = f"TTS the following conversation between {la} and {lb}:\n" + "\n".join(f"{names[s]}: {t}" for s, t in group)
+            cfg = multi_cfg([(la, voices[a]), (lb, voices[b])])
+        calls += 1
+        pcm, rate, model = speak(prompt, cfg, key, state)
+        SLEEP(ctx["sleep"])
+        return pcm, rate, model
+
+    def render(plain):
+        if len(voices_used) <= 2:
+            return one_call(segs, plain)
+        parts, model, rate = [], None, 24000
+        for spk, t in segs:                                   # three voices: one call per speaker run
+            pcm, rate, model = one_call([(spk, t)], plain)
+            parts.append(pcm)
+            parts.append(b"\x00\x00" * int(rate * 0.12))
+        return b"".join(parts), rate, model
+
+    best = None
+    for plain in (False, True):
+        pcm, rate, model = render(plain)
+        write_wav(raw_path, pcm, rate)
+        trim_silence(raw_path, final)
+        dur = wav_seconds(final)
+        best = (dur, model)
+        if dur > exp * 1.3 + 0.5:
+            print(f"  shot {shot['id']}: {dur:.1f}s but about {exp:.1f}s expected, probably an instruction was read aloud; voicing again without any instruction", flush=True)
+            continue
+        if dur < exp * 0.5 - 0.3:
+            print(f"  shot {shot['id']}: {dur:.1f}s but about {exp:.1f}s expected, probably cut short; voicing again", flush=True)
+            continue
+        break
+    return final, wav_seconds(final), best[1], calls
+
+
+# ------------------------------------------------------------------ main
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", required=True)
-    ap.add_argument("--gender", default="male", choices=["male", "female"])
-    ap.add_argument("--voice", default="")
-    ap.add_argument("--mode", default="auto", choices=["auto", "single", "chunks", "per_shot"])
-    ap.add_argument("--target", type=float, default=0.0, help="video length in seconds (default: from the plan, 150)")
+    ap.add_argument("--gender", default="male")
+    ap.add_argument("--mode", default="auto")           # accepted for the old workflow, not needed any more
     ap.add_argument("--fps", type=int, default=15)
-    ap.add_argument("--quality", default="high", choices=list(QUALITY))
-    ap.add_argument("--models", default="")
-    ap.add_argument("--min-interval", dest="min_interval", type=float, default=22.0)
-    ap.add_argument("--retries", type=int, default=5)
-    ap.add_argument("--edge-fallback", action="store_true", help="use the Microsoft voice for a shot Gemini cannot voice")
-    ap.add_argument("--no-reuse", dest="reuse", action="store_false")
+    ap.add_argument("--quality", default="high")
+    ap.add_argument("--voice", default="", help="narrator voice name (default Charon for male, Kore for female)")
+    ap.add_argument("--models", default=os.environ.get("TTS_MODELS", ""))
+    ap.add_argument("--pause", type=float, default=0.8, help="silence after every shot (seconds)")
+    ap.add_argument("--end-pause", type=float, default=1.2, help="silence after the last shot")
+    ap.add_argument("--lead", type=float, default=0.25)
+    ap.add_argument("--min-shot", type=float, default=3.5)
     ap.add_argument("--audio-dir", default="audio")
-    ap.add_argument("--out-plan", default="scene_plan_timed.json")
-    ap.add_argument("--timeline", default="timeline.json")
-    ap.add_argument("--report", default="voice_report.md")
-    a = ap.parse_args()
+    ap.add_argument("--sleep", type=float, default=2.0, help="pause between TTS calls (free tier limits)")
+    ap.add_argument("--fake", action="store_true", help="test without Gemini: beeps of the expected length")
+    a, _unused = ap.parse_known_args()
 
     plan = json.load(open(a.plan, encoding="utf-8"))
-    shots = plan["shots"]
     language = plan.get("language", "English")
-    target = a.target or float(plan.get("target_seconds", 150))
-    voice = a.voice or GEMINI_VOICES[a.gender]
-    os.makedirs(a.audio_dir, exist_ok=True)
-    n = len(shots)
-
+    shots = plan["shots"]
     key = os.environ.get("GEMINI_API_KEY", "").strip()
-    if not key:
-        sys.exit("FAIL: GEMINI_API_KEY is empty. Add it under Settings > Secrets > Actions.")
-    chain = model_chain(key, a.models)
-    print("Gemini TTS model order:", ", ".join(chain), "| voice:", voice, "| mode:", a.mode)
+    if not key and not a.fake:
+        sys.exit("FAIL: GEMINI_API_KEY is empty.")
+    os.makedirs(a.audio_dir, exist_ok=True)
 
-    def path_of(i):
-        return os.path.join(a.audio_dir, f"shot_{i:02d}.mp3")
+    narrator = a.voice or NARRATOR.get(a.gender, "Charon")
+    voices, names = {"narrator": narrator}, {"narrator": "Narrator"}
+    spare = list(SPARE)
+    for c in plan.get("cast", []):
+        v = c.get("voice_name") or DEFAULT_VOICES.get(c["id"]) or (spare.pop(0) if spare else "Puck")
+        if v == narrator:
+            v = spare.pop(0) if spare else v
+        voices[c["id"]] = v
+        names[c["id"]] = re.sub(r"[^A-Za-z0-9]", "", c.get("name", c["id"])) or c["id"]
+    for sh in shots:
+        for spk, _ in segments(sh):
+            if spk not in voices:
+                voices[spk] = spare.pop(0) if spare else "Puck"
+                names[spk] = re.sub(r"[^A-Za-z0-9]", "", spk) or "Animal"
+    models = [m.strip() for m in a.models.split(",") if m.strip()] or MODELS
+    print("TTS models:", ", ".join(models), "| narrator:", narrator, "| voices:", ", ".join(f"{k}={v}" for k, v in voices.items() if k != "narrator"), flush=True)
 
-    def meta_of(i):
-        return os.path.join(a.audio_dir, f"shot_{i:02d}.json")
+    ctx = {"language": language, "voices": voices, "names": names, "key": key, "dir": a.audio_dir, "fake": a.fake, "sleep": a.sleep,
+           "rate": 2.5 if language != "Hindi" else 11.0, "state": {"model": "", "models": models, "dead": set()}}
+    results, rates = [], []
+    for i, sh in enumerate(shots):
+        print(f"Voice shot {sh['id']}/{len(shots)}", flush=True)
+        path, secs, model, calls = voice_shot(i, len(shots), sh, ctx)
+        full = " ".join(t for _, t in segments(sh))
+        obs = units_of(full, language) / max(0.5, secs - 0.15 * pauses_in(full) - 0.2)
+        if 0.5 * ctx["rate"] < obs < 2.0 * ctx["rate"]:
+            rates.append(obs)
+            if len(rates) >= 3:
+                ctx["rate"] = statistics.median(rates)
+        results.append((path, secs, model, calls))
 
-    engines, pending, notes = {}, [], []
-    for i, s in enumerate(shots, start=1):
-        text = s["narration"].strip()
-        ok = False
-        if a.reuse and os.path.exists(path_of(i)) and os.path.exists(meta_of(i)):
-            try:
-                m = json.load(open(meta_of(i)))
-                ok = m.get("fp") == fingerprint(text, voice, language)
-                if ok:
-                    engines[i] = m.get("engine", "kept") + " (kept)"
-            except Exception:
-                ok = False
-        if not ok:
-            pending.append((i, text))
+    # ---- timeline: the video is exactly as long as the voice needs
+    fps = a.fps
+    w, h, samples = QUALITY.get(a.quality, QUALITY["high"])
+    durs = []
+    for i, (_, secs, _, _) in enumerate(results):
+        pause = a.end_pause if i == len(results) - 1 else a.pause
+        durs.append(max(a.min_shot, a.lead + secs + pause))
+    bounds, acc = [], 0.0
+    for dsec in durs:
+        bounds.append((int(round(acc * fps)), int(round((acc + dsec) * fps))))
+        acc += dsec
+    total_frames = bounds[-1][1]
+    tl_shots = []
+    for sh, (path, secs, model, calls), (sf, ef) in zip(shots, results, bounds):
+        dur = (ef - sf) / fps
+        sh.update({"duration": round(dur, 3), "start_frame": sf, "end_frame": ef, "start_time": round(sf / fps, 3)})
+        tl_shots.append({"id": sh["id"], "duration": round(dur, 3), "start_frame": sf, "end_frame": ef,
+                         "start_time": round(sf / fps, 3), "lead": a.lead, "voice_seconds": round(secs, 3),
+                         "audio": path, "thumb": bool(sh.get("thumb"))})
+    total = total_frames / float(fps)
+    plan.update({"fps": fps, "total_frames": total_frames, "total_seconds": round(total, 3), "target_seconds": round(total),
+                 "voices": voices})
+    json.dump(plan, open("scene_plan_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    json.dump({"fps": fps, "width": w, "height": h, "samples": samples, "aspect": "vertical", "total_frames": total_frames,
+               "total_seconds": round(total, 3), "tempo": 1.0, "lead": a.lead, "shots": tl_shots},
+              open("timeline.json", "w"), indent=1)
 
-    def commit(i, text, engine):
-        json.dump({"fp": fingerprint(text, voice, language), "engine": engine}, open(meta_of(i), "w"))
-        engines[i] = engine
-
-    # ---- voice levels
-    n_chunks = max(1, math.ceil(len(pending) / 5)) if pending else 1
-    levels = {"auto": [1, n_chunks, len(pending)], "single": [1], "chunks": [n_chunks], "per_shot": [len(pending)]}[a.mode]
-    levels = [g for k, g in enumerate(levels) if g >= 1 and g not in levels[:k]]
-    for g in levels:
-        if not pending:
-            break
-        groups = chunk(pending, g)
-        print(f"Voice level: {len(pending)} shots in {len(groups)} call(s)", flush=True)
-        failed = []
-        for gi, grp in enumerate(groups, start=1):
-            texts = [t for _, t in grp]
-            gpath = os.path.join(a.audio_dir, f"group_{gi:02d}_of_{len(groups)}.mp3")
-            try:
-                model = synth("\n\n".join(texts), voice, language, len(grp) > 1, chain, a, gpath)
-            except Fatal as e:
-                sys.exit(f"FAIL: {e}")
-            except Exception as e:
-                print(f"  group {gi}/{len(groups)}: {str(e)[:140]}", flush=True)
-                failed.extend(grp)
-                continue
-            if len(grp) == 1:
-                i, text = grp[0]
-                trim_edges(gpath, path_of(i))
-                commit(i, text, f"gemini:{model} [1 shot/call]")
-                continue
-            dur = probe(gpath)
-            cuts, quality = choose_cuts(dur, find_silences(gpath), [len(t) for t in texts])
-            if any(q != "ok" for q in quality):
-                bad = [f"{grp[k][0]}|{grp[k + 1][0]}: {q}" for k, q in enumerate(quality) if q != "ok"]
-                notes.append(f"{len(groups)}-call level, call {gi}: doubtful cuts ({'; '.join(bad)}), voiced again in smaller groups")
-                print("  doubtful cuts:", "; ".join(bad), flush=True)
-                failed.extend(grp)
-                continue
-            bounds = [0.0] + cuts + [dur]
-            for (i, text), st, en in zip(grp, bounds[:-1], bounds[1:]):
-                tmp = path_of(i) + ".cut.mp3"
-                cut_audio(gpath, st, en, tmp)
-                trim_edges(tmp, path_of(i))
-                os.remove(tmp)
-                commit(i, text, f"gemini:{model} [{len(groups)} call{'s' if len(groups) > 1 else ''}]")
-        pending = failed
-
-    if pending and a.edge_fallback:
-        print(f"Using the Microsoft voice for shots {[i for i, _ in pending]}", flush=True)
-        evoice = EDGE_VOICES.get((language, a.gender), "en-IN-PrabhatNeural")
-        still = []
-        for i, text in pending:
-            try:
-                tmp = path_of(i) + ".edge.mp3"
-                asyncio.run(_edge(text, evoice, tmp))
-                trim_edges(tmp, path_of(i))
-                os.remove(tmp)
-                commit(i, text, f"edge:{evoice}")
-            except Exception as e:
-                print(f"  shot {i}: Edge failed too: {e}")
-                still.append((i, text))
-        pending = still
-
-    missing = [i for i, _ in pending]
-    if missing:
-        with open(a.report, "w", encoding="utf-8") as f:
-            f.write(f"### Voice report\n\n**MISSING VOICE FOR SHOTS {missing}**\n\nFinished shots are kept. Run again later "
-                    f"(daily limits reset) and only these shots are made.\n\n" + "\n".join(f"- {x}" for x in notes) + "\n")
-        sys.exit(f"FAIL: no voice for shots {missing}. Run again later, the finished shots are kept.")
-
-    # ---- exact timing: the video is exactly `target` seconds
-    voice_s = [probe(path_of(i)) for i in range(1, n + 1)]
-    L = sum(voice_s)
-    pad_lo, pad_hi = 0.25, 1.4                  # tail pause per shot (s); the lead is fixed
-    base = n * LEAD
-    f = 1.0
-    need = target - base                        # time for speech plus tails
-    if L + n * pad_lo > need * 1.0001:          # voice too long: speed up
-        f = min(1.08, (L) / (need - n * pad_lo))
-    elif L + n * pad_hi < need * 0.9999:        # voice too short: slow down
-        f = max(0.92, L / (need - n * pad_hi))
-    speech = L / f
-    tail_total = need - speech
-    tail = tail_total / n
-    if not (pad_lo - 1e-6 <= tail <= pad_hi + 1e-6):
-        direction = "long" if tail < pad_lo else "short"
-        raise SystemExit(f"FAIL: the narration is too {direction} for {target:.0f} s: voice {L:.1f} s (speed x{f:.2f}) leaves "
-                         f"{tail:.2f} s pause per shot, allowed {pad_lo}-{pad_hi}. Write the story again "
-                         f"{'shorter' if direction == 'long' else 'longer'} (the director does this automatically).")
-    w, h, samples = QUALITY[a.quality]
-    cum, tl_shots = 0.0, []
-    total_frames = int(round(target * a.fps))
-    for i, s in enumerate(shots, start=1):
-        d = LEAD + voice_s[i - 1] / f + tail
-        start_f = int(round(cum * a.fps))
-        cum += d
-        end_f = total_frames if i == n else int(round(cum * a.fps))
-        dur = (end_f - start_f) / a.fps
-        s.update({"audio": path_of(i), "voice_seconds": round(voice_s[i - 1], 3), "lead": LEAD, "duration": round(dur, 3),
-                  "start_time": round(start_f / a.fps, 3), "start_frame": start_f, "end_frame": end_f})
-        tl_shots.append({"id": s["id"], "audio": path_of(i), "voice_seconds": round(voice_s[i - 1], 3), "lead": LEAD,
-                         "duration": round(dur, 3), "start_time": round(start_f / a.fps, 3), "start_frame": start_f,
-                         "end_frame": end_f, "thumb": bool(s.get("thumb"))})
-    plan.update({"fps": a.fps, "total_frames": total_frames, "total_seconds": target, "voice_tempo": round(f, 4)})
-    json.dump(plan, open(a.out_plan, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    json.dump({"fps": a.fps, "width": w, "height": h, "samples": samples, "aspect": "vertical",
-               "total_frames": total_frames, "total_seconds": target, "tempo": round(f, 4), "lead": LEAD, "shots": tl_shots},
-              open(a.timeline, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    with open(a.report, "w", encoding="utf-8") as fh:
-        fh.write(f"### Voice report\n\n**ALL {n} SHOTS HAVE A VOICE. VIDEO LENGTH = {target:.1f} s ({total_frames} frames at {a.fps} fps)**\n\n")
-        fh.write(f"Voice: {voice} | mode: {a.mode} | speech {L:.1f} s, speed x{f:.3f}, pause after each shot {tail:.2f} s, "
-                 f"picture {w}x{h}, {samples} samples\n\n")
-        if notes:
-            fh.write("Notes:\n" + "\n".join(f"- {x}" for x in notes) + "\n\n")
-        fh.write("| Shot | Voice engine | Voice s | Shot s |\n|---|---|---|---|\n")
-        for i, s in enumerate(shots, start=1):
-            fh.write(f"| {i} | {engines.get(i, '?')} | {voice_s[i - 1]:.1f} | {s['duration']:.1f} |\n")
-    print(f"Done: {n} shots, speech {L:.1f}s x{f:.3f}, total {target:.1f}s, {total_frames} frames")
+    speech = sum(r[1] for r in results)
+    md = [f"Voice report\nALL {len(results)} SHOTS HAVE A VOICE. VIDEO LENGTH = {total:.1f} s ({total_frames} frames at {fps} fps)\n",
+          f"Narrator: {narrator} | model: {ctx['state']['model'] or 'cached/fake'} | speech {speech:.1f} s, pause after each shot {a.pause} s, picture {w}x{h}, {samples} samples\n",
+          "Shot\tVoice\tVoice s\tShot s"]
+    for sh, (path, secs, model, calls), t in zip(shots, results, tl_shots):
+        md.append(f"{sh['id']}\t{model} [{calls} calls]\t{secs:.1f}\t{t['duration']:.1f}")
+    open("voice_report.md", "w", encoding="utf-8").write("\n".join(md))
+    print("\n".join(md))
+    if total > 180:
+        print("WARNING: longer than 3 minutes, this will not be a Short. Shorten the story or lower --pause.")
 
 
 if __name__ == "__main__":
