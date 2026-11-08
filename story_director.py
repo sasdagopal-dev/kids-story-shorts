@@ -340,6 +340,14 @@ def repair_plan(raw, cfg, strict=True):
             c["move"] = "push_in" if c["move"] != "push_in" else "pull_out"
             notes.append(f"shot {i + 1}: three equal camera setups in a row, camera move changed")
 
+    omap = cfg.get("outro") or {}
+    outro = omap.get(language, "") if isinstance(omap, dict) else ""
+    if outro:
+        last = shots[-1]["narration"]
+        kws = ("subscribe",) if language == "English" else ("\u0938\u092c\u094d\u0938\u0915\u094d\u0930\u093e\u0907\u092c",)
+        if not any(k in last.lower() for k in kws):
+            shots[-1]["narration"] = last.rstrip() + " " + outro
+            notes.append("subscribe outro added to the last shot")
     # ---- optional closing sentence (only when the config has one)
     dmap = cfg.get("disclaimer") or {}
     disc = dmap.get(language, "") if isinstance(dmap, dict) else ""
@@ -689,11 +697,13 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
                        "a trickster selling 'free gold leaves' = scam, a drought or flood = emergency fund, a seed that becomes a tree = patience and long-term growth, three baskets = needs, wants, savings. "
                        "Use small numbers a child can follow (Rs 10, Rs 20, 5 nuts). One wise animal says the rule in one short sentence. Never name real banks, apps, brands, stocks or funds, "
                        "never promise returns, never tell anyone to buy anything.")
-        heart = "a plain three-point recap of the money lesson in simple words"
+        heart = "a plain recap of the money lesson in simple words, starting with 'Today we learned' (in the story language), as three short points"
     else:
         lesson_rule = "7. LESSON: one gentle life lesson, shown by events and one short wise line, never a speech."
-        heart = "the heart of the story in one simple line"
-    end_extra = (" and this sentence: " + disc) if disc else ""
+        heart = "the lesson of the story in one simple line, starting with 'Today we learned' (in the story language)"
+    omap = cfg.get("outro") or {}
+    outro = omap.get(language, "") if isinstance(omap, dict) else ""
+    end_extra = ((" and this exact outro sentence: " + outro) if outro else "") + ((" and this exact closing sentence: " + disc) if disc else "")
     return f"""You are a master children's-film writer. Write ONLY the story (no camera, no positions) of a vertical YouTube Short, {n} shots, language {language}.
 Series "{series.get('name', '')}". World: {series.get('bible', '')}
 Story idea: {topic}
@@ -715,7 +725,7 @@ CRAFT RULES
 5. DIALOGUE: at least 8 of the {n} shots contain a spoken line in double quotes with the speaker named next to it ("said Ragnar"). Short, funny or touching lines in each animal's own voice. Do not let a narrator explain what a line already shows.
 6. EMOTION: show fear, pride, shock, laughter, relief through actions and short lines, not by naming the feeling.
 {lesson_rule}
-8. ENDING: shot {n - 1} = {heart} + a one-line teaser. Shot {n} = a warm, funny or surprising last line that echoes shot 1 (so the video loops){end_extra}, plus a friendly 'follow for the next adventure'.
+8. ENDING: shot {n - 1} = {heart} + a one-line teaser. Shot {n} = a warm, funny or surprising last line that echoes shot 1 (so the video loops){end_extra}, {'(the last shot may be a little longer than the others because of these sentences)' if end_extra else ''}.
 9. Simple vivid words, short sentences, storyteller rhythm. Family friendly, no blood, no real brands.
 10. LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. Count carefully.
 
@@ -748,7 +758,8 @@ def check_story(story, cfg, strict=True):
             raise Reject(f"shot {i} narration must be written in {language}")
         u = count_units(s["narration"], unit)
         lo, hi = tg["shot"]
-        if strict and not (lo - 2 <= u <= hi + 4):
+        extra = (14 if unit == "words" else 90) if i == n else 4 if unit == "words" else 20
+        if strict and not (lo - 2 <= u <= hi + extra):
             raise Reject(f"shot {i} narration has {u} {unit}, each shot must have {lo} to {hi} {unit}")
         total += u
         nq = len(QUOTE_RE.findall(s["narration"]))
