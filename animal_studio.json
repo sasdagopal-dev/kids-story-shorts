@@ -137,5 +137,9 @@
     "Bholu accidentally wakes the whole valley at night and saves everyone from a falling tree",
     "A young fox learns that the shortcut is not worth it when a flood comes"
   ],
-  "made_for_kids": true
+  "made_for_kids": true,
+  "outro": {
+    "English": "If you liked this story, subscribe for the next one!",
+    "Hindi": "अगर कहानी पसंद आई, तो अगली कहानी के लिए सब्सक्राइब करें!"
+  }
 }
