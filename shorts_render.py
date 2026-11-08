@@ -209,7 +209,47 @@ def make_rock(x, y, size, seed=1):
     return r
 
 
-def ground_material(c0, c1):
+DENSITY = float(os.environ.get("SCENE_DENSITY", "1.6") or 1.6)
+
+
+def haze_of(look):
+    """Colour that far things fade into (atmospheric depth)."""
+    if look.get("haze"):
+        return look["haze"]
+    if look["night"]:
+        return (0.05, 0.08, 0.17)
+    if look["elev"] < 14 and look["sun_col"][2] < 0.5:
+        return (0.85, 0.58, 0.42)
+    return (0.68, 0.78, 0.90)
+
+
+def lerp3(a, b, t):
+    return tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+
+
+def no_shadow(o):
+    for attr in ("visible_shadow",):
+        try:
+            setattr(o, attr, False)
+        except Exception:
+            pass
+
+
+def make_emissive(color, strength):
+    m = bpy.data.materials.new("emit")
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = (*color, 1)
+    em.inputs["Strength"].default_value = strength
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    return m
+
+
+def ground_material(c0, c1, haze):
+    """Patchy grass, dirt patches, and a fade into the haze colour far away."""
     m = bpy.data.materials.new("ground")
     m.use_nodes = True
     nt = m.node_tree
@@ -217,15 +257,39 @@ def ground_material(c0, c1):
     bsdf.inputs["Roughness"].default_value = 0.95
     try:
         tc = nt.nodes.new("ShaderNodeTexCoord")
-        noise = nt.nodes.new("ShaderNodeTexNoise")
-        noise.inputs["Scale"].default_value = 0.35
-        noise.inputs["Detail"].default_value = 6.0
-        ramp = nt.nodes.new("ShaderNodeValToRGB")
-        ramp.color_ramp.elements[0].color = (*c0, 1)
-        ramp.color_ramp.elements[1].color = (*c1, 1)
-        nt.links.new(tc.outputs["Object"], noise.inputs["Vector"])
-        nt.links.new(noise.outputs["Fac"], ramp.inputs["Fac"])
-        nt.links.new(ramp.outputs["Color"], bsdf.inputs["Base Color"])
+        n1 = nt.nodes.new("ShaderNodeTexNoise")
+        n1.inputs["Scale"].default_value = 0.35
+        n1.inputs["Detail"].default_value = 6.0
+        r1 = nt.nodes.new("ShaderNodeValToRGB")
+        r1.color_ramp.elements[0].color = (*c0, 1)
+        r1.color_ramp.elements[1].color = (*c1, 1)
+        nt.links.new(tc.outputs["Object"], n1.inputs["Vector"])
+        nt.links.new(n1.outputs["Fac"], r1.inputs["Fac"])
+        n2 = nt.nodes.new("ShaderNodeTexNoise")
+        n2.inputs["Scale"].default_value = 0.11
+        n2.inputs["Detail"].default_value = 3.0
+        r2 = nt.nodes.new("ShaderNodeValToRGB")
+        r2.color_ramp.elements[0].position = 0.58
+        r2.color_ramp.elements[1].position = 0.68
+        nt.links.new(tc.outputs["Object"], n2.inputs["Vector"])
+        nt.links.new(n2.outputs["Fac"], r2.inputs["Fac"])
+        dirt = tuple(0.55 * c0[i] + 0.45 * b for i, b in enumerate((0.40, 0.30, 0.20)))
+        mixd = nt.nodes.new("ShaderNodeMixRGB")
+        mixd.inputs["Color2"].default_value = (*dirt, 1)
+        nt.links.new(r2.outputs["Color"], mixd.inputs["Fac"])
+        nt.links.new(r1.outputs["Color"], mixd.inputs["Color1"])
+        geo = nt.nodes.new("ShaderNodeNewGeometry")
+        sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+        mr = nt.nodes.new("ShaderNodeMapRange")
+        mr.inputs["From Min"].default_value = 30.0
+        mr.inputs["From Max"].default_value = 150.0
+        nt.links.new(geo.outputs["Position"], sep.inputs["Vector"])
+        nt.links.new(sep.outputs["Y"], mr.inputs["Value"])
+        mixh = nt.nodes.new("ShaderNodeMixRGB")
+        mixh.inputs["Color2"].default_value = (*haze, 1)
+        nt.links.new(mr.outputs["Result"], mixh.inputs["Fac"])
+        nt.links.new(mixd.outputs["Color"], mixh.inputs["Color1"])
+        nt.links.new(mixh.outputs["Color"], bsdf.inputs["Base Color"])
     except Exception:
         bsdf.inputs["Base Color"].default_value = (*c0, 1)
     return m
@@ -241,6 +305,24 @@ def build_world(look):
     bg = nt.nodes.new("ShaderNodeBackground")
     if look["night"]:
         bg.inputs["Color"].default_value = (0.045, 0.075, 0.17, 1)
+        try:                                              # a field of stars
+            tc = nt.nodes.new("ShaderNodeTexCoord")
+            nz = nt.nodes.new("ShaderNodeTexNoise")
+            nz.inputs["Scale"].default_value = 420.0
+            nz.inputs["Detail"].default_value = 0.0
+            rp = nt.nodes.new("ShaderNodeValToRGB")
+            rp.color_ramp.elements[0].position = 0.80
+            rp.color_ramp.elements[1].position = 0.83
+            mix = nt.nodes.new("ShaderNodeMixRGB")
+            mix.blend_type = "ADD"
+            mix.inputs["Fac"].default_value = 1.0
+            mix.inputs["Color1"].default_value = (0.045, 0.075, 0.17, 1)
+            nt.links.new(tc.outputs["Generated"], nz.inputs["Vector"])
+            nt.links.new(nz.outputs["Fac"], rp.inputs["Fac"])
+            nt.links.new(rp.outputs["Color"], mix.inputs["Color2"])
+            nt.links.new(mix.outputs["Color"], bg.inputs["Color"])
+        except Exception:
+            pass
     else:
         try:
             sky = nt.nodes.new("ShaderNodeTexSky")
@@ -257,10 +339,12 @@ def build_world(look):
     sc.world = w
 
 
-def scatter(names, count, rng, kind):
-    """kind: tree / extra / decor. Everything is registered so the camera can later clear its view."""
+def scatter(names, count, rng, kind, centers=None):
+    """kind: tree / extra / decor. Items grow in groves and clumps (natural), and everything is registered
+    so the camera can clear its view later."""
     decor = kind == "decor"
     base_r = {"tree": 1.0, "extra": 0.8, "decor": 0.3}[kind]
+    count = int(round(count * DENSITY))
     cache, placed, tries = {}, 0, 0
     names = list(names)
     while placed < count and tries < count * 25 and names:
@@ -268,7 +352,12 @@ def scatter(names, count, rng, kind):
         if decor:
             x, y = rng.uniform(-7, 7), rng.uniform(-3, 9)
         else:
-            x, y = rng.uniform(-32, 32), rng.uniform(-1.5, 42)
+            if centers and rng.random() < 0.75:
+                cx, cy = rng.choice(centers)
+                x, y = rng.gauss(cx, 4.5), rng.gauss(cy, 4.5)
+            else:
+                x, y = rng.uniform(-34, 34), 9 + (rng.random() ** 1.3) * 38
+            x, y = max(-40, min(40, x)), max(-1.5, min(48, y))
             if -9.0 < x < 9.0 and -4.0 < y < 9.0:        # keep the action area free
                 continue
         name = rng.choice(names)
@@ -286,19 +375,57 @@ def scatter(names, count, rng, kind):
             w = clone_hierarchy(cache[name], f"C_{name}_{placed}")
         w.location = (x, y, 0)
         w.rotation_euler.z = rng.uniform(0, math.tau)
-        s = rng.uniform(0.85, 1.35) if not decor else rng.uniform(0.9, 1.2)
+        s = rng.uniform(0.8, 1.5) if not decor else rng.uniform(0.9, 1.25)
         w.scale = (s, s, s)
         low = name in core.SMALL_DECOR
         register(w, x, y, base_r * s, "low" if low else kind)
         placed += 1
 
 
+def add_backdrop(look, rng, haze):
+    """Far hills in three hazy layers, clouds, and a moon: the picture gets a real horizon."""
+    base = look["ground"][0]
+    for mixv, (ylo, yhi) in zip((0.55, 0.70, 0.82), ((110, 130), (135, 155), (158, 172))):
+        col = lerp3(base, haze, mixv)
+        for k in range(8):
+            r = rng.uniform(28, 55)
+            bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=r,
+                                                  location=(-170 + k * 48 + rng.uniform(-20, 20), rng.uniform(ylo, yhi), 0))
+            o = bpy.context.active_object
+            o.scale = (1.6, 1.0, rng.uniform(0.28, 0.42))
+            for pl in o.data.polygons:
+                pl.use_smooth = True
+            o.data.materials.append(make_material(col, 1.0))
+            no_shadow(o)
+    if look["night"]:
+        for rad, strength, col, loc in ((5.0, 7.0, (1.0, 0.96, 0.82), (-8, 135, 36)), (9.0, 0.5, (0.55, 0.65, 1.0), (-8, 138, 36))):
+            bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=3, radius=rad, location=loc)
+            o = bpy.context.active_object
+            o.data.materials.append(make_emissive(col, strength))
+            no_shadow(o)
+        return
+    stormy = look["dust"] >= 9 or look["sun"] < 1.0
+    warm = look["elev"] < 14 and not stormy
+    ccol = (0.38, 0.40, 0.46) if stormy else ((1.0, 0.78, 0.62) if warm else (1.0, 1.0, 1.0))
+    cmat = make_emissive(ccol, 0.6 if stormy else 1.0)
+    for _ in range(16 if stormy else 11):
+        cx, cy, cz = rng.uniform(-130, 130), rng.uniform(120, 210), rng.uniform(38, 75)
+        for _j in range(rng.randint(3, 5)):
+            bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2, radius=rng.uniform(9, 17),
+                                                  location=(cx + rng.uniform(-14, 14), cy + rng.uniform(-4, 4), cz + rng.uniform(-3, 3)))
+            o = bpy.context.active_object
+            o.scale = (1.6, 1.0, 0.6)
+            o.data.materials.append(cmat)
+            no_shadow(o)
+
+
 def build_env(look_name):
     look = core.LOOKS.get(look_name, core.LOOKS["meadow_day"])
+    haze = haze_of(look)
     build_world(look)
     bpy.ops.mesh.primitive_plane_add(size=320, location=(0, 20, 0))
     ground = bpy.context.active_object
-    ground.data.materials.append(ground_material(*look["ground"]))
+    ground.data.materials.append(ground_material(*look["ground"], haze))
     if look["water"]:
         bpy.ops.mesh.primitive_plane_add(size=1, location=(0, 10.5, 0.05))
         water = bpy.context.active_object
@@ -311,7 +438,7 @@ def build_env(look_name):
     sun = bpy.data.objects.new("Sun", sun_data)
     link(sun)
     sun.rotation_euler = (math.radians(90 - look["elev"]), 0, math.radians(look["az"]))
-    fill_data = bpy.data.lights.new("Fill", "SUN")          # soft fill from the other side, keeps shadows readable
+    fill_data = bpy.data.lights.new("Fill", "SUN")
     fill_data.energy = look["sun"] * 0.22
     fill_data.color = (0.85, 0.9, 1.0)
     fill_data.angle = math.radians(40)
@@ -327,10 +454,12 @@ def build_env(look_name):
         link(lo)
         lo.location = (0.5, -1.5, 3.0)
     rng = random.Random(sum(ord(c) for c in look_name) * 7919)
-    scatter(look["trees"], look["n_trees"], rng, "tree")
-    scatter(look["extras"], look["n_extras"], rng, "extra")
+    centers = [(rng.choice([-1, 1]) * rng.uniform(9, 26), rng.uniform(9, 34)) for _ in range(5)]
+    add_backdrop(look, rng, haze)
+    scatter(look["trees"], look["n_trees"], rng, "tree", centers)
+    scatter(look["extras"], look["n_extras"], rng, "extra", centers)
     scatter(look["decor"], look["n_decor"], rng, "decor")
-    for k in range(7):
+    for k in range(10):
         x = rng.choice([-1, 1]) * rng.uniform(8, 26)
         size = rng.uniform(1.0, 2.6)
         y = rng.uniform(4, 36)
@@ -367,6 +496,27 @@ def setup_render():
         sc.view_settings.exposure = -0.3
     except Exception:
         pass
+    if os.environ.get("VIGNETTE", "1") != "0":          # soft dark corners, cinematic look
+        try:
+            sc.use_nodes = True
+            nt = sc.node_tree
+            nt.nodes.clear()
+            rl = nt.nodes.new("CompositorNodeRLayers")
+            mask = nt.nodes.new("CompositorNodeEllipseMask")
+            mask.width, mask.height = 0.95, 0.95
+            blur = nt.nodes.new("CompositorNodeBlur")
+            blur.use_relative = True
+            blur.factor_x = blur.factor_y = 0.12
+            mix = nt.nodes.new("CompositorNodeMixRGB")
+            mix.blend_type = "MULTIPLY"
+            mix.inputs[0].default_value = 0.45
+            comp = nt.nodes.new("CompositorNodeComposite")
+            nt.links.new(mask.outputs[0], blur.inputs[0])
+            nt.links.new(rl.outputs["Image"], mix.inputs[1])
+            nt.links.new(blur.outputs[0], mix.inputs[2])
+            nt.links.new(mix.outputs[0], comp.inputs["Image"])
+        except Exception:
+            sc.use_nodes = False
     return sc
 
 
@@ -512,7 +662,7 @@ def build_shot(shot, dur):
     cam_data.lens = 30
     cam_data.clip_end = 500
     cam_data.dof.use_dof = True
-    cam_data.dof.aperture_fstop = 4.0
+    cam_data.dof.aperture_fstop = 3.2
     cam = bpy.data.objects.new("Cam", cam_data)
     link(cam)
     sc.camera = cam
@@ -558,7 +708,32 @@ def render_to(sc, path):
     bpy.ops.render.render(write_still=True)
 
 
+def calibrate(models):
+    """Measure the real nose-to-tail length of every animal, so animals never overlap."""
+    for m in sorted(models):
+        try:
+            bpy.ops.wm.read_factory_settings(use_empty=True)
+            res = load_model(m)
+            if not res:
+                continue
+            bpy.context.view_layer.update()
+            xs, ys, zs = [], [], []
+            for o in res[1]:
+                if o.type != "MESH":
+                    continue
+                for cc in o.bound_box:
+                    v = o.matrix_world @ Vector(cc)
+                    xs.append(v.x); ys.append(v.y); zs.append(v.z)
+            h = max(zs) - min(zs)
+            if h > 0.01:
+                core.MEASURED_LEN[m] = round(max(max(xs) - min(xs), max(ys) - min(ys)) * core.TARGET_HEIGHT.get(m, 1.5) / h, 2)
+        except Exception as e:
+            print("calibrate failed for", m, str(e)[:80])
+    print("LENGTHS (m):", "; ".join(f"{k} {v}" for k, v in sorted(core.MEASURED_LEN.items())), flush=True)
+
+
 def main():
+    calibrate({c["model"] for s in STORY["shots"] for c in s["characters"]})
     t_start = time.time()
     total = TL["total_frames"]
     done = 0
