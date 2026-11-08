@@ -588,6 +588,7 @@ def dialogue_choreo(sh, cfg, notes, hint, given=None):
     if any(c["id"] == main for c in chars):
         sh["camera"]["focus"] = main
     sh["speakers"] = [{"id": spk, "at": fr} for fr, spk, _ in segs]
+    sh["quotes"] = [{"start": st, "end": en, "id": spk} for st, en, spk in qs if text[st:st + 1] in ("\"", "\u201c")]
 
 
 # ------------------------------------------------------------------ prompt
@@ -858,6 +859,7 @@ def main():
     ap.add_argument("--topic", default="")
     ap.add_argument("--date", default="")
     ap.add_argument("--language", default="", help="English or Hindi (default: from the config)")
+    ap.add_argument("--story-mode", default="", help="money or adventure (default: from the config)")
     ap.add_argument("--models", default="")
     ap.add_argument("--attempts", type=int, default=6)
     ap.add_argument("--no-progress", action="store_true")
@@ -866,6 +868,8 @@ def main():
     cfg = json.load(open(a.config, encoding="utf-8"))
     if a.language:
         cfg["language"] = a.language
+    if a.story_mode:
+        cfg["story_mode"] = a.story_mode
     language = cfg["language"]
     unit = cfg["targets"][language]["unit"]
 
