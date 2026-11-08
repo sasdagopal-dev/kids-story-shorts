@@ -18,7 +18,8 @@
       "role": "hero, young fox who just started earning, clever and brave but impatient with money",
       "voice_style": "quick, eager, a little cheeky",
       "catchphrase": "But I have a plan!",
-      "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared"
+      "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+      "voice_name": "Puck"
     },
     {
       "id": "ragnar",
@@ -32,7 +33,8 @@
       "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
       "voice_style": "slow, calm, one short wise sentence",
       "catchphrase": "Patience is also a path.",
-      "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle"
+      "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+      "voice_name": "Gacrux"
     },
     {
       "id": "drakon",
@@ -46,7 +48,8 @@
       "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
       "voice_style": "loud, proud, sneering, hides fear",
       "catchphrase": "Nobody beats Drakon!",
-      "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax"
+      "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+      "voice_name": "Algenib"
     },
     {
       "id": "lakshmi",
@@ -55,7 +58,8 @@
       "role": "kind honest cow, saves a little every day, protects the young",
       "voice_style": "warm, motherly, gentle",
       "catchphrase": "Come here, little one.",
-      "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry"
+      "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+      "voice_name": "Sulafat"
     },
     {
       "id": "bholu",
@@ -64,7 +68,8 @@
       "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
       "voice_style": "funny, mixes up words, cheerful",
       "catchphrase": "Oh my whiskers... I mean, oh my ears!",
-      "behaviour": "comic: big shock, sad, celebrates too early, arrives late running"
+      "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+      "voice_name": "Fenrir"
     },
     {
       "id": "veer",
@@ -73,7 +78,8 @@
       "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
       "voice_style": "few words, deep and noble",
       "catchphrase": "The forest listens.",
-      "behaviour": "stands tall and still, arrives fast to protect, serious"
+      "behaviour": "stands tall and still, arrives fast to protect, serious",
+      "voice_name": "Orus"
     }
   ],
   "targets": {
