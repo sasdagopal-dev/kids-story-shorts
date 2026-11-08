@@ -325,6 +325,12 @@ def repair_plan(raw, cfg, strict=True):
         raise Reject(f"{moving_shots} shots have walking or running animals. Too much movement: at most 10 shots may move, "
                      f"in all other shots the animals stand still and the story is told by the narration and the camera")
 
+    if strict:
+        looks_used = [sh["look"] for sh in shots]
+        if len(set(looks_used)) < 3 or max(looks_used.count(x) for x in set(looks_used)) > 10:
+            raise Reject("use more variety of places and times: at least 4 different looks, none for more than 8 shots")
+        if sum(1 for sh in shots if len(sh["characters"]) >= 3) < 3:
+            raise Reject("show more group moments: at least 3 shots with 3 animals in the picture (and some shots with 1 animal alone for emotion)")
     framings = {sh["camera"]["framing"] for sh in shots}
     if strict and len(framings) < 3:
         raise Reject("use more camera variety: at least 3 different framings (close, medium, wide)")
@@ -351,9 +357,9 @@ def repair_plan(raw, cfg, strict=True):
                      f"({'shorten' if total > thi else 'lengthen'} it)")
 
     # ---- FLEXIBLE length: the video is as long as the story needs (voice + a little air per shot)
-    rate = float(tg.get("rate", 2.2 if unit == "words" else 9.5))        # spoken units per second
+    rate = float(tg.get("rate", 2.4 if unit == "words" else 9.5))        # spoken units per second
     est = total / rate
-    target = core.clamp(est * 1.10 + len(shots) * 0.45, float(cfg.get("min_seconds", 105)), float(cfg.get("max_seconds", 178)))
+    target = core.clamp(est + len(shots) * 0.8, float(cfg.get("min_seconds", 105)), float(cfg.get("max_seconds", 178)))
     target = int(round(target))
 
     thumbs = [i for i, sh in enumerate(shots) if sh.get("thumb")]
@@ -379,7 +385,8 @@ def repair_plan(raw, cfg, strict=True):
     plan = {"version": 4, "language": language, "title": title + suffix,
             "description": str(raw.get("description") or "").strip(), "tags": tags,
             "twist": str(raw.get("twist") or "")[:200], "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
-            "disclaimer": disc, "credits": cfg.get("credits", ""),
+            "disclaimer": disc, "credits": cfg.get("credits", ""), "story_mode": cfg.get("story_mode", "adventure"),
+            "made_for_kids": bool(cfg.get("made_for_kids", True)),
             "target_seconds": target, "flexible_length": True, "estimated_voice_seconds": round(est, 1),
             "cast": [cast_by_id[i] for i in used_ids], "shots": shots}
     return plan, notes, total
@@ -583,7 +590,7 @@ def build_prompt(cfg, topic, genre, history, feedback, story=None):
     series = cfg.get("series", {})
     dmap = cfg.get("disclaimer") or {}
     disc = dmap.get(language, "") if isinstance(dmap, dict) else ""
-    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} (model {c['model']}{', black fur' if c.get('tint') and c['tint'][0] < 1 else (', white fur' if c.get('tint') else '')}): {c['role']}"
+    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} (model {c['model']}{', black fur' if c.get('tint') and c['tint'][0] < 1 else (', white fur' if c.get('tint') else '')}): {c['role']}. On screen: {c.get('behaviour', '-')}"
                      for c in cfg["cast"])
     past = "\n".join(f"- {h.get('title', '')}" + (f" | what happened: {h['recap']}" if h.get("recap") else "") +
                      (f" | ended with: {h['cliffhanger']}" if h.get("cliffhanger") else "") for h in history[-6:]) or "- (this is episode 1)"
@@ -635,13 +642,13 @@ DIRECTION RULES (the renderer follows them exactly)
 - Actions allowed: {', '.join(core.ACTIONS)}. Only walk and run move; they REQUIRE "to":[x,y]. Walking is 1.4 m/s and running 5.5 m/s.
 - CALM MOVEMENT: at most 10 of the {n} shots may have a walking or running animal. In all other shots the animals stand still (talk, listen, shock, sad ...). No pacing, no wandering.
 - Each animal has 1 to 3 "beats" in time order. "at" = when the beat starts as a fraction of the shot (0 = when the narration starts, 0.5 = half way). Start every action when the narration mentions it. An animal that walks in must arrive BEFORE it talks.
-- The frame is VERTICAL and narrow. Keep every animal at x from -2.4 to 2.4 and y from 0 to 5.5 (y = distance from the camera). Animals are BIG: a horse is 2.4 m long. Place animals ACROSS the picture (left and right of each other, depth difference at most 1.5 m) so that nobody stands directly behind another animal: the camera must see every animal fully. At most 3 animals in a shot (4 only for a wolf pack scene). An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
+- The frame is VERTICAL and narrow. Keep every animal at x from -2.4 to 2.4 and y from 0 to 5.5 (y = distance from the camera). Animals are BIG: a horse is 2.4 m long. Place animals ACROSS the picture (left and right of each other, depth difference at most 1.5 m) so that nobody stands directly behind another animal: the camera must see every animal fully. VARY the number of animals: 1 animal alone for strong emotion (at least 2 shots), 2 for a conversation, 3 for group moments (at least 4 shots), 4 only for a pack or crowd scene. An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
 - props: optional boulder {{"type":"rock","pos":[x,y],"size":1.0-2.5}}. Use a boulder ONLY when an animal stands on top of it (same x,y as the animal): good for a wise elder or a leader watching from above.
 - WHO SPEAKS: every quoted line must be written between double quotes and must name the speaker right next to it with a speech verb ("said Ragnar", "Milo whispered"). Give each shot "quote_speakers": the ids of the speaker of each quoted line, in the order the lines appear ([] if nobody speaks). Only that animal talks while its line is read; all the others listen. Never let another animal move or talk while a line is spoken. Also give each shot "speaker" = the id of the first speaker (null if nobody) and "tone" = 2-4 words telling the voice actor how to read the shot (for example "whispered, scared", "proud, loud", "warm, gentle").
 - "face": the id of the animal this one looks at.
 - camera = {{"framing": one of {core.FRAMINGS}, "angle": one of {core.ANGLES}, "move": one of {core.MOVES}, "focus": id of the animal the camera is about, "side": one of {core.SIDES}}}.
   Direct like a film: open with a wide shot; most shots wide or medium (at least 12 of {n}); close or extreme_close only for the strongest emotion (at most 4 shots in the whole story); low angle for powerful animals, high angle for small or scared ones; push_in slowly on dramatic lines, pull_out for the consequence, follow ONLY when the focus animal walks or runs; static otherwise. Never repeat the same framing and move three times in a row.
-- look = one of {list(core.LOOKS)}. Change the look only when the story moves to a new place or time (forest_day, golden_sunset, riverbank_dawn, storm_dusk, night_moon, ember_sky = fiery red sky for danger, meadow_day).
+- look = one of {list(core.LOOKS)}. Meanings: meadow_day (normal day), forest_day, flower_field (happy, spring), misty_morning (calm, mystery), autumn_gold (change, warm), golden_sunset (ending of a day, hope), riverbank_dawn, snow_pines (cold, lonely, hard times), rainy_forest (sadness, trouble), storm_dusk (danger), ember_sky (fiery red sky = big danger), night_moon (secret, fear, quiet). Use AT LEAST 4 different looks in the story, change the look whenever the place or the time changes, and never use one look for more than 8 shots.
 - Put "thumb": true on the single most dramatic shot.
 
 SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal is in that shot's characters; every walk/run has "to"; at most 10 moving shots; at most 4 close-ups; nobody stands behind another animal; quote_speakers matches the quotes one by one.
@@ -669,13 +676,23 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
     unit = tg["unit"]
     series = cfg.get("series", {})
     n = cfg.get("shots", 20)
-    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} ({c['model']}): {c['role']}. Speaks: {c.get('voice_style', 'natural')}. Catchphrase: {c.get('catchphrase', '-')}"
+    cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} ({c['model']}): {c['role']}. Speaks: {c.get('voice_style', 'natural')}. Catchphrase: {c.get('catchphrase', '-')}. Behaves: {c.get('behaviour', '-')}"
                      for c in cfg["cast"])
     past = "\n".join(f"- {h.get('title', '')}" + (f" | {h['recap']}" if h.get("recap") else "") for h in history[-6:]) or "- (episode 1)"
     twists = "\n".join(f"- {h['twist']}" for h in history[-12:] if h.get("twist")) or "- (none yet)"
     dmap = cfg.get("disclaimer") or {}
     disc = dmap.get(language, "") if isinstance(dmap, dict) else ""
     fix = ("FIX THIS PROBLEM FROM YOUR LAST ANSWER: " + feedback) if feedback else ""
+    if cfg.get("story_mode", "adventure") == "money":
+        lesson_rule = ("7. MONEY LESSON (the hidden purpose): teach ONE beginner money-awareness idea, today: " + topic + ". Show it with ANIMAL-NATIVE money, never with human shops or banks: "
+                       "food stored for winter = savings, a berry bank in a hollow tree, a hive that grows = compound growth, a lender wolf who asks 'two nuts back for one' = interest and debt trap, "
+                       "a trickster selling 'free gold leaves' = scam, a drought or flood = emergency fund, a seed that becomes a tree = patience and long-term growth, three baskets = needs, wants, savings. "
+                       "Use small numbers a child can follow (Rs 10, Rs 20, 5 nuts). One wise animal says the rule in one short sentence. Never name real banks, apps, brands, stocks or funds, "
+                       "never promise returns, never tell anyone to buy anything.")
+        heart = "a plain three-point recap of the money lesson in simple words"
+    else:
+        lesson_rule = "7. LESSON: one gentle life lesson, shown by events and one short wise line, never a speech."
+        heart = "the heart of the story in one simple line"
     end_extra = (" and this sentence: " + disc) if disc else ""
     return f"""You are a master children's-film writer. Write ONLY the story (no camera, no positions) of a vertical YouTube Short, {n} shots, language {language}.
 Series "{series.get('name', '')}". World: {series.get('bible', '')}
@@ -697,8 +714,8 @@ CRAFT RULES
 4. TWIST around shots 11-13 that the viewer does not expect but that is fair (hinted earlier).
 5. DIALOGUE: at least 8 of the {n} shots contain a spoken line in double quotes with the speaker named next to it ("said Ragnar"). Short, funny or touching lines in each animal's own voice. Do not let a narrator explain what a line already shows.
 6. EMOTION: show fear, pride, shock, laughter, relief through actions and short lines, not by naming the feeling.
-7. LESSON: one gentle life lesson, shown by events and one short wise line, never a speech.
-8. ENDING: shot {n - 1} = the heart of the story in one simple line + a one-line teaser. Shot {n} = a warm, funny or surprising last line that echoes shot 1 (so the video loops){end_extra}, plus a friendly 'follow for the next adventure'.
+{lesson_rule}
+8. ENDING: shot {n - 1} = {heart} + a one-line teaser. Shot {n} = a warm, funny or surprising last line that echoes shot 1 (so the video loops){end_extra}, plus a friendly 'follow for the next adventure'.
 9. Simple vivid words, short sentences, storyteller rhythm. Family friendly, no blood, no real brands.
 10. LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. Count carefully.
 
@@ -861,7 +878,7 @@ def main():
             prog.update(json.load(open(a.progress, encoding="utf-8")))
         except Exception:
             pass
-    topics = cfg.get("themes") or cfg.get("topics") or []
+    topics = cfg.get("themes_" + cfg.get("story_mode", "adventure")) or cfg.get("themes") or cfg.get("topics") or []
     if a.topic:
         topic = a.topic
     elif prog["next_topic"] < len(topics):
