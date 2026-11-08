@@ -24,17 +24,22 @@ TARGET_HEIGHT = {"Cow": 1.5, "Bull": 1.7, "Horse": 2.1, "Horse_White": 2.1, "Don
                  "Stag": 1.95, "Alpaca": 1.7, "Fox": 0.85, "Wolf": 1.05, "Husky": 0.95, "ShibaInu": 0.75}
 
 
+MEASURED_LEN = {}    # filled by the Blender renderer: real nose-to-tail length of each model (metres)
+
+
 def kind_of(model):
     return "canine" if model in CANINE else "hoof"
 
 
 def body_len(model):
     """Nose to rump in metres (without the tail)."""
-    return TARGET_HEIGHT.get(model, 1.5) * (1.5 if model in CANINE else 1.2)
+    if model in MEASURED_LEN:                     # real size measured by the renderer
+        return MEASURED_LEN[model]
+    return TARGET_HEIGHT.get(model, 1.5) * (1.7 if model in CANINE else 1.45)
 
 
 def min_sep(model_a, model_b, extra=0.0):
-    return 0.5 * (body_len(model_a) + body_len(model_b)) + 0.45 + extra
+    return 0.5 * (body_len(model_a) + body_len(model_b)) + 0.6 + extra
 
 
 ACTIONS = {
@@ -95,6 +100,31 @@ LOOKS = {
                        trees=["Pine_1", "Pine_3", "CommonTree_2", "DeadTree_2"], n_trees=14,
                        extras=["Bush_Common", "Mushroom_Laetiporus", "Grass_Common_Tall"], n_extras=12,
                        decor=["Grass_Common_Short", "Pebble_Round_1"], n_decor=12),
+    "misty_morning": dict(elev=12, az=25, sun=1.6, sun_col=(1.0, 0.93, 0.85), world=0.6, dust=10.0,
+                          ground=((0.40, 0.56, 0.30), (0.30, 0.46, 0.22)), water=False, night=False, haze=(0.80, 0.84, 0.88),
+                          trees=["CommonTree_2", "CommonTree_3", "Pine_1", "Pine_2"], n_trees=16,
+                          extras=["Bush_Common", "Fern_1", "Grass_Common_Tall", "Mushroom_Common"], n_extras=22,
+                          decor=["Grass_Common_Short", "Clover_1", "Pebble_Round_1"], n_decor=24),
+    "autumn_gold": dict(elev=30, az=40, sun=2.8, sun_col=(1.0, 0.82, 0.55), world=0.4, dust=2.5, haze=(0.90, 0.75, 0.55),
+                        ground=((0.50, 0.36, 0.13), (0.36, 0.24, 0.08)), water=False, night=False,
+                        trees=["CommonTree_1", "CommonTree_3", "CommonTree_4", "CommonTree_5"], n_trees=12,
+                        extras=["Bush_Common", "Plant_1", "Grass_Wispy_Tall", "Mushroom_Laetiporus"], n_extras=20,
+                        decor=["Petal_1", "Petal_2", "Pebble_Round_2", "Grass_Common_Short"], n_decor=30),
+    "flower_field": dict(elev=55, az=30, sun=3.2, sun_col=(1.0, 0.97, 0.9), world=0.45, dust=0.4,
+                         ground=((0.32, 0.58, 0.18), (0.22, 0.46, 0.12)), water=False, night=False,
+                         trees=["CommonTree_2", "CommonTree_4"], n_trees=6,
+                         extras=["Flower_3_Group", "Flower_4_Group", "Bush_Common_Flowers", "Grass_Common_Tall"], n_extras=30,
+                         decor=["Flower_3_Single", "Flower_4_Single", "Clover_1", "Clover_2"], n_decor=34),
+    "snow_pines": dict(elev=20, az=15, sun=2.4, sun_col=(0.85, 0.92, 1.0), world=0.55, dust=1.0, haze=(0.85, 0.90, 0.96),
+                       ground=((0.86, 0.89, 0.94), (0.74, 0.80, 0.90)), water=False, night=False,
+                       trees=["Pine_1", "Pine_2", "Pine_3"], n_trees=26,
+                       extras=["Pebble_Square_1", "Pebble_Square_2", "Bush_Common", "Grass_Wispy_Tall"], n_extras=10,
+                       decor=["Pebble_Round_1", "Pebble_Round_3"], n_decor=14),
+    "rainy_forest": dict(elev=18, az=-15, sun=0.9, sun_col=(0.75, 0.85, 0.95), world=0.3, dust=8.0, haze=(0.45, 0.52, 0.58),
+                         ground=((0.12, 0.26, 0.12), (0.08, 0.18, 0.08)), water=False, night=False,
+                         trees=["Pine_1", "Pine_2", "Pine_3", "CommonTree_2", "CommonTree_3"], n_trees=22,
+                         extras=["Fern_1", "Mushroom_Common", "Bush_Common", "Plant_7"], n_extras=24,
+                         decor=["Pebble_Round_2", "Clover_2"], n_decor=16),
 }
 
 TURN_SECONDS = 0.45
