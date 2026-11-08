@@ -7,17 +7,18 @@
   "title_suffix": " #shorts",
   "credits": "3D models by Quaternius (CC0).",
   "series": {
-    "name": "Jungle Heart Tales",
-    "bible": "A warm green valley with a river, a meadow and a dark pine forest. Animals speak, but they live like real animals: herds, packs, dens, storms, droughts, hunters. Milo is a small, clever, brave young fox who is often underestimated. Ragnar is the old white wolf who watches from a boulder and gives short wise rules. Drakon is the proud black wolf rival who bullies others but is not purely evil. Lakshmi is the kind, strong cow who protects the young. Bholu is the funny, clumsy donkey. Keep the same personalities in every episode."
+    "name": "Jungle Money Tales",
+    "bible": "A warm green valley with a river, a meadow and a dark pine forest. Animals speak, but they live like real animals: herds, packs, dens, storms, droughts. Their money is food and favours: nuts, berries, honey, a storehouse in a hollow tree. Milo is a small clever young fox who just started earning. Ragnar is the old white wolf, the money mentor, who gives rules in one short sentence. Drakon is the proud black wolf who runs the Fang Lending Den and tricks the young. Lakshmi is the kind honest cow who saves a little every day. Bholu is the funny donkey who spends on shiny useless things. Veer is the stag forest-guard who warns about tricksters. Keep these personalities in every episode."
   },
   "cast": [
     {
       "id": "milo",
       "name": "Milo",
       "model": "Fox",
-      "role": "hero, small clever young fox, brave but sometimes impatient",
+      "role": "hero, young fox who just started earning, clever and brave but impatient with money",
       "voice_style": "quick, eager, a little cheeky",
-      "catchphrase": "But I have a plan!"
+      "catchphrase": "But I have a plan!",
+      "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared"
     },
     {
       "id": "ragnar",
@@ -28,9 +29,10 @@
         2.3,
         2.5
       ],
-      "role": "old white wolf, calm and wise, gives short rules",
+      "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
       "voice_style": "slow, calm, one short wise sentence",
-      "catchphrase": "Patience is also a path."
+      "catchphrase": "Patience is also a path.",
+      "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle"
     },
     {
       "id": "drakon",
@@ -41,33 +43,37 @@
         0.14,
         0.16
       ],
-      "role": "proud black wolf rival, bully with a hidden fear",
+      "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
       "voice_style": "loud, proud, sneering, hides fear",
-      "catchphrase": "Nobody beats Drakon!"
+      "catchphrase": "Nobody beats Drakon!",
+      "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax"
     },
     {
       "id": "lakshmi",
       "name": "Lakshmi",
       "model": "Cow",
-      "role": "kind strong cow, protects the young, loves everyone",
+      "role": "kind honest cow, saves a little every day, protects the young",
       "voice_style": "warm, motherly, gentle",
-      "catchphrase": "Come here, little one."
+      "catchphrase": "Come here, little one.",
+      "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry"
     },
     {
       "id": "bholu",
       "name": "Bholu",
       "model": "Donkey",
-      "role": "funny clumsy donkey, loyal friend, comic relief",
+      "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
       "voice_style": "funny, mixes up words, cheerful",
-      "catchphrase": "Oh my whiskers... I mean, oh my ears!"
+      "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+      "behaviour": "comic: big shock, sad, celebrates too early, arrives late running"
     },
     {
       "id": "veer",
       "name": "Veer",
       "model": "Stag",
-      "role": "noble stag, guardian of the forest, speaks little",
+      "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
       "voice_style": "few words, deep and noble",
-      "catchphrase": "The forest listens."
+      "catchphrase": "The forest listens.",
+      "behaviour": "stands tall and still, arrives fast to protect, serious"
     }
   ],
   "targets": {
@@ -97,8 +103,8 @@
     }
   },
   "disclaimer": {
-    "English": "",
-    "Hindi": ""
+    "English": "This story is for education only and is not financial advice.",
+    "Hindi": "यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।"
   },
   "genres": [
     "a rescue adventure with a ticking clock",
@@ -108,12 +114,28 @@
     "a funny misunderstanding that turns heroic",
     "a legend told by the old wolf"
   ],
-  "themes": [
+  "story_mode": "money",
+  "themes_money": [
+    "Milo earns his first 10 berries and must choose between spending, saving and a shiny trick (save first)",
+    "The winter storehouse: Lakshmi shows why a part of the food is stored before the drought comes (emergency fund)",
+    "Drakon's Fang Lending Den: Milo borrows one nut and owes two (interest and the debt trap)",
+    "A trickster sells 'free gold leaves' that vanish: how to spot a scam (too good to be true, never share secret codes)",
+    "The seed and the tree: Milo plants a seed and learns patience and growth over time (compound growth)",
+    "Bholu buys everything shiny and has nothing left: needs, wants and three baskets (budget)",
+    "Two honey hives: one adds a little every week, one waits for a big amount (start small, be regular)",
+    "The Forest Fund: everybody puts in a little to help whoever is in trouble (sharing risk, insurance idea)",
+    "Never put all your nuts in one hole: a squirrel loses everything (spreading risk)",
+    "The secret code of the nut-bank: Veer teaches Milo never to share it (digital safety)",
+    "Price tags and bargains: Lakshmi teaches comparing prices and checking the real cost",
+    "The shrinking basket: the same 10 berries buy fewer things each year, so savings must grow (inflation)"
+  ],
+  "themes_adventure": [
     "A baby calf is lost near the dark pine forest and the whole valley must find her before night falls",
     "The river is drying up and Milo must find the hidden spring before the herd leaves",
     "A rumour of a monster in the forest turns out to be a lonely, frightened animal",
     "Drakon's pack is trapped by a storm and Milo has to decide whether to help the rival who bullied him",
     "Bholu accidentally wakes the whole valley at night and saves everyone from a falling tree",
     "A young fox learns that the shortcut is not worth it when a flood comes"
-  ]
+  ],
+  "made_for_kids": true
 }
