@@ -69,6 +69,15 @@ jobs:
           for f in voice_maker.py shorts_core.py shorts_render.py shorts_assemble.py get_blender_v2.sh; do
             [ -f "$f" ] || { echo "ERROR: $f is missing from the repo root."; exit 1; }
           done
+          check() { grep -q "$2" "$1" || { echo "ERROR: $1 is not the right file (it does not contain: $2). Copy the new $1 from Claude into the repo root, replacing the old one."; exit 1; }; }
+          nocheck() { grep -q "$2" "$1" && { echo "ERROR: $1 contains the wrong code ($2). A different script was pasted into this file. Copy the right one."; exit 1; }; return 0; }
+          check shorts_render.py "import bpy"
+          check shorts_render.py "def clear_sightlines"
+          nocheck shorts_render.py "def build_prompt"
+          check shorts_core.py "def cut_camera"
+          nocheck shorts_core.py "import bpy"
+          check voice_maker.py "def voice_shot_ms"
+          check shorts_assemble.py "sidechaincompress"
 
       - name: Install the Microsoft voice helper (with retry)
         run: |
@@ -154,6 +163,16 @@ jobs:
       - uses: actions/download-artifact@v7
         with:
           name: plan
+
+      - name: Check the renderer is the right file
+        run: |
+          check() { grep -q "$2" "$1" || { echo "ERROR: $1 is not the right file (it does not contain: $2). Copy the new $1 from Claude into the repo root, replacing the old one."; exit 1; }; }
+          nocheck() { grep -q "$2" "$1" && { echo "ERROR: $1 contains the wrong code ($2). A different script was pasted into this file. Copy the right one."; exit 1; }; return 0; }
+          check shorts_render.py "import bpy"
+          check shorts_render.py "def clear_sightlines"
+          nocheck shorts_render.py "def build_prompt"
+          check shorts_core.py "def cut_camera"
+          nocheck shorts_core.py "import bpy"
 
       - name: Download the animal and nature packs (with retry)
         env:
