@@ -95,6 +95,16 @@ def tts_request(model, text, speech_cfg, key):
     raise TTSError("no audio in the answer", 200)
 
 
+class MultiUnsupported(Exception):
+    def __init__(self, model):
+        super().__init__(model)
+        self.model = model
+
+
+class QuotaExhausted(Exception):
+    pass
+
+
 def speak(text, speech_cfg, key, state):
     """Returns (pcm, rate, model). Keeps the same model for the whole video; switches only if it is not usable."""
     last = None
@@ -111,14 +121,20 @@ def speak(text, speech_cfg, key, state):
                 t = (e.text or str(e)).lower()
                 if e.code in (401, 403) or "api key not valid" in t:
                     sys.exit(f"FAIL: Gemini rejected the key or access: {str(e)[:200]}")
+                if e.code == 400 and "multi-speaker" in t:
+                    raise MultiUnsupported(model)
                 if e.code == 404 or (e.code == 429 and ("perday" in t or "per day" in t)):
                     state["dead"].add(model)
-                    print(f"  {model}: not usable now, trying the next model", flush=True)
+                    if e.code == 429:
+                        state["quota_hit"] = True
+                    print(f"  {model}: not usable now ({'daily quota used up' if e.code == 429 else 'not found'}), trying the next model", flush=True)
                     break
                 wait = min(90, (e.wait or 0) + 3) if e.code == 429 else 6 * attempt
-                print(f"  {model}: attempt {attempt}/3 failed ({str(e)[:90]}), waiting {wait:.0f}s", flush=True)
+                print(f"  {model}: attempt {attempt}/3 failed ({str(e)[:300]}), waiting {wait:.0f}s", flush=True)
                 if attempt < 3:
                     SLEEP(wait)
+    if state.get("quota_hit") and all(m in state["dead"] for m in state["models"]):
+        raise QuotaExhausted(str(last)[:200])
     raise RuntimeError(f"no TTS model answered: {last}")
 
 
@@ -171,22 +187,147 @@ def style_phrase(shot, idx, n):
     return "in a clear, lively storytelling voice"
 
 
+# ------------------------------------------------------------------ Microsoft voices (fallback engines: Azure Speech, Edge)
+from xml.sax.saxutils import escape as xml_escape
+
+# role -> ([voice names, best first], rate %, pitch %). The first name that really exists is used.
+MS_EN = {
+    "narrator_male": (["en-US-AndrewNeural", "en-US-GuyNeural", "en-US-ChristopherNeural"], 0, 0),
+    "narrator_female": (["en-US-AvaNeural", "en-US-JennyNeural", "en-US-AriaNeural"], 0, 0),
+    "milo": (["en-US-AnaNeural", "en-US-EmmaNeural", "en-US-JennyNeural"], 6, 6),
+    "ragnar": (["en-GB-ThomasNeural", "en-GB-RyanNeural", "en-US-DavisNeural"], -12, -6),
+    "drakon": (["en-US-ChristopherNeural", "en-US-EricNeural", "en-US-GuyNeural"], -8, -10),
+    "lakshmi": (["en-IN-NeerjaNeural", "en-US-AriaNeural", "en-US-JennyNeural"], -3, 0),
+    "bholu": (["en-US-GuyNeural", "en-US-BrianNeural", "en-US-SteffanNeural"], 10, 6),
+    "veer": (["en-GB-RyanNeural", "en-AU-WilliamNeural", "en-US-ChristopherNeural"], -6, -4),
+}
+MS_EN_SPARE = [(["en-US-EricNeural", "en-US-RogerNeural"], 0, -4), (["en-US-MichelleNeural", "en-US-AriaNeural"], 0, 0),
+               (["en-AU-WilliamNeural", "en-GB-RyanNeural"], 4, 0), (["en-US-SteffanNeural", "en-US-BrianNeural"], -4, -6)]
+MS_HI = {
+    "narrator_male": (["hi-IN-MadhurNeural"], 0, 0),
+    "narrator_female": (["hi-IN-SwaraNeural"], 0, 0),
+    "milo": (["hi-IN-MadhurNeural"], 6, 14),
+    "ragnar": (["hi-IN-MadhurNeural"], -12, -8),
+    "drakon": (["hi-IN-MadhurNeural"], -6, -14),
+    "lakshmi": (["hi-IN-SwaraNeural"], -3, 0),
+    "bholu": (["hi-IN-MadhurNeural"], 10, 8),
+    "veer": (["hi-IN-MadhurNeural"], -4, -4),
+}
+MS_HI_SPARE = [(["hi-IN-MadhurNeural"], 3, 4), (["hi-IN-SwaraNeural"], 4, 6)]
+
+
+def edge_available():
+    import asyncio, edge_tts
+    return {x["ShortName"]: x for x in asyncio.run(edge_tts.list_voices())}
+
+
+def build_ms_profiles(plan, gender, language, avail, extra_ids):
+    table, spare = (MS_HI, list(MS_HI_SPARE)) if language == "Hindi" else (MS_EN, list(MS_EN_SPARE))
+    used, out = set(), {}
+
+    def pick(cands):
+        for c in cands:
+            if (not avail or c in avail) and c not in used:
+                return c
+        for c in cands:
+            if not avail or c in avail:
+                return c
+        for nme in avail:                                  # any neural voice of the same language
+            if nme.startswith(cands[0][:2]) and nme.endswith("Neural") and nme not in used:
+                return nme
+        return cands[0]
+
+    def add(key, spec):
+        cands, rate, pitch = spec
+        v = pick(cands)
+        used.add(v)
+        out[key] = {"voice": v, "rate": rate, "pitch": pitch}
+
+    add("narrator", table["narrator_female" if gender == "female" else "narrator_male"])
+    ids = [c["id"] for c in plan.get("cast", [])] + [i for i in extra_ids if i not in [c["id"] for c in plan.get("cast", [])]]
+    for cid in ids:
+        if cid == "narrator":
+            continue
+        cast = next((c for c in plan.get("cast", []) if c["id"] == cid), {})
+        if cast.get("ms_voice"):                           # your own choice in animal_studio.json: {"voice","rate","pitch"}
+            out[cid] = dict({"rate": 0, "pitch": 0}, **cast["ms_voice"])
+            used.add(out[cid]["voice"])
+        elif cid in table:
+            add(cid, table[cid])
+        else:
+            add(cid, spare.pop(0) if spare else table["narrator_male"])
+    return out
+
+
+def _read_pcm(path):
+    with wave.open(path, "rb") as w:
+        return w.readframes(w.getnframes()), w.getframerate()
+
+
+def edge_synth(text, prof, tmpdir):
+    import asyncio, edge_tts
+    mp3, wav = os.path.join(tmpdir, "_ms.mp3"), os.path.join(tmpdir, "_ms.wav")
+
+    async def go():
+        await edge_tts.Communicate(text, prof["voice"], rate=f"{int(prof['rate']):+d}%",
+                                   pitch=f"{int(prof['pitch'] * 1.5):+d}Hz").save(mp3)
+    asyncio.run(go())
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", mp3, "-ar", "24000", "-ac", "1", wav], check=True)
+    return _read_pcm(wav)
+
+
+def azure_synth(text, prof, tmpdir, key, region):
+    lang = prof["voice"][:5]
+    ssml = (f"<speak version='1.0' xml:lang='{lang}'><voice name='{prof['voice']}'>"
+            f"<prosody rate='{int(prof['rate']):+d}%' pitch='{int(prof['pitch']):+d}%'>{xml_escape(text)}</prosody></voice></speak>")
+    req = urllib.request.Request(f"https://{region}.tts.speech.microsoft.com/cognitiveservices/v1", data=ssml.encode("utf-8"),
+                                 headers={"Ocp-Apim-Subscription-Key": key, "Content-Type": "application/ssml+xml",
+                                          "X-Microsoft-OutputFormat": "riff-24khz-16bit-mono-pcm", "User-Agent": "shorts-voice"})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        data = r.read()
+    wav = os.path.join(tmpdir, "_az.wav")
+    open(wav, "wb").write(data)
+    return _read_pcm(wav)
+
+
+def voice_shot_ms(idx, n, shot, ctx, engine, profiles):
+    """One shot with Microsoft voices: every animal has its own voice, no two-voice limit, no quota."""
+    segs = segments(shot) if ctx["characters"] else [("narrator", shot["narration"].strip())]
+    prof_of = lambda spk: profiles.get(spk) or profiles["narrator"]
+    cache_key = hashlib.sha1(json.dumps([engine, segs, [prof_of(s) for s, _ in segs]], ensure_ascii=False).encode()).hexdigest()[:10]
+    raw_path = os.path.join(ctx["dir"], f"shot_{shot['id']:02d}_{cache_key}.raw.wav")
+    final = os.path.join(ctx["dir"], f"shot_{shot['id']:02d}.wav")
+    calls = 0
+    if not os.path.exists(raw_path):
+        parts, rate = [], 24000
+        for spk, text in segs:
+            if engine == "azure":
+                pcm, rate = azure_synth(text, prof_of(spk), ctx["dir"], ctx["azure_key"], ctx["azure_region"])
+            else:
+                pcm, rate = edge_synth(text, prof_of(spk), ctx["dir"])
+            calls += 1
+            parts += [pcm, b"\x00\x00" * int(rate * 0.12)]
+        write_wav(raw_path, b"".join(parts), rate)
+    trim_silence(raw_path, final)
+    return final, wav_seconds(final), engine, calls
+
+
 # ------------------------------------------------------------------ one shot
 def voice_shot(idx, n, shot, ctx):
     language, voices, names, key, state = ctx["language"], ctx["voices"], ctx["names"], ctx["key"], ctx["state"]
-    segs = segments(shot)
+    segs = segments(shot) if ctx["characters"] else [("narrator", shot["narration"].strip())]
     full = " ".join(t for _, t in segs)
     exp = units_of(full, language) / ctx["rate"] + 0.2 + 0.15 * pauses_in(full)
-    cache_key = hashlib.sha1(json.dumps([segs, style_phrase(shot, idx, n), [voices[s] for s, _ in segs]], ensure_ascii=False).encode()).hexdigest()[:10]
+    style = style_phrase(shot, idx, n) if ctx["style"] else "off"
+    cache_key = hashlib.sha1(json.dumps([segs, style, [voices[s] for s, _ in segs]], ensure_ascii=False).encode()).hexdigest()[:10]
     raw_path = os.path.join(ctx["dir"], f"shot_{shot['id']:02d}_{cache_key}.raw.wav")
     final = os.path.join(ctx["dir"], f"shot_{shot['id']:02d}.wav")
     if os.path.exists(raw_path):
         trim_silence(raw_path, final)
         return final, wav_seconds(final), "cached", 0
     if ctx["fake"]:
-        secs = exp
         rate = 24000
-        pcm = b"".join(int(8000 * math.sin(2 * math.pi * 220 * k / rate)).to_bytes(2, "little", signed=True) for k in range(int(rate * secs)))
+        pcm = b"".join(int(8000 * math.sin(2 * math.pi * 220 * k / rate)).to_bytes(2, "little", signed=True) for k in range(int(rate * exp)))
         write_wav(raw_path, pcm, rate)
         trim_silence(raw_path, final)
         return final, wav_seconds(final), "fake", 0
@@ -197,49 +338,61 @@ def voice_shot(idx, n, shot, ctx):
             voices_used.append(spk)
     calls = 0
 
-    def one_call(group, plain):
-        """group = [(speaker, text)] using at most 2 voices."""
+    def single(spk, text):
+        nonlocal calls
+        prompt = f"Say {style}: {text}" if ctx["style"] else text      # by default: the plain story text only
+        calls += 1
+        r = speak(prompt, single_cfg(voices[spk]), key, state)
+        SLEEP(ctx["sleep"])
+        return r
+
+    def multi(group, preamble):
         nonlocal calls
         vs = []
         for spk, _ in group:
             if spk not in vs:
                 vs.append(spk)
-        if len(vs) == 1:
-            text = " ".join(t for _, t in group)
-            prompt = text if plain else f"Say {style_phrase(shot, idx, n)}: {text}"
-            cfg = single_cfg(voices[vs[0]])
-        else:
-            a, b = vs[0], vs[1]
-            la, lb = names[a], names[b]
-            prompt = f"TTS the following conversation between {la} and {lb}:\n" + "\n".join(f"{names[s]}: {t}" for s, t in group)
-            cfg = multi_cfg([(la, voices[a]), (lb, voices[b])])
+        a, b = vs[0], vs[1]
+        lines = "\n".join(f"{names[s]}: {t}" for s, t in group)
+        prompt = (f"TTS the following conversation between {names[a]} and {names[b]}:\n" if preamble else "") + lines
         calls += 1
-        pcm, rate, model = speak(prompt, cfg, key, state)
+        try:
+            r = speak(prompt, multi_cfg([(names[a], voices[a]), (names[b], voices[b])]), key, state)
+        except MultiUnsupported as ex:
+            state["nomulti"].add(ex.model)
+            print(f"  {ex.model} does not accept two voices in one call, voicing each animal separately", flush=True)
+            return None
         SLEEP(ctx["sleep"])
-        return pcm, rate, model
+        return r
 
-    def render(plain):
-        if len(voices_used) <= 2:
-            return one_call(segs, plain)
+    def runs():
         parts, model, rate = [], None, 24000
-        for spk, t in segs:                                   # three voices: one call per speaker run
-            pcm, rate, model = one_call([(spk, t)], plain)
+        for spk, t in segs:                                   # one call per speaker run
+            pcm, rate, model = single(spk, t)
             parts.append(pcm)
             parts.append(b"\x00\x00" * int(rate * 0.12))
         return b"".join(parts), rate, model
 
     best = None
-    for plain in (False, True):
-        pcm, rate, model = render(plain)
+    for variant in (0, 1):
+        if len(voices_used) == 1:
+            pcm, rate, model = single(voices_used[0], full)
+        elif len(voices_used) == 2 and state["model"] not in state["nomulti"]:
+            r = multi(segs, preamble=(variant == 0))
+            pcm, rate, model = r if r else runs()
+        else:
+            pcm, rate, model = runs()
         write_wav(raw_path, pcm, rate)
         trim_silence(raw_path, final)
         dur = wav_seconds(final)
         best = (dur, model)
-        if dur > exp * 1.3 + 0.5:
-            print(f"  shot {shot['id']}: {dur:.1f}s but about {exp:.1f}s expected, probably an instruction was read aloud; voicing again without any instruction", flush=True)
-            continue
-        if dur < exp * 0.5 - 0.3:
-            print(f"  shot {shot['id']}: {dur:.1f}s but about {exp:.1f}s expected, probably cut short; voicing again", flush=True)
+        # a too long result is only worth one more try when something could have been read aloud
+        # (a two-voice request or a style hint), and only once the normal reading speed is known
+        suspicious = ctx["calibrated"] and dur > exp * 1.5 + 1.2 and (len(voices_used) == 2 or ctx["style"])
+        if suspicious and variant == 0:
+            print(f"  shot {shot['id']}: {dur:.1f}s but about {exp:.1f}s expected, voicing again in a plainer form", flush=True)
+            if ctx["style"]:
+                ctx["style"] = False
             continue
         break
     return final, wav_seconds(final), best[1], calls
@@ -260,7 +413,12 @@ def main():
     ap.add_argument("--lead", type=float, default=0.25)
     ap.add_argument("--min-shot", type=float, default=3.5)
     ap.add_argument("--audio-dir", default="audio")
-    ap.add_argument("--sleep", type=float, default=2.0, help="pause between TTS calls (free tier limits)")
+    ap.add_argument("--sleep", type=float, default=3.0, help="pause between TTS calls (free tier limits)")
+    ap.add_argument("--style", choices=["off", "on"], default="off", help="on = add a short \"Say ...:\" hint (it can be read aloud)")
+    ap.add_argument("--engine", choices=["auto", "gemini", "azure", "edge"], default="auto", help="auto = Gemini first, then Azure (if keys), then Edge")
+    ap.add_argument("--fallback", choices=["consistent", "mixed"], default="consistent", help="consistent = if Gemini fails, voice the WHOLE video with the next engine")
+    ap.add_argument("--gemini-rounds", type=int, default=3, help="how many full rounds Gemini gets per shot before the fallback")
+    ap.add_argument("--characters", choices=["auto", "off"], default="auto", help="off = the narrator reads everything (fewest calls)")
     ap.add_argument("--fake", action="store_true", help="test without Gemini: beeps of the expected length")
     a, _unused = ap.parse_known_args()
 
@@ -268,8 +426,6 @@ def main():
     language = plan.get("language", "English")
     shots = plan["shots"]
     key = os.environ.get("GEMINI_API_KEY", "").strip()
-    if not key and not a.fake:
-        sys.exit("FAIL: GEMINI_API_KEY is empty.")
     os.makedirs(a.audio_dir, exist_ok=True)
 
     narrator = a.voice or NARRATOR.get(a.gender, "Charon")
@@ -289,19 +445,84 @@ def main():
     models = [m.strip() for m in a.models.split(",") if m.strip()] or MODELS
     print("TTS models:", ", ".join(models), "| narrator:", narrator, "| voices:", ", ".join(f"{k}={v}" for k, v in voices.items() if k != "narrator"), flush=True)
 
+    az_key, az_region = os.environ.get("AZURE_SPEECH_KEY", "").strip(), os.environ.get("AZURE_SPEECH_REGION", "").strip()
+    engines = {"auto": ["gemini"] + (["azure"] if az_key and az_region else []) + ["edge"],
+               "gemini": ["gemini"], "azure": ["azure"], "edge": ["edge"]}[a.engine]
+    if "gemini" in engines and not key and not a.fake:
+        engines.remove("gemini")
+        print("No GEMINI_API_KEY: starting with the Microsoft voices.", flush=True)
+    if not engines:
+        sys.exit("FAIL: no voice engine is available.")
     ctx = {"language": language, "voices": voices, "names": names, "key": key, "dir": a.audio_dir, "fake": a.fake, "sleep": a.sleep,
-           "rate": 2.5 if language != "Hindi" else 11.0, "state": {"model": "", "models": models, "dead": set()}}
-    results, rates = [], []
-    for i, sh in enumerate(shots):
-        print(f"Voice shot {sh['id']}/{len(shots)}", flush=True)
-        path, secs, model, calls = voice_shot(i, len(shots), sh, ctx)
-        full = " ".join(t for _, t in segments(sh))
-        obs = units_of(full, language) / max(0.5, secs - 0.15 * pauses_in(full) - 0.2)
-        if 0.5 * ctx["rate"] < obs < 2.0 * ctx["rate"]:
-            rates.append(obs)
+           "rate": 2.0 if language != "Hindi" else 9.0, "style": a.style == "on", "characters": a.characters == "auto", "calibrated": False,
+           "azure_key": az_key, "azure_region": az_region,
+           "state": {"model": "", "models": models, "dead": set(), "nomulti": set(), "quota_hit": False}}
+    ms = {"profiles": None}
+
+    def ms_profiles():
+        if ms["profiles"] is None:
+            avail = {}
+            try:
+                avail = edge_available()
+            except Exception as ex:
+                print(f"  could not read the Microsoft voice list ({str(ex)[:80]}), using the built-in names", flush=True)
+            ms["profiles"] = build_ms_profiles(plan, a.gender, language, avail, list(voices))
+            print("Microsoft voices:", ", ".join(f"{k}={p['voice']}({p['rate']:+d}%,{p['pitch']:+d})" for k, p in ms["profiles"].items()), flush=True)
+        return ms["profiles"]
+
+    def one(engine, i, sh):
+        if engine == "gemini":
+            for rnd in range(1, a.gemini_rounds + 1):          # try Gemini as long as it can possibly work
+                try:
+                    return voice_shot(i, len(shots), sh, ctx)
+                except QuotaExhausted:
+                    raise
+                except RuntimeError as ex:
+                    if rnd == a.gemini_rounds:
+                        raise
+                    print(f"  Gemini round {rnd}/{a.gemini_rounds} failed ({str(ex)[:120]}), waiting {30 * rnd}s", flush=True)
+                    SLEEP(30 * rnd)
+        for rnd in range(1, 4):
+            try:
+                return voice_shot_ms(i, len(shots), sh, ctx, engine, ms_profiles())
+            except Exception as ex:
+                if rnd == 3:
+                    raise RuntimeError(f"{engine} failed: {str(ex)[:150]}")
+                print(f"  {engine} attempt {rnd}/3 failed ({str(ex)[:100]}), waiting {5 * rnd}s", flush=True)
+                SLEEP(5 * rnd)
+
+    results, rates, ei, i = [], [], 0, 0
+    while i < len(shots):
+        eng, sh = engines[ei], shots[i]
+        print(f"Voice shot {sh['id']}/{len(shots)} [{eng}]", flush=True)
+        try:
+            res = one(eng, i, sh)
+        except (QuotaExhausted, RuntimeError) as ex:
+            if ei + 1 >= len(engines):
+                if isinstance(ex, QuotaExhausted):
+                    print(f"STOP: the daily voice quota is used up ({ex}). {i} of {len(shots)} shots are finished and kept; run the workflow "
+                          "again after the quota resets (or switch on billing) and it continues.", flush=True)
+                    sys.exit(75)
+                raise
+            ei += 1
+            keep = "for the WHOLE video, so every voice stays the same" if a.fallback == "consistent" else "for the remaining shots"
+            print(f"FALLBACK: {eng} could not finish ({str(ex)[:140]}). Using {engines[ei]} {keep}.", flush=True)
+            if a.fallback == "consistent":
+                results, rates, i = [], [], 0
+            continue
+        if eng == "gemini" and res[1] > 0.5:
+            full = " ".join(t for _, t in segments(sh))
+            rates.append(units_of(full, language) / max(0.5, res[1] - 0.15 * pauses_in(full) - 0.2))
             if len(rates) >= 3:
                 ctx["rate"] = statistics.median(rates)
-        results.append((path, secs, model, calls))
+                ctx["calibrated"] = True
+        results.append(res)
+        i += 1
+    final_engine = engines[ei]
+    if final_engine != engines[0]:
+        print(f"NOTE: the voice was made with {final_engine}, not {engines[0]}.", flush=True)
+    if final_engine != "gemini":
+        narrator = ms_profiles()["narrator"]["voice"]
 
     # ---- timeline: the video is exactly as long as the voice needs
     fps = a.fps
@@ -324,7 +545,7 @@ def main():
                          "audio": path, "thumb": bool(sh.get("thumb"))})
     total = total_frames / float(fps)
     plan.update({"fps": fps, "total_frames": total_frames, "total_seconds": round(total, 3), "target_seconds": round(total),
-                 "voices": voices})
+                 "voices": voices, "voice_engine": final_engine})
     json.dump(plan, open("scene_plan_timed.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     json.dump({"fps": fps, "width": w, "height": h, "samples": samples, "aspect": "vertical", "total_frames": total_frames,
                "total_seconds": round(total, 3), "tempo": 1.0, "lead": a.lead, "shots": tl_shots},
@@ -332,7 +553,7 @@ def main():
 
     speech = sum(r[1] for r in results)
     md = [f"Voice report\nALL {len(results)} SHOTS HAVE A VOICE. VIDEO LENGTH = {total:.1f} s ({total_frames} frames at {fps} fps)\n",
-          f"Narrator: {narrator} | model: {ctx['state']['model'] or 'cached/fake'} | speech {speech:.1f} s, pause after each shot {a.pause} s, picture {w}x{h}, {samples} samples\n",
+          f"Narrator: {narrator} | engine: {final_engine} ({ctx['state']['model'] if final_engine == 'gemini' else 'Microsoft'}) | speech {speech:.1f} s, pause after each shot {a.pause} s, picture {w}x{h}, {samples} samples\n",
           "Shot\tVoice\tVoice s\tShot s"]
     for sh, (path, secs, model, calls), t in zip(shots, results, tl_shots):
         md.append(f"{sh['id']}\t{model} [{calls} calls]\t{secs:.1f}\t{t['duration']:.1f}")
