@@ -1,0 +1,1370 @@
+{
+ "version": 4,
+ "language": "Hindi",
+ "title": "सारे अखरोट एक गड्ढे में मत रखो | Jungle Money Tales #shorts",
+ "description": "जब ड्रैकोन का सारा भोजन आग में जलकर राख हो जाता है, तो चतुर माइलो अपनी चार अलग-अलग जगहों पर छुपाई बचत से उसकी मदद करता है और जोखिम बाँटने का सबक सिखाता है।",
+ "tags": [
+  "JungleMoneyTales",
+  "MoralStories",
+  "KidsAnimation",
+  "HindiKahaniya",
+  "MoneyLessonsForKids",
+  "FinancialLiteracy",
+  "RiskDiversification",
+  "Shorts",
+  "MiloTheFox",
+  "FriendshipStory"
+ ],
+ "twist": "माइलो ने अपना भोजन एक पेड़ में नहीं, बल्कि जंगल की चार अलग झाड़ियों में बाँटकर सुरक्षित रखा था।",
+ "recap": "एक ही पेड़ में अनाज छिपाने वाले ड्रैकोन ने सब खो दिया, जबकि चार जगह जोखिम बाँटने वाले माइलो ने सबको बचा लिया।",
+ "cliffhanger": "क्या आने वाले बर्फ़ीले तूफान में माइलो और ड्रैकोन मिलकर पूरे जंगल का अनाज सुरक्षित रख पाएंगे?",
+ "disclaimer": "यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।",
+ "credits": "3D models by Quaternius (CC0).",
+ "story_mode": "money",
+ "made_for_kids": true,
+ "target_seconds": 178,
+ "flexible_length": true,
+ "estimated_voice_seconds": 161.8,
+ "cast": [
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+   "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "veer",
+   "name": "Veer",
+   "model": "Stag",
+   "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
+   "voice_style": "few words, deep and noble",
+   "catchphrase": "The forest listens.",
+   "behaviour": "stands tall and still, arrives fast to protect, serious",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind honest cow, saves a little every day, protects the young",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one.",
+   "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+   "voice_name": "Sulafat"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Burning Tree",
+   "look": "ember_sky",
+   "narration": "अरे बाप रे! ड्रैकोन का सारा खाना एक ही पेड़ में जलकर राख हो गया!",
+   "tone": "dramatic, urgent",
+   "visual": "A massive hollow pine tree is swallowed by roaring fire against a dark fiery sky.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Drakon's Despair",
+   "look": "ember_sky",
+   "narration": "लपटें आसमान छू रही थीं और घमंडी ड्रैकोन बेबस होकर ज़मीन पर बैठ गया।",
+   "tone": "tense, shocked",
+   "visual": "Flames rise into the dark sky as Drakon slumps to the ground in total helplessness.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Milo's Question",
+   "look": "ember_sky",
+   "narration": "चलाक लोमड़ी माइलो चिल्लाया, \"ड्रैकोन! सारा भोजन एक ही पेड़ में क्यों रखा?\"",
+   "tone": "worried, fast",
+   "visual": "Milo steps forward quickly, looking worriedly at Drakon near the smoke.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 28,
+     "end": 74,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Crying Wolf",
+   "look": "ember_sky",
+   "narration": "ड्रैकोन रोते हुए गुर्राया, \"ड्रैकोन की किस्मत फूटी! मेरी पूरी बचत ख़त्म!\"",
+   "tone": "sad, ashamed",
+   "visual": "Drakon groans with tears in his eyes, bowed in shame next to the embers.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 27,
+     "end": 73,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Bholu Panic",
+   "look": "storm_dusk",
+   "narration": "भोलू खरगोश घबराकर उछला, \"हाय मेरी गाजर! सारा अनाज एक साथ स्वाहा हो गया!\"",
+   "tone": "funny, panicky",
+   "visual": "Bholu jumps up in dramatic comic horror amidst smoky air.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 24,
+     "end": 72,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Veer's Warning",
+   "look": "storm_dusk",
+   "narration": "वीर हिरण ने गहरी सांस लेकर कहा, \"एक ही जगह दांव लगाना बहुत बड़ा ख़तरा है।\"",
+   "tone": "noble, firm",
+   "visual": "Veer the stag stands tall and imposing, taking a deep breath.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "veer",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      1.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.39
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.39
+    }
+   ],
+   "quotes": [
+    {
+     "start": 32,
+     "end": 74,
+     "id": "veer"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Ragnar's Wisdom",
+   "look": "storm_dusk",
+   "narration": "राग्नार भालू गरजकर बोला, \"सुनो जंगल वालो! सारे अखरोट एक गड्ढे में मत रखो!\"",
+   "tone": "wise, calm",
+   "visual": "Ragnar stands on a high boulder, looking down sternly at the crowd.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "drakon",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.29
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.2,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      4.0
+     ],
+     "size": 2.0
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 25,
+     "end": 74,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Lakshmi's Comfort",
+   "look": "storm_dusk",
+   "narration": "लक्ष्मी गाय प्यार से बोली, \"ड्रैकोन, दुखी मत हो, हर मुसीबत नया सबक देती है।\"",
+   "tone": "motherly, gentle",
+   "visual": "Lakshmi cow steps softly towards Drakon, speaking with gentle empathy.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "lakshmi",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 27,
+     "end": 76,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Winter Fear",
+   "look": "storm_dusk",
+   "narration": "ड्रैकोन की आँखों में आँसू थे, सर्दियों में पूरा जंगल भूखा मरने वाला था।",
+   "tone": "heartbroken, desperate",
+   "visual": "Close-up of Drakon's tear-filled eyes as mist settles over the cold forest.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.2
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Milo's Offer",
+   "look": "autumn_gold",
+   "narration": "तभी माइलो मुस्कुराया और बोला, \"ड्रैकोन, हिम्मत मत हारो, मेरे साथ चलो!\"",
+   "tone": "thoughtful, eager",
+   "visual": "Milo smiles brightly and gestures for Drakon to follow him into the golden woods.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.36
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.36
+    }
+   ],
+   "quotes": [
+    {
+     "start": 30,
+     "end": 70,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Journey to the Cave",
+   "look": "autumn_gold",
+   "narration": "सबको लगा माइलो के पास कुछ नहीं है, पर वह सबको गुफा की तरफ ले गया।",
+   "tone": "mysterious, intriguing",
+   "visual": "Milo leads Drakon and Bholu walking across the autumnal valley towards a hidden cave.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.5,
+        3.2
+       ]
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.4,
+      5.54
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.1,
+       "to": [
+        -0.5,
+        5.54
+       ]
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Unveiling the Secret",
+   "look": "autumn_gold",
+   "narration": "माइलो ने पहली झाड़ी हटाई, वहाँ रसीले फल और ढेर सारे अखरोट रखे थे!",
+   "tone": "surprising, triumphant",
+   "visual": "Milo pulls back a dense bush revealing piles of fresh fruits and nuts behind it.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Four Hidden Stashes",
+   "look": "autumn_gold",
+   "narration": "अनोखा ट्विस्ट! माइलो ने अपनी बचत एक नहीं, चार अलग झाड़ियों में छुपाई थी!",
+   "tone": "surprising, triumphant",
+   "visual": "Wide vista showing four distinct bushes filled with hidden food across the clearing.",
+   "camera": {
+    "framing": "wide",
+    "angle": "high",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "thumb": true
+  },
+  {
+   "id": 14,
+   "title": "Smart Strategy",
+   "look": "autumn_gold",
+   "narration": "माइलो हँसकर बोला, \"एक झाड़ी जल भी जाती, तो तीन झाड़ियों का खाना बच जाता!\"",
+   "tone": "warm, generous",
+   "visual": "Milo laughs warmly, explaining his diversification strategy proudly.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.24
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.24
+    }
+   ],
+   "quotes": [
+    {
+     "start": 18,
+     "end": 73,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Drakon Saved",
+   "look": "golden_sunset",
+   "narration": "ड्रैकोन ने भरपेट खाना खाया और बोला, \"माइलो, तुमने आज मेरी जान बचा ली!\"",
+   "tone": "emotional, touching",
+   "visual": "Drakon eats eagerly, then stops with tears of relief and gratitude.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.6,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.43
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.43
+    }
+   ],
+   "quotes": [
+    {
+     "start": 36,
+     "end": 70,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Bholu's Dance",
+   "look": "golden_sunset",
+   "narration": "भोलू खरगोश ख़ुशी से नाचा, \"बल्ले-बल्ले! अब से मैं भी अलग-अलग गड्ढे खोदूंगा!\"",
+   "tone": "joyful, funny",
+   "visual": "Bholu donkey dances around happily under the sunset light.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 26,
+     "end": 76,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Ragnar's Praise",
+   "look": "golden_sunset",
+   "narration": "राग्नार भालू ने माइलो की पीठ थपथपाई, \"जोखिम बाँटना ही असली समझदारी है।\"",
+   "tone": "wise, approving",
+   "visual": "Ragnar pats Milo on the back approvingly in front of the gathered animals.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.45
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.45
+    }
+   ],
+   "quotes": [
+    {
+     "start": 37,
+     "end": 71,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Old Enemies, True Friends",
+   "look": "golden_sunset",
+   "narration": "पुराने दुश्मन ड्रैकोन और माइलो अब गले मिलकर सबसे पक्के दोस्त बन गए।",
+   "tone": "noble, resolute",
+   "visual": "Drakon and Milo stand side by side, looking at each other as true allies.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Light of Friendship",
+   "look": "golden_sunset",
+   "narration": "अरे वाह! आग जलकर राख हुई, पर माइलो की सूझबूझ से दोस्ती का नया चिराग जला!",
+   "tone": "clear, educational",
+   "visual": "The whole group stands together under the warm golden evening glow.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Drakon's Promise",
+   "look": "golden_sunset",
+   "narration": "ड्रैकोन मुस्कुराया, \"अब सारे अखरोट एक गड्ढे में कभी नहीं रखूँगा!\" सब याद रखो! अगर कहानी पसंद आई, तो अगली कहानी के लिए सब्सक्राइब करें! यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।",
+   "tone": "warm, friendly",
+   "visual": "Drakon smiles warmly towards the camera and nods to everyone.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.24
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.24
+    }
+   ],
+   "quotes": [
+    {
+     "start": 20,
+     "end": 65,
+     "id": "drakon"
+    }
+   ]
+  }
+ ],
+ "topic": "Never put all your nuts in one hole: a squirrel loses everything (spreading risk)",
+ "genre": "a friendship story where an enemy becomes a friend",
+ "director_model": "gemini-3.6-flash"
+}
