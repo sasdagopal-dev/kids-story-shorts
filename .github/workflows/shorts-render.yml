@@ -19,6 +19,16 @@ on:
       fps:
         description: "Animation frames per second (15 = smooth, 24 = smoothest but about 1.6x slower)"
         default: "15"
+      voice_engine:
+        description: "auto = Gemini first, then Microsoft voices if Gemini cannot finish (recommended). gemini / azure / edge = only that one"
+        type: choice
+        default: auto
+        options: [auto, gemini, azure, edge]
+      character_voices:
+        description: "yes = each animal has its own voice (a few more voice calls). no = the narrator reads everything (fewest calls)"
+        type: choice
+        default: "yes"
+        options: ["yes", "no"]
       scene_density:
         description: "How full the background is (1.6 = rich, 1.0 = lighter and faster)"
         default: "1.6"
@@ -60,21 +70,56 @@ jobs:
             [ -f "$f" ] || { echo "ERROR: $f is missing from the repo root."; exit 1; }
           done
 
-      - name: Make the narration and the timeline (with retry, finished shots are kept)
+      - name: Install the Microsoft voice helper (with retry)
+        run: |
+          for i in 1 2 3; do
+            pip install --upgrade edge-tts && break
+            echo "pip failed, attempt $i"; sleep $((i*10))
+          done
+
+      - name: Restore voice clips finished in earlier runs of this plan
+        uses: actions/cache/restore@v5
+        with:
+          path: audio
+          key: voice-${{ hashFiles(steps.plan.outputs.plan) }}-${{ github.run_id }}
+          restore-keys: |
+            voice-${{ hashFiles(steps.plan.outputs.plan) }}-
+
+      - name: Make the narration and the timeline (finished shots are kept, also for the next run)
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PLAN: ${{ steps.plan.outputs.plan }}
           GENDER: ${{ inputs.voice_gender }}
           FPS: ${{ inputs.fps }}
           QUALITY: ${{ inputs.quality }}
+          CHARS: ${{ inputs.character_voices }}
+          ENGINE: ${{ inputs.voice_engine }}
+          AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+          AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
         run: |
+          CH=auto; [ "$CHARS" = "no" ] && CH=off
           ok=0
           for i in 1 2 3; do
-            python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --fps "$FPS" --quality "$QUALITY" \
-              && ok=1 && break
-            echo "Voice step failed (attempt $i). Finished shots are kept. Waiting 60 s."; sleep 60
+            if python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --fps "$FPS" --quality "$QUALITY" --characters "$CH" --engine "${ENGINE:-auto}"; then
+              ok=1; break
+            else
+              code=$?
+            fi
+            if [ "$code" = 75 ]; then
+              echo "The daily voice quota is used up. The finished shots are saved. Run this workflow again after the quota resets (or switch on billing for the Gemini key); it continues where it stopped."
+              echo "### Voice quota used up. Run again later, finished shots are kept." >> "$GITHUB_STEP_SUMMARY"
+              break
+            fi
+            echo "Voice step failed (attempt $i, code $code). Finished shots are kept. Waiting 60 s."; sleep 60
           done
           [ "$ok" = 1 ] || exit 1
+
+      - name: Save finished voice clips for the next run
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: audio
+          key: voice-${{ hashFiles(steps.plan.outputs.plan) }}-${{ github.run_id }}
 
       - name: Show voice report
         if: always()
