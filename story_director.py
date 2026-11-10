@@ -799,6 +799,23 @@ STORY:
         return story
 
 
+
+def build_unified_prompt(cfg, topic, genre, history, feedback):
+    """ONE prompt for the whole job: the story (craft rules, characters, lesson) AND the direction (camera, actions, looks)."""
+    story_part = build_story_prompt(cfg, topic, genre, history, feedback)
+    head = story_part[:story_part.index("Return ONLY JSON")]
+    direct = build_prompt(cfg, topic, genre, history, "", None)
+    rules = direct[direct.index("DIRECTION RULES"):direct.index("SELF-CHECK")]
+    ret = direct[direct.index("Return ONLY JSON"):]
+    n = cfg.get("shots", 20)
+    head = head.replace("Write ONLY the story (no camera, no positions) of a vertical YouTube Short", "Write AND direct a vertical YouTube Short")
+    return (head + "\nNow the DIRECTION. You are also the director: for every shot you give the narration and also what is seen.\n"
+            + rules + f"SELF-CHECK before you answer: shots = {n}; narration {cfg['targets'][cfg.get('language', 'English')]['unit']} in range; at least 8 shots with spoken lines; "
+            "quote_speakers matches the quotes one by one; every named animal is in that shot's characters; every walk/run has \"to\"; at most 10 moving shots; "
+            "at most 4 close-ups; at least 4 different looks; some shots with 1 animal, some with 3; nobody stands behind another animal.\n\n"
+            + ret.replace('"recap":', '"logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap":', 1))
+
+
 # ------------------------------------------------------------------ continuity pass
 def critic_pass(plan, cfg, models, key, state):
     brief = [{"id": s["id"], "narration": s["narration"], "focus": s["camera"]["focus"],
@@ -859,6 +876,7 @@ def main():
     ap.add_argument("--topic", default="")
     ap.add_argument("--date", default="")
     ap.add_argument("--language", default="", help="English or Hindi (default: from the config)")
+    ap.add_argument("--calls", choices=["single", "multi"], default="", help="single = ONE Gemini call for story and direction (default), multi = writer, editor, director")
     ap.add_argument("--story-mode", default="", help="money or adventure (default: from the config)")
     ap.add_argument("--models", default="")
     ap.add_argument("--attempts", type=int, default=6)
@@ -870,6 +888,7 @@ def main():
         cfg["language"] = a.language
     if a.story_mode:
         cfg["story_mode"] = a.story_mode
+    a.calls = a.calls or cfg.get("pipeline", "single")
     language = cfg["language"]
     unit = cfg["targets"][language]["unit"]
 
@@ -912,6 +931,12 @@ def main():
         print(f"Director attempt {attempt}/{a.attempts}", flush=True)
         stage = "story"
         try:
+            if a.calls == "single":
+                print("  ONE call: story and direction together", flush=True)
+                raw = ask_json(build_unified_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state)
+                check_story(raw, cfg)
+                plan, notes, total = repair_plan(raw, cfg, strict=True)
+                break
             if story is None:
                 print("  pass 1: writing the story", flush=True)
                 story = check_story(ask_json(build_story_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state), cfg)
@@ -940,7 +965,7 @@ def main():
             break
         except Reject as e:
             print("  rejected:", e, flush=True)
-            if stage == "story":
+            if stage == "story" or a.calls == "single":
                 feedback, story = str(e), None
             else:
                 dir_feedback = str(e)
