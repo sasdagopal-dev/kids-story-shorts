@@ -155,10 +155,10 @@ def main():
         tail = f"afade=t=out:st={target - 0.25:.2f}:d=0.25"
         if music and os.path.exists(music):
             inputs += ["-stream_loop", "-1", "-i", music]
-            fc = (f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,asplit=2[v][vs];"
-                  f"[2:a]volume={a.music_level},afade=t=in:d=1.5[m0];"
+            fc = (f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,aformat=sample_rates=44100:channel_layouts=stereo,asplit=2[v][vs];"
+                  f"[2:a]aformat=sample_rates=44100:channel_layouts=stereo,volume={a.music_level},afade=t=in:d=1.5,atrim=0:{target:.3f}[m0];"
                   f"[m0][vs]sidechaincompress=threshold=0.02:ratio=10:attack=20:release=500[md];"
-                  f"[v][md]amix=inputs=2:duration=first:normalize=0,{tail}[a]")
+                  f"[v][md]amix=inputs=2:duration=longest:normalize=0,{tail}[a]")
         else:
             fc = f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,{tail}[a]"
         cmd = ["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", fc, "-map", "0:v", "-map", "[a]",
