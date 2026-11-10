@@ -1,0 +1,1386 @@
+{
+ "version": 4,
+ "language": "Hindi",
+ "title": "मायावी फल और दोगुनी बचत का धोखा | Jungle Money Tales #shorts",
+ "description": "जब ड्रेकोन ने एक ही रात में बचत दोगुनी करने का लालच दिया, तो भोलू उसके जाल में फँस गया। देखिए कैसे माइलो ने अपनी बुद्धिमानी से इस फर्जी योजना का पर्दाफाश किया।",
+ "tags": [
+  "JungleMoneyTales",
+  "HindiShorts",
+  "MoralStories",
+  "KidsAnimation",
+  "FinancialLiteracy",
+  "Panchatantra",
+  "MoneyLessons",
+  "FoxAndWolf",
+  "BedtimeStories",
+  "Shorts"
+ ],
+ "twist": "ड्रेकोन फल दोगुना नहीं कर रहा था, बल्कि ताज़ा बचत चुराकर अंदर से सूखे और सड़े फल टोकरी में बदल रहा था।",
+ "recap": "माइलो ने साबित किया कि रातों-रात धन दोगुना करने का वादा करने वाली योजनाएं हमेशा एक धोखा होती हैं।",
+ "cliffhanger": "अगली बार देखिए, जब जंगल में आई भयानक बीमारी और केवल एक गुप्त जड़ी-बूटी ने सबकी बचत का इम्तिहान लिया!",
+ "disclaimer": "यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।",
+ "credits": "3D models by Quaternius (CC0).",
+ "story_mode": "money",
+ "made_for_kids": true,
+ "target_seconds": 178,
+ "flexible_length": true,
+ "estimated_voice_seconds": 163.8,
+ "cast": [
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+   "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind honest cow, saves a little every day, protects the young",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one.",
+   "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+   "voice_name": "Sulafat"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  },
+  {
+   "id": "veer",
+   "name": "Veer",
+   "model": "Stag",
+   "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
+   "voice_style": "few words, deep and noble",
+   "catchphrase": "The forest listens.",
+   "behaviour": "stands tall and still, arrives fast to protect, serious",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Big News",
+   "look": "meadow_day",
+   "narration": "भोलू चिल्लाया, \"ड्रेकोन एक ही दिन में हमारे सारे फल दोगुने कर रहा है!\"",
+   "tone": "excited, loud, cheerful",
+   "visual": "Bholu jumps up and down excited in the green meadow while Milo and Lakshmi listen in surprise.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.23
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.23
+    }
+   ],
+   "quotes": [
+    {
+     "start": 15,
+     "end": 70,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Milo's Doubt",
+   "look": "meadow_day",
+   "narration": "माइलो ने हैरान होकर पूछा, \"क्या सच में? लेकिन फल अचानक दोगुने कैसे होंगे?\"",
+   "tone": "curious, doubtful, quick",
+   "visual": "Milo tilts his head skeptically, looking closely at Bholu while Lakshmi nods in concern.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.4,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.6,
+      6.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.3
+    }
+   ],
+   "quotes": [
+    {
+     "start": 26,
+     "end": 74,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Lakshmi Warning",
+   "look": "meadow_day",
+   "narration": "लक्ष्मी गाय मुस्कुराई और बोली, \"यहाँ आओ, छोटे। बिना मेहनत का लालच खतरनाक है।\"",
+   "tone": "warm, gentle, motherly",
+   "visual": "Lakshmi chews grass gently and warns the young ones with a calm motherly tone.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.2,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 31,
+     "end": 77,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Entering the Den",
+   "look": "forest_day",
+   "narration": "भोलू ने अपनी मीठी रसीली बेरी की टोकरी ड्रेकोन की गहरी गुफा के अंदर रख दी।",
+   "tone": "suspenseful, storytelling",
+   "visual": "Bholu walks excitedly toward Drakon's dark pine forest den carrying a heavy basket.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.0,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.2,
+        3.2
+       ]
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Drakon Boast",
+   "look": "forest_day",
+   "narration": "ड्रेकोन घमंड से बोला, \"ड्रैकोन को कोई नहीं हरा सकता! कल दो टोकरियाँ ले जाना।\"",
+   "tone": "loud, proud, sneering",
+   "visual": "Drakon towers over Bholu sneering proudly in front of his den.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.26
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.26
+    }
+   ],
+   "quotes": [
+    {
+     "start": 22,
+     "end": 77,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "The Double Basket",
+   "look": "misty_morning",
+   "narration": "अगली सुबह भोलू को गुफा के बाहर दो टोकरियाँ मिलीं। वह खुशी से नाचने लगा।",
+   "tone": "cheerful, bright",
+   "visual": "At dawn, Bholu dances happily near two fruit baskets while Milo stands nearby watching.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.3
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Rotten Inside",
+   "look": "misty_morning",
+   "narration": "माइलो ने टोकरी सूंघी। फल बाहर से सुंदर दिख रहे थे, पर अंदर से बिल्कुल सूखे थे।",
+   "tone": "tense, serious, shocked",
+   "visual": "Milo sniffs the berries closely and gasps as he breaks one open to find dry rot.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.4,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.4
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Veer Arrives",
+   "look": "misty_morning",
+   "narration": "वीर हिरण वहाँ आकर खड़ा हुआ और बोला, \"जंगल सब सुनता है। कुछ तो गलत है।\"",
+   "tone": "deep, noble, watchful",
+   "visual": "Veer the stag steps out of the forest haze, standing noble and watchful.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "veer",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -1.0,
+        3.2
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.4
+    }
+   ],
+   "quotes": [
+    {
+     "start": 36,
+     "end": 70,
+     "id": "veer"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "The Demand",
+   "look": "forest_day",
+   "narration": "ड्रेकोन चिल्लाया, \"मैंने तुम्हारी टोकरी दोगुनी कर दी, अब मेरा आधा हिस्सा मुझे दो!\"",
+   "tone": "loud, aggressive, demanding",
+   "visual": "Drakon blocks the pathway, aggressively demanding his heavy interest fee from Bholu.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.22
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -2.6,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.22
+    }
+   ],
+   "quotes": [
+    {
+     "start": 18,
+     "end": 82,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Milo's Plan",
+   "look": "forest_day",
+   "narration": "माइलो ने फुसफुसाकर कहा, \"लेकिन मेरे पास एक योजना है!\" और वह गुफा के पीछे भागा।",
+   "tone": "eager, energetic, sharp",
+   "visual": "Milo whispers quickly to Veer and sprints around toward the hidden back of the den.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.5
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.5
+    }
+   ],
+   "quotes": [
+    {
+     "start": 24,
+     "end": 53,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "The Secret Uncovered",
+   "look": "storm_dusk",
+   "narration": "गुफा की दरार से माइलो ने देखा कि ड्रेकोन ताज़ा फल चुराकर सड़े फल भर रहा था!",
+   "tone": "dramatic, shocking twist",
+   "visual": "Milo peers through a narrow cave crack while inside Drakon swaps good berries into his secret pile.",
+   "camera": {
+    "framing": "wide",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.3
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.0,
+      3.8
+     ],
+     "beats": [
+      {
+       "action": "eat",
+       "at": 0.2
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "thumb": true
+  },
+  {
+   "id": 12,
+   "title": "Exposing the Scam",
+   "look": "meadow_day",
+   "narration": "माइलो ने भरी सभा में सबको दिखाया कि ड्रेकोन असली फल छिपाकर नकली दे रहा था।",
+   "tone": "brave, triumphant",
+   "visual": "Milo rushes into the valley gathering crowd and tips over the secret basket revealing rotten fruits.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.4,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        -0.5,
+        3.0
+       ]
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.0,
+      6.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Drakon Defeated",
+   "look": "meadow_day",
+   "narration": "ड्रेकोन की चालाकी पकड़ी गई। वह डरकर पीछे हटने लगा और उसकी अकड़ टूट गई।",
+   "tone": "shocked, tense",
+   "visual": "Drakon recoils in shock as Veer steps forward and the animals stare with anger.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "pull_out",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.2
+      }
+     ],
+     "face": "veer",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      2.6,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Ragnar's Lesson",
+   "look": "autumn_gold",
+   "narration": "राग्नार ने चट्टान पर खड़े होकर कहा, \"धैर्य भी एक रास्ता है। जल्दी का फल कच्चा है।\"",
+   "tone": "slow, wise, calm",
+   "visual": "Ragnar stands serene atop a stone boulder, gazing down at the gathered animals.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.36
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 0.9
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.0,
+      3.6
+     ],
+     "size": 1.4
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.36
+    }
+   ],
+   "quotes": [
+    {
+     "start": 36,
+     "end": 82,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Lakshmi Wisdom",
+   "look": "autumn_gold",
+   "narration": "लक्ष्मी ने समझाया, \"बिना जोखिम और समय के रातों-रात कोई भी बचत दोगुनी नहीं होती।\"",
+   "tone": "gentle, wise, warm",
+   "visual": "Lakshmi talks warmly to Bholu while he lowers his head regretfully.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.25
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.25
+    }
+   ],
+   "quotes": [
+    {
+     "start": 19,
+     "end": 80,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Bholu Regret",
+   "look": "autumn_gold",
+   "narration": "भोलू ने चौंककर कहा, \"अरे मेरी मूँछें... मेरा मतलब, मेरे कान! मैं तो ठगा गया!\"",
+   "tone": "funny, dramatic, shock",
+   "visual": "Bholu holds his long donkey ears in exaggerated comedy shock.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.19
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.19
+    }
+   ],
+   "quotes": [
+    {
+     "start": 20,
+     "end": 77,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Justice Served",
+   "look": "golden_sunset",
+   "narration": "वीर ने ड्रेकोन को चेतावनी दी और भोलू के सारे असली फल वापस दिलवाए।",
+   "tone": "firm, heroic, resolving",
+   "visual": "Veer forces Drakon to return the fresh berries back to Bholu.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "veer",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.6,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "veer",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Sharing Real Savings",
+   "look": "golden_sunset",
+   "narration": "माइलो, भोलू और लक्ष्मी ने मिलकर सूखी घास पर बैठकर अपने ताज़ा फल खाए।",
+   "tone": "warm, happy, peaceful",
+   "visual": "Milo, Bholu, and Lakshmi sit together happily eating fresh honest berries under the warm sunset.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.0,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "The Core Lesson",
+   "look": "golden_sunset",
+   "narration": "आज हमने सीखा: रातों-रात पैसा दोगुना करने का वादा हमेशा एक बड़ा धोखा होता है।",
+   "tone": "wise, friendly, clear",
+   "visual": "Milo smiles at the viewer, giving a wise concluding nod.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Outro Loop",
+   "look": "golden_sunset",
+   "narration": "अगर कहानी पसंद आई, तो अगली कहानी के लिए सब्सक्राइब करें! यह केवल शिक्षा के लिए है। यह कहानी केवल शिक्षा के लिए है, यह वित्तीय सलाह नहीं है।",
+   "tone": "cheerful, inviting",
+   "visual": "Bholu winks comically while Milo wags his tail happily.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.2
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.4
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  }
+ ],
+ "topic": "Invent a NEW animal adventure that is different from the earlier stories list",
+ "genre": "a mystery in the forest with a twist",
+ "director_model": "gemini-3.6-flash"
+}
