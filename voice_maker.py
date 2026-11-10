@@ -22,7 +22,7 @@ BASE = "https://generativelanguage.googleapis.com/v1beta"
 MODELS = ["gemini-3.1-flash-tts-preview", "gemini-2.5-flash-preview-tts", "gemini-3.8-flash-tts",
           "gemini-3.8-flash-lite-tts", "gemini-2.5-pro-preview-tts"]
 QUALITY = {"fast": (540, 960, 8), "balanced": (720, 1280, 16), "high": (720, 1280, 32), "ultra": (1080, 1920, 28)}
-NARRATOR = {"male": "Charon", "female": "Kore"}
+NARRATOR = {"male": "Achird", "female": "Sulafat"}      # friendly / warm voices that suit animal stories
 DEFAULT_VOICES = {"milo": "Puck", "ragnar": "Gacrux", "drakon": "Algenib", "lakshmi": "Sulafat", "bholu": "Fenrir", "veer": "Orus"}
 SPARE = ["Zephyr", "Iapetus", "Umbriel", "Achird", "Leda", "Enceladus"]
 QUOTE_RE = re.compile(r'["\u201c](.+?)["\u201d]')
@@ -398,6 +398,129 @@ def voice_shot(idx, n, shot, ctx):
     return final, wav_seconds(final), best[1], calls
 
 
+# ------------------------------------------------------------------ ONE call for the whole story (single voice), cut into shots afterwards
+def eff_len(s):
+    return len(s) + 10 * pauses_in(s) + 4 * sum(s.count(c) for c in ",;:")
+
+
+def find_silences(path, noise_db=-35, dur=0.22):
+    r = subprocess.run(["ffmpeg", "-hide_banner", "-i", path, "-af", f"silencedetect=noise={noise_db}dB:d={dur}", "-f", "null", "-"],
+                       capture_output=True, text=True)
+    starts = [float(x) for x in re.findall(r"silence_start: (-?[\d.]+)", r.stderr)]
+    ends = [(float(x), float(y)) for x, y in re.findall(r"silence_end: ([\d.]+) \| silence_duration: ([\d.]+)", r.stderr)]
+    out = []
+    for s, (e, d) in zip(starts, ends):
+        out.append((max(0.0, s), e, d))
+    return out
+
+
+def llm_align(path, texts, key, cache_path):
+    """Ask a Gemini TEXT model (its own, much bigger quota) when each segment starts. Optional: None if it does not work."""
+    if os.path.exists(cache_path):
+        try:
+            return json.load(open(cache_path))["starts"]
+        except Exception:
+            pass
+    mp3 = path + ".align.mp3"
+    try:
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", path, "-ar", "16000", "-ac", "1", "-b:a", "48k", mp3], check=True)
+        b64 = base64.b64encode(open(mp3, "rb").read()).decode()
+    except Exception as e:
+        print("  alignment skipped (could not prepare the audio):", str(e)[:80], flush=True)
+        return None
+    n = len(texts)
+    prompt = (f"Listen to the audio. It reads these {n} numbered text segments in order, nothing skipped. For EACH segment give the time in seconds "
+              f"(decimal) at which its first spoken word starts. Return ONLY JSON: {{\"starts\": [{n} numbers in increasing order, the first one near 0]}}\n\n"
+              + "\n".join(f"{i + 1}. {t}" for i, t in enumerate(texts)))
+    body = {"contents": [{"parts": [{"inline_data": {"mime_type": "audio/mp3", "data": b64}}, {"text": prompt}]}],
+            "generationConfig": {"temperature": 0, "responseMimeType": "application/json"}}
+    for model in [m for m in os.environ.get("ALIGN_MODELS", "gemini-3.6-flash,gemini-3.5-flash,gemini-3-flash,gemini-2.5-flash,gemini-2.5-flash-lite").split(",") if m]:
+        try:
+            req = urllib.request.Request(f"{BASE}/models/{model}:generateContent", data=json.dumps(body).encode("utf-8"),
+                                         headers={"Content-Type": "application/json", "x-goog-api-key": key})
+            with urllib.request.urlopen(req, timeout=300) as r:
+                out = json.load(r)
+            txt = "".join(p.get("text", "") for p in out["candidates"][0]["content"]["parts"])
+            starts = [float(x) for x in json.loads(re.sub(r"^```(?:json)?\s*|\s*```$", "", txt.strip()))["starts"]]
+            if len(starts) == n and all(starts[i] < starts[i + 1] for i in range(n - 1)):
+                json.dump({"starts": starts, "model": model}, open(cache_path, "w"))
+                print(f"  alignment by {model}: ok", flush=True)
+                return starts
+        except Exception as e:
+            print(f"  alignment with {model} not possible ({str(e)[:70]})", flush=True)
+    return None
+
+
+def pick_cuts(T, texts, sil, llm):
+    """The n-1 cut times. Each cut goes into a real pause, chosen so the shots follow the text lengths (and the LLM's times)."""
+    n = len(texts)
+    w = [eff_len(t) for t in texts]
+    tot = float(sum(w))
+    exp = [T * sum(w[:i]) / tot for i in range(1, n)]
+    est = [(0.65 * llm[i] + 0.35 * exp[i - 1]) if llm else exp[i - 1] for i in range(1, n)]
+    cands = [((s + e) / 2.0, d) for s, e, d in sil if 1.5 < (s + e) / 2.0 < T - 1.5]
+    m = len(cands)
+    if m < n - 1:
+        print(f"  only {m} pauses found for {n - 1} cuts, some cuts are placed by the text length", flush=True)
+        return [min(max(est[i], 1.5), T - 1.5) for i in range(n - 1)]
+    INF = 1e18
+    best = [[INF] * m for _ in range(n - 1)]
+    back = [[-1] * m for _ in range(n - 1)]
+    cost = lambda i, j: abs(cands[j][0] - est[i]) - 1.2 * min(cands[j][1], 0.7)
+    for j in range(m):
+        best[0][j] = cost(0, j)
+    for i in range(1, n - 1):
+        for j in range(m):
+            for k in range(j):
+                if cands[j][0] - cands[k][0] >= 1.8 and best[i - 1][k] + cost(i, j) < best[i][j]:
+                    best[i][j] = best[i - 1][k] + cost(i, j)
+                    back[i][j] = k
+    j = min(range(m), key=lambda x: best[n - 2][x])
+    if best[n - 2][j] >= INF:
+        return [min(max(est[i], 1.5), T - 1.5) for i in range(n - 1)]
+    cuts = []
+    for i in range(n - 2, -1, -1):
+        cuts.append(cands[j][0])
+        j = back[i][j]
+    return cuts[::-1]
+
+
+def voice_single(shots, ctx, a):
+    texts = [s["narration"].strip() for s in shots]
+    voice = ctx["voices"]["narrator"]
+    h = hashlib.sha1(json.dumps([texts, voice, ctx["fake"]], ensure_ascii=False).encode()).hexdigest()[:10]
+    raw = os.path.join(ctx["dir"], f"single_{h}.raw.wav")
+    full = os.path.join(ctx["dir"], f"single_{h}.wav")
+    calls = 0
+    if not os.path.exists(raw):
+        if ctx["fake"]:
+            rate, pcm = 24000, b""
+            for t in texts:
+                secs = units_of(t, ctx["language"]) / 2.4 + 0.3
+                pcm += b"".join(int(8000 * math.sin(2 * math.pi * 220 * k / rate)).to_bytes(2, "little", signed=True) for k in range(int(rate * secs)))
+                pcm += b"\x00\x00" * int(rate * 0.7)
+        else:
+            print(f"Voice: ONE Gemini call for the whole story, voice {voice}", flush=True)
+            pcm, rate, model = speak("\n\n".join(texts), single_cfg(voice), ctx["key"], ctx["state"])
+            calls = 1
+        write_wav(raw, pcm, rate)
+    trim_silence(raw, full)
+    T = wav_seconds(full)
+    llm = None if ctx["fake"] else llm_align(full, texts, ctx["key"], os.path.join(ctx["dir"], f"align_{h}.json"))
+    cuts = pick_cuts(T, texts, find_silences(full), llm)
+    print("  cuts at:", ", ".join(f"{c:.1f}" for c in cuts), f"| total speech {T:.1f}s", flush=True)
+    with wave.open(full, "rb") as w:
+        rate, frames = w.getframerate(), w.readframes(w.getnframes())
+    bounds = [0.0] + list(cuts) + [T]
+    results = []
+    for i, sh in enumerate(shots):
+        s0, s1 = int(bounds[i] * rate) * 2, int(bounds[i + 1] * rate) * 2
+        path = os.path.join(ctx["dir"], f"shot_{sh['id']:02d}.wav")
+        write_wav(path, frames[s0:s1], rate)
+        results.append((path, (s1 - s0) / 2.0 / rate, "gemini (1 call)" if True else "", calls if i == 0 else 0))
+    return results
+
+
 # ------------------------------------------------------------------ main
 def main():
     ap = argparse.ArgumentParser()
@@ -415,6 +538,8 @@ def main():
     ap.add_argument("--audio-dir", default="audio")
     ap.add_argument("--sleep", type=float, default=3.0, help="pause between TTS calls (free tier limits)")
     ap.add_argument("--style", choices=["off", "on"], default="off", help="on = add a short \"Say ...:\" hint (it can be read aloud)")
+    ap.add_argument("--layout", choices=["single", "per_shot"], default="single",
+                    help="single = ONE Gemini call for the whole story and ONE voice, cut into shots afterwards (fewest calls)")
     ap.add_argument("--engine", choices=["auto", "gemini", "azure", "edge"], default="auto", help="auto = Gemini first, then Azure (if keys), then Edge")
     ap.add_argument("--fallback", choices=["consistent", "mixed"], default="consistent", help="consistent = if Gemini fails, voice the WHOLE video with the next engine")
     ap.add_argument("--gemini-rounds", type=int, default=3, help="how many full rounds Gemini gets per shot before the fallback")
@@ -491,7 +616,26 @@ def main():
                 print(f"  {engine} attempt {rnd}/3 failed ({str(ex)[:100]}), waiting {5 * rnd}s", flush=True)
                 SLEEP(5 * rnd)
 
-    results, rates, ei, i = [], [], 0, 0
+    results, rates, ei, i = None, [], 0, 0
+    single_mode = False
+    if a.layout == "single" and engines[0] == "gemini":
+        try:
+            results = voice_single(shots, ctx, a)
+            single_mode = True
+        except (QuotaExhausted, RuntimeError) as ex:
+            print(f"FALLBACK: Gemini could not make the voice ({str(ex)[:140]}). Using {engines[1] if len(engines) > 1 else 'nothing'} with ONE narrator voice.", flush=True)
+            results = None
+            engines = engines[1:]
+            ctx["characters"] = False
+            if not engines:
+                if isinstance(ex, QuotaExhausted):
+                    print("STOP: the daily voice quota is used up. Run again after the quota resets (or switch on billing).", flush=True)
+                    sys.exit(75)
+                raise
+    if results is None:
+        results = []
+    else:
+        i = len(shots)
     while i < len(shots):
         eng, sh = engines[ei], shots[i]
         print(f"Voice shot {sh['id']}/{len(shots)} [{eng}]", flush=True)
@@ -518,7 +662,7 @@ def main():
                 ctx["calibrated"] = True
         results.append(res)
         i += 1
-    final_engine = engines[ei]
+    final_engine = "gemini" if single_mode else engines[ei]
     if final_engine != engines[0]:
         print(f"NOTE: the voice was made with {final_engine}, not {engines[0]}.", flush=True)
     if final_engine != "gemini":
@@ -527,21 +671,26 @@ def main():
     # ---- timeline: the video is exactly as long as the voice needs
     fps = a.fps
     w, h, samples = QUALITY.get(a.quality, QUALITY["high"])
-    durs = []
+    durs, leads = [], []
     for i, (_, secs, _, _) in enumerate(results):
-        pause = a.end_pause if i == len(results) - 1 else a.pause
-        durs.append(max(a.min_shot, a.lead + secs + pause))
+        if single_mode:                                  # the shots are slices of one continuous reading: no extra gaps
+            lead = a.lead if i == 0 else 0.0
+            durs.append(max(3.0, lead + secs + (a.end_pause if i == len(results) - 1 else 0.0)))
+        else:
+            lead = a.lead
+            durs.append(max(a.min_shot, a.lead + secs + (a.end_pause if i == len(results) - 1 else a.pause)))
+        leads.append(lead)
     bounds, acc = [], 0.0
     for dsec in durs:
         bounds.append((int(round(acc * fps)), int(round((acc + dsec) * fps))))
         acc += dsec
     total_frames = bounds[-1][1]
     tl_shots = []
-    for sh, (path, secs, model, calls), (sf, ef) in zip(shots, results, bounds):
+    for sh, (path, secs, model, calls), (sf, ef), lead in zip(shots, results, bounds, leads):
         dur = (ef - sf) / fps
         sh.update({"duration": round(dur, 3), "start_frame": sf, "end_frame": ef, "start_time": round(sf / fps, 3)})
         tl_shots.append({"id": sh["id"], "duration": round(dur, 3), "start_frame": sf, "end_frame": ef,
-                         "start_time": round(sf / fps, 3), "lead": a.lead, "voice_seconds": round(secs, 3),
+                         "start_time": round(sf / fps, 3), "lead": lead, "voice_seconds": round(secs, 3),
                          "audio": path, "thumb": bool(sh.get("thumb"))})
     total = total_frames / float(fps)
     plan.update({"fps": fps, "total_frames": total_frames, "total_seconds": round(total, 3), "target_seconds": round(total),
