@@ -17,18 +17,24 @@ on:
         default: high
         options: [high, ultra, balanced, fast]
       fps:
-        description: "Animation frames per second (15 = smooth, 24 = smoothest but about 1.6x slower)"
-        default: "15"
+        description: "Animation frames per second. 12 = good and fast (the final video is 30 fps anyway). 15 = smoother, 25% slower"
+        default: "12"
+      shards:
+        description: "How many render jobs run in parallel (more = the video is ready sooner; 12 is a good start, up to 20 on a free plan)"
+        default: "12"
+      voice_name:
+        description: "Optional Gemini voice name for the single narrator (empty = Achird for male, Sulafat for female). Others to try: Puck, Leda, Zephyr, Charon, Kore"
+        default: ""
+      sound_design:
+        description: "yes = add music, ambience and sound effects made locally (free)"
+        type: choice
+        default: "yes"
+        options: ["yes", "no"]
       voice_engine:
         description: "auto = Gemini first, then Microsoft voices if Gemini cannot finish (recommended). gemini / azure / edge = only that one"
         type: choice
         default: auto
         options: [auto, gemini, azure, edge]
-      character_voices:
-        description: "yes = each animal has its own voice (a few more voice calls). no = the narrator reads everything (fewest calls)"
-        type: choice
-        default: "yes"
-        options: ["yes", "no"]
       scene_density:
         description: "How full the background is (1.6 = rich, 1.0 = lighter and faster)"
         default: "1.6"
@@ -41,6 +47,9 @@ jobs:
   prepare:
     runs-on: ubuntu-24.04
     timeout-minutes: 120
+    outputs:
+      shards: ${{ steps.shards.outputs.list }}
+      count: ${{ steps.shards.outputs.count }}
     steps:
       - uses: actions/checkout@v6
 
@@ -57,6 +66,19 @@ jobs:
           echo "Using plan: $PLAN"
           echo "plan=$PLAN" >> "$GITHUB_OUTPUT"
 
+      - name: List the render parts
+        id: shards
+        env:
+          N_IN: ${{ inputs.shards }}
+        run: |
+          N=$(( ${N_IN:-12} ))
+          [ "$N" -lt 1 ] && N=1
+          [ "$N" -gt 20 ] && N=20
+          LIST=$(python3 -c "import json;print(json.dumps(list(range($N))))")
+          echo "list=$LIST" >> "$GITHUB_OUTPUT"
+          echo "count=$N" >> "$GITHUB_OUTPUT"
+          echo "Render parts: $N"
+
       - name: Install ffmpeg (with retry)
         run: |
           for i in 1 2 3 4; do
@@ -66,7 +88,7 @@ jobs:
 
       - name: Check the scripts are the new ones
         run: |
-          for f in voice_maker.py shorts_core.py shorts_render.py shorts_assemble.py get_blender_v2.sh; do
+          for f in voice_maker.py shorts_core.py shorts_render.py shorts_assemble.py sound_design.py get_blender_v2.sh; do
             [ -f "$f" ] || { echo "ERROR: $f is missing from the repo root."; exit 1; }
           done
           check() { grep -q "$2" "$1" || { echo "ERROR: $1 is not the right file (it does not contain: $2). Copy the new $1 from Claude into the repo root, replacing the old one."; exit 1; }; }
@@ -76,7 +98,8 @@ jobs:
           nocheck shorts_render.py "def build_prompt"
           check shorts_core.py "def cut_camera"
           nocheck shorts_core.py "import bpy"
-          check voice_maker.py "def voice_shot_ms"
+          check voice_maker.py "def voice_single"
+          check sound_design.py "def ambience"
           check shorts_assemble.py "sidechaincompress"
 
       - name: Install the Microsoft voice helper (with retry)
@@ -101,15 +124,15 @@ jobs:
           GENDER: ${{ inputs.voice_gender }}
           FPS: ${{ inputs.fps }}
           QUALITY: ${{ inputs.quality }}
-          CHARS: ${{ inputs.character_voices }}
+          VOICE_NAME: ${{ inputs.voice_name }}
           ENGINE: ${{ inputs.voice_engine }}
           AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
           AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
         run: |
-          CH=auto; [ "$CHARS" = "no" ] && CH=off
+          VN=(); [ -n "$VOICE_NAME" ] && VN=(--voice "$VOICE_NAME")
           ok=0
           for i in 1 2 3; do
-            if python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --fps "$FPS" --quality "$QUALITY" --characters "$CH" --engine "${ENGINE:-auto}"; then
+            if python3 voice_maker.py --plan "$PLAN" --gender "$GENDER" --fps "$FPS" --quality "$QUALITY" --layout single --engine "${ENGINE:-auto}" "${VN[@]}"; then
               ok=1; break
             else
               code=$?
@@ -152,11 +175,11 @@ jobs:
   render:
     needs: prepare
     runs-on: ubuntu-24.04
-    timeout-minutes: 300
+    timeout-minutes: 350
     strategy:
       fail-fast: false
       matrix:
-        shard: [0, 1, 2, 3, 4, 5]
+        shard: ${{ fromJSON(needs.prepare.outputs.shards) }}
     steps:
       - uses: actions/checkout@v6
 
@@ -219,6 +242,7 @@ jobs:
       - name: Render this part (3 automatic attempts, finished frames are kept)
         env:
           SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ needs.prepare.outputs.count }}
           MODEL_FORWARD_OFFSET: ${{ inputs.forward_offset }}
           SCENE_DENSITY: ${{ inputs.scene_density }}
         run: |
@@ -228,7 +252,7 @@ jobs:
             xvfb-run -a "$HOME/blender/blender" -b --python-exit-code 1 \
               -P shorts_render.py -- \
               --timeline timeline.json --story scene_plan_timed.json \
-              --assets . --out out --shard "$SHARD" --shards 6 2>&1 | tee "render_log_$SHARD.txt"; \
+              --assets . --out out --shard "$SHARD" --shards "$SHARDS" 2>&1 | tee "render_log_$SHARD.txt"; \
             [ "${PIPESTATUS[0]}" = 0 ] && ok=1 && break
             echo "Render attempt $i failed, trying again in 30 s"; sleep 30
           done
@@ -238,13 +262,14 @@ jobs:
         env:
           FPS: ${{ inputs.fps }}
           SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ needs.prepare.outputs.count }}
         run: |
           TOTAL=$(python3 -c "import json;print(json.load(open('timeline.json'))['total_frames'])")
-          START=$((TOTAL * SHARD / 6))
+          START=$((TOTAL * SHARD / SHARDS))
           ffmpeg -y -loglevel error -framerate "$FPS" -start_number "$START" -i out/f_%06d.png \
             -c:v libx264 -preset fast -crf 14 -pix_fmt yuv420p "out/segment_${SHARD}.mp4"
           echo "Shard $SHARD: frames from $START, total $TOTAL" > "out/render_summary_${SHARD}.md"
-          grep -E "LENGTHS|SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|switched off|Finished" "render_log_${SHARD}.txt" >> "out/render_summary_${SHARD}.md" || true
+          grep -E "LENGTHS|SCALES|ANIMATIONS USED|ANIMATION PROBLEMS|MISSING MODELS|switched off|Finished|s per frame" "render_log_${SHARD}.txt" >> "out/render_summary_${SHARD}.md" || true
           rm -f out/f_*.png
 
       - name: Save this part
@@ -258,7 +283,7 @@ jobs:
 
   # ------------------------------------------------------------ 3) final video, subtitle files, upload data
   assemble:
-    needs: render
+    needs: [prepare, render]
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -281,21 +306,35 @@ jobs:
             echo "apt failed, attempt $i"; sleep $((i*10))
           done
 
-      - name: Check all 6 parts are present
+      - name: Check all parts are present
+        env:
+          SHARDS: ${{ needs.prepare.outputs.count }}
         run: |
-          for i in 0 1 2 3 4 5; do
+          for i in $(seq 0 $((SHARDS-1))); do
             [ -f "segments/segment_$i.mp4" ] || { echo "ERROR: part $i is missing. Re-run the failed render job, then this one."; ls -la segments; exit 1; }
           done
 
-      - name: Join the parts and make the final video
+      - name: Join the parts, add the sounds, make the final video
+        env:
+          SHARDS: ${{ needs.prepare.outputs.count }}
+          SOUND: ${{ inputs.sound_design }}
         run: |
           mkdir -p out
           : > list.txt
-          for i in 0 1 2 3 4 5; do echo "file '$PWD/segments/segment_$i.mp4'" >> list.txt; done
+          for i in $(seq 0 $((SHARDS-1))); do echo "file '$PWD/segments/segment_$i.mp4'" >> list.txt; done
           ffmpeg -y -loglevel error -f concat -safe 0 -i list.txt -c copy out/video_all.mp4
-          MUSIC=$(find music -type f -iname "*.mp3" 2>/dev/null | head -1 || true)
+          MP3=$(find music -type f -iname "*.mp3" 2>/dev/null | head -1 || true)
+          MUSIC_ARG=(--music "$MP3")
+          if [ "$SOUND" != "no" ]; then
+            if [ -n "$MP3" ]; then
+              python3 sound_design.py --plan scene_plan_timed.json --timeline timeline.json --out out/soundtrack.wav --music-file "$MP3"
+            else
+              python3 sound_design.py --plan scene_plan_timed.json --timeline timeline.json --out out/soundtrack.wav
+            fi
+            MUSIC_ARG=(--music out/soundtrack.wav --music-level 0.45)
+          fi
           python3 shorts_assemble.py --plan scene_plan_timed.json --timeline timeline.json \
-            --video out/video_all.mp4 --out out/final_shorts.mp4 --music "$MUSIC"
+            --video out/video_all.mp4 --out out/final_shorts.mp4 "${MUSIC_ARG[@]}"
           rm -f out/video_all.mp4
 
       - name: Show summary
