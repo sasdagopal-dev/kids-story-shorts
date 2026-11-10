@@ -490,6 +490,11 @@ def setup_render():
     r.image_settings.color_mode = "RGB"
     r.image_settings.compression = 5
     r.threads_mode = "AUTO"
+    if os.environ.get("PERSISTENT", "1") != "0":        # keep the scene in memory between frames: much faster
+        try:
+            r.use_persistent_data = True
+        except Exception:
+            pass
     try:
         sc.view_settings.view_transform = "Filmic"
         sc.view_settings.look = "Medium High Contrast"
@@ -557,42 +562,101 @@ class Actor:
         return a
 
     def build_nla(self, segs):
-        """One clip per beat, placed exactly when the beat starts. Two NLA tracks alternate so neighbours cross-fade."""
+        """Every beat becomes one or more clips on the NLA timeline, placed exactly when the beat starts.
+        Nobody freezes: a one-shot reaction (shock, hurt, celebrate) is followed by an idle loop, long idle or talking
+        stretches alternate Idle and Idle_2, and a clip that does not fit on a track is tried on the next one."""
         if not self.ok:
             return
+        idle, idle2 = self.actions.get("idle"), self.actions.get("idle_2")
         for arm in self.arms:
             ad = arm.animation_data_create()
             ad.action = None
             for t in list(ad.nla_tracks):
                 ad.nla_tracks.remove(t)
-            tracks = [ad.nla_tracks.new(), ad.nla_tracks.new()]
+            tracks = [ad.nla_tracks.new() for _ in range(4)]
+            pieces = []                                       # (action, begin, end, one_shot, scale)
             for i, s in enumerate(segs):
                 act = self.pick(s["anim"])
                 if act is None:
                     continue
-                lo, hi = act.frame_range
-                length = max(1.0, hi - lo)
-                begin = 1.0 + s["t0"] * 24.0 - (OVERLAP if i > 0 else 0.0)
-                end = 1.0 + s["t1"] * 24.0
-                span = max(3.0, end - begin)
-                try:
-                    st = tracks[i % 2].strips.new(f"{i}_{act.name}", int(round(begin)), act)
-                except Exception:
-                    continue
-                if st is None:
-                    continue
-                one = is_one_shot(s["anim"])
+                b0 = 1.0 + s["t0"] * 24.0 - (OVERLAP if i > 0 else 0.0)
+                e0 = 1.0 + s["t1"] * 24.0
                 sc_ = CLIP_SCALE.get(s["action"], 1.0)
+                length = max(1.0, act.frame_range[1] - act.frame_range[0])
+                if s["action"] in ("idle", "listen", "talk") and idle2 is not None and (e0 - b0) > 3.5 * 24:
+                    t, k = b0, 0
+                    while t < e0 - 6:
+                        if k % 2 == 0:
+                            end = min(e0, t + 2.8 * 24)
+                            pieces.append((act, t, end, False, 1.0))
+                        else:
+                            end = min(e0, t + max(1.0, idle2.frame_range[1] - idle2.frame_range[0]))
+                            pieces.append((idle2, t, end, True, 1.0))
+                        t = end - OVERLAP if end < e0 else e0
+                        k += 1
+                elif is_one_shot(s["anim"]):
+                    end1 = min(e0, b0 + length)
+                    pieces.append((act, b0, end1, True, 1.0))
+                    if e0 - end1 > 3 and idle is not None:
+                        pieces.append((idle, end1 - OVERLAP, e0, False, 1.0))
+                else:
+                    pieces.append((act, b0, e0, False, sc_))
+            for n, (act, b, e, one, sc_) in enumerate(pieces):
+                length = max(1.0, act.frame_range[1] - act.frame_range[0])
+                span = max(3.0, e - b)
+                st = None
+                for tr in tracks:
+                    try:
+                        st = tr.strips.new(f"{n}_{act.name}", int(round(b)), act)
+                    except Exception:
+                        st = None
+                    if st is not None:
+                        break
+                if st is None:
+                    ANIM_PROBLEMS.add(f"{self.model}: a clip of '{act.name}' did not fit on any NLA track")
+                    continue
                 try:
                     st.scale = sc_
-                    if not one:
+                    if one:
+                        if span < length * sc_ - 1:
+                            st.action_frame_end = st.action_frame_start + span / sc_
+                    else:
                         st.repeat = max(0.05, span / (length * sc_))
                     slen = st.frame_end - st.frame_start
-                    st.blend_in = min(OVERLAP, 0.4 * slen) if i > 0 else 0.0
-                    st.blend_out = min(OVERLAP, 0.4 * slen) if i < len(segs) - 1 else 0.0
-                    st.extrapolation = "HOLD" if i == 0 else ("HOLD_FORWARD" if one else "NOTHING")
-                except Exception as e:
-                    ANIM_PROBLEMS.add(f"{self.model}: NLA setting failed ({str(e)[:60]})")
+                    st.blend_in = min(OVERLAP, 0.4 * slen) if n > 0 else 0.0
+                    st.blend_out = min(OVERLAP, 0.4 * slen) if n < len(pieces) - 1 else 0.0
+                    st.extrapolation = "HOLD" if n == 0 else ("HOLD_FORWARD" if n == len(pieces) - 1 else "NOTHING")
+                except Exception as ex:
+                    ANIM_PROBLEMS.add(f"{self.model}: NLA setting failed ({str(ex)[:60]})")
+
+
+def cull_unseen(shot, chars, dur):
+    """Switch off everything far outside the picture: it cannot be seen, but it costs render time on every frame."""
+    if os.environ.get("CULL", "1") == "0":
+        return
+    cdesc = [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars]
+    times = sorted(set([dur * k / 6.0 for k in range(7)] + [sp["at"] * dur + 0.1 for sp in shot.get("speakers", [])]))
+    css = [core.camera_state(core.cut_camera(shot, t, dur), cdesc, t, dur, HFOV, VFOV) for t in times]
+    half = math.degrees(HFOV / 2.0) * 1.8
+    for it in ENV:
+        if it["obj"].hide_render:
+            continue
+        keep = False
+        for cs in css:
+            cx, cy = cs["cam"][0], cs["cam"][1]
+            fx, fy = cs["target"][0] - cx, cs["target"][1] - cy
+            vx, vy = it["x"] - cx, it["y"] - cy
+            dist = math.hypot(vx, vy)
+            if dist < 1.0 or math.hypot(fx, fy) < 1e-6:
+                keep = True
+                break
+            ang = abs(math.degrees(math.atan2(fx * vy - fy * vx, fx * vx + fy * vy)))
+            if ang < half + math.degrees(math.atan2(it["r"] + 1.0, dist)):
+                keep = True
+                break
+        if not keep:
+            hide_item(it["obj"])
+            CLEARED["culled"] = CLEARED.get("culled", 0) + 1
 
 
 def clear_sightlines(shot, chars, dur):
@@ -674,6 +738,7 @@ def build_shot(shot, dur):
     con.track_axis = "TRACK_NEGATIVE_Z"
     con.up_axis = "UP_Y"
     clear_sightlines(shot, chars, dur)
+    cull_unseen(shot, chars, dur)
     return sc, cam, target, chars
 
 
@@ -769,7 +834,7 @@ def main():
                     el = time.time() - t_start
                     print(f"  {done}/{b - a} frames, {el / done:.1f}s per frame", flush=True)
     print(f"Finished {done} frames in {(time.time() - t_start) / 60:.1f} min")
-    print(f"Objects switched off because they hid an animal or the camera: {CLEARED['n']}")
+    print(f"Objects switched off because they hid an animal or the camera: {CLEARED['n']}; far outside the picture (not rendered): {CLEARED.get('culled', 0)}")
     if SCALE_REPORT:
         print("SCALES:", "; ".join(f"{k} {v}" for k, v in sorted(SCALE_REPORT.items())))
     if ANIM_USED:
