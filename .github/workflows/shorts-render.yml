@@ -25,6 +25,16 @@ on:
       voice_name:
         description: "Optional Gemini voice name for the single narrator (empty = Achird for male, Sulafat for female). Others to try: Puck, Leda, Zephyr, Charon, Kore"
         default: ""
+      upload_youtube:
+        description: "yes = upload the finished Short to your YouTube channel automatically (needs the YT_ secrets)"
+        type: choice
+        default: "yes"
+        options: ["yes", "no"]
+      youtube_privacy:
+        description: "private = only you can see it, check it in YouTube Studio and press Publish (recommended). unlisted / public = visible at once"
+        type: choice
+        default: private
+        options: [private, unlisted, public]
       sound_design:
         description: "yes = add music, ambience and sound effects made locally (free)"
         type: choice
@@ -359,3 +369,32 @@ jobs:
             out/thumbnail.jpg
             voice_report.md
             scene_plan_timed.json
+
+  # ------------------------------------------------------------ 4) upload to YouTube (private by default)
+  upload:
+    needs: assemble
+    if: ${{ inputs.upload_youtube != 'no' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check the upload script is the right file
+        run: |
+          grep -q "def send_video" youtube_upload.py || { echo "ERROR: youtube_upload.py is missing or is the wrong file. Copy it into the repo root."; exit 1; }
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: shorts-final
+          path: final
+
+      - name: Upload to YouTube
+        env:
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          YT_CHANNEL_ID: ${{ secrets.YT_CHANNEL_ID }}
+          PRIVACY: ${{ inputs.youtube_privacy }}
+        run: |
+          ls -la final/out
+          python3 youtube_upload.py --dir final/out --privacy "${PRIVACY:-private}"
