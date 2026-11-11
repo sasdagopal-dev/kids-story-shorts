@@ -379,7 +379,8 @@ def repair_plan(raw, cfg, strict=True):
     title = raw.get("title") if isinstance(raw.get("title"), str) else ""
     if not title.strip():
         raise Reject("the 'title' is missing")
-    suffix = cfg.get("title_suffix", "")
+    ep_cfg = cfg.get("_episode")
+    suffix = (f" | {cfg.get('series', {}).get('name', '')} Ep {ep_cfg['number']} #shorts" if ep_cfg else cfg.get("title_suffix", ""))
     title = title.strip()
     if suffix and title.endswith(suffix):
         title = title[:-len(suffix)]
@@ -392,7 +393,9 @@ def repair_plan(raw, cfg, strict=True):
                 used_ids.append(c["id"])
     plan = {"version": 4, "language": language, "title": title + suffix,
             "description": str(raw.get("description") or "").strip(), "tags": tags,
-            "twist": str(raw.get("twist") or "")[:200], "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
+            "twist": str(raw.get("twist") or "")[:200], "episode": (ep_cfg or {}).get("number"),
+            "viewer_question": str(raw.get("viewer_question") or "")[:200],
+            "beat_sheet": {str(k)[:30]: str(v)[:300] for k, v in (raw.get("beat_sheet") or {}).items()} if isinstance(raw.get("beat_sheet"), dict) else {}, "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
             "disclaimer": disc, "credits": cfg.get("credits", ""), "story_mode": cfg.get("story_mode", "adventure"),
             "made_for_kids": bool(cfg.get("made_for_kids", True)),
             "target_seconds": target, "flexible_length": True, "estimated_voice_seconds": round(est, 1),
@@ -412,6 +415,12 @@ def fix_actions(sh, cfg, notes):
             m = re.search(rx, sent, re.I)
             if not m:
                 continue
+            if action in ("run", "walk", "shock", "sad", "celebrate"):          # figures of speech are not actions
+                after = sent[m.end():m.end() + 24].lower()
+                prior = sent[max(0, m.start() - 24):m.start()].lower()
+                if re.match(r"\s+(a\s+|the\s+)?(shiver|chill|cold|tingle)", after) or re.match(r"\s+(down|through|up|over)\b", after) \
+                        or re.search(r"(heart|mind|thoughts?|pulse|blood|eyes|tears?|stomach)\W+(\w+\W+)?$", prior):
+                    continue
             before = [e for p, e in named if p < m.start()]
             if not named:
                 continue
@@ -679,61 +688,103 @@ One shot looks like this:
 
 
 # ------------------------------------------------------------------ pass 1 and 2: the story itself
+def pick_episode(cfg, idx):
+    """The planned episode of the season for position idx (or None when the season is over / no season is defined)."""
+    season = cfg.get("season") or {}
+    eps = season.get("episodes") or []
+    if idx < 0 or idx >= len(eps):
+        return None
+    ep = dict(eps[idx])
+    ep["number"] = idx + 1
+    ep["total"] = len(eps)
+    ep["previous_cliffhanger"] = eps[idx - 1]["cliffhanger"] if idx > 0 else ""
+    return ep
+
+
 def build_story_prompt(cfg, topic, genre, history, feedback):
     language = cfg.get("language", "English")
     tg = cfg["targets"][language]
     unit = tg["unit"]
     series = cfg.get("series", {})
+    season = cfg.get("season") or {}
+    ep = cfg.get("_episode")
     n = cfg.get("shots", 20)
     cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} ({c['model']}): {c['role']}. Speaks: {c.get('voice_style', 'natural')}. Catchphrase: {c.get('catchphrase', '-')}. Behaves: {c.get('behaviour', '-')}"
                      for c in cfg["cast"])
-    past = "\n".join(f"- {h.get('title', '')}" + (f" | {h['recap']}" if h.get("recap") else "") for h in history[-6:]) or "- (episode 1)"
+    past = "\n".join(f"- Ep {h.get('episode', '?')}: {h.get('title', '')}" + (f" | happened: {h['recap']}" if h.get("recap") else "") +
+                     (f" | ended on: {h['cliffhanger']}" if h.get("cliffhanger") else "") + (f" | clue planted: {h['clue']}" if h.get("clue") else "")
+                     for h in history[-4:]) or "- (nothing yet: this is the very first episode)"
     twists = "\n".join(f"- {h['twist']}" for h in history[-12:] if h.get("twist")) or "- (none yet)"
     dmap = cfg.get("disclaimer") or {}
     disc = dmap.get(language, "") if isinstance(dmap, dict) else ""
-    fix = ("FIX THIS PROBLEM FROM YOUR LAST ANSWER: " + feedback) if feedback else ""
-    if cfg.get("story_mode", "adventure") == "money":
-        lesson_rule = ("7. MONEY LESSON (the hidden purpose): teach ONE beginner money-awareness idea, today: " + topic + ". Show it with ANIMAL-NATIVE money, never with human shops or banks: "
-                       "food stored for winter = savings, a berry bank in a hollow tree, a hive that grows = compound growth, a lender wolf who asks 'two nuts back for one' = interest and debt trap, "
-                       "a trickster selling 'free gold leaves' = scam, a drought or flood = emergency fund, a seed that becomes a tree = patience and long-term growth, three baskets = needs, wants, savings. "
-                       "Use small numbers a child can follow (Rs 10, Rs 20, 5 nuts). One wise animal says the rule in one short sentence. Never name real banks, apps, brands, stocks or funds, "
-                       "never promise returns, never tell anyone to buy anything.")
-        heart = "a plain recap of the money lesson in simple words, starting with 'Today we learned' (in the story language), as three short points"
-    else:
-        lesson_rule = "7. LESSON: one gentle life lesson, shown by events and one short wise line, never a speech."
-        heart = "the lesson of the story in one simple line, starting with 'Today we learned' (in the story language)"
     omap = cfg.get("outro") or {}
     outro = omap.get(language, "") if isinstance(omap, dict) else ""
-    end_extra = ((" and this exact outro sentence: " + outro) if outro else "") + ((" and this exact closing sentence: " + disc) if disc else "")
-    return f"""You are a master children's-film writer. Write ONLY the story (no camera, no positions) of a vertical YouTube Short, {n} shots, language {language}.
-Series "{series.get('name', '')}". World: {series.get('bible', '')}
-Story idea: {topic}
-Style: {genre}
-Earlier episodes (do not repeat):
+    fix = ("FIX THIS PROBLEM FROM YOUR LAST ANSWER: " + feedback) if feedback else ""
+    money = cfg.get("story_mode", "adventure") == "money"
+    if ep:
+        opening = (f"Answer the previous cliffhanger in a surprising way in shots 1-2 (previous episode ended on: {ep['previous_cliffhanger']}). Include ONE short catch-up line so a new viewer understands."
+                   if ep["previous_cliffhanger"] else "This is the first episode: shot 1 starts in the middle of the mystery, the vanished food, with no calm introduction.")
+        episode_block = (f"SEASON \"{season.get('name', '')}\": {season.get('premise', '')}\n"
+                         f"HIDDEN TRUTH (for your planning ONLY, never reveal it before episode {season.get('reveal_episode', 11)}): {season.get('secret', '')}\n"
+                         f"THIS IS EPISODE {ep['number']} OF {ep['total']}.\n"
+                         f"- Money idea of this episode: {ep['concept']}\n- Story beat you must deliver: {ep['beat']}\n- Clue to plant (visible but innocent): {ep['clue']}\n"
+                         f"- The episode MUST END on this cliffhanger: {ep['cliffhanger']}\n- Opening: {opening}")
+    else:
+        episode_block = (f"Story idea of today: {topic}\nThis is a continuing series. Open by answering the cliffhanger of the last episode listed below in a surprising way (one short catch-up line), "
+                         "plant one new clue, and end on a new cliffhanger.")
+    lesson = (f"MONEY LEARNING (the purpose of the series, but it must never feel like school):\n"
+              "- The money idea is the KEY of the plot: the problem is caused by ignoring it, and the hero wins by using it. Never explain it in a speech.\n"
+              "- Use ANIMAL-NATIVE money (nuts, berries, honey, a hollow-tree storehouse) and small numbers a child can follow (10 nuts, save 3, 3 + 3 + 3 = 9). "
+              "Show the wrong way costing something real, then the right way with a clear, correct calculation.\n"
+              "- Be accurate. Never name real banks, apps, brands, stocks or funds, never promise returns, never tell anyone to buy something. Scams and traps are shown as dangerous.\n"
+              "- Shot 18: the hero uses the idea with the numbers. Shot 19: the recap starts with 'Today we learned' and gives exactly three short points in plain words.") if money else (
+              "LESSON: one gentle life lesson, shown by events and one short wise line, never a speech.")
+    lang_note = ("Write natural spoken Hindi in Devanagari, short sentences, simple words a child knows, no heavy Sanskrit words. Write the animal names exactly as in the cast list, in Latin letters (Milo, Drakon, Gulab)."
+                 if language == "Hindi" else "Write natural spoken English with simple words, short sentences and a storyteller's rhythm.")
+    end_extra = ((" Then this exact outro sentence: " + outro) if outro else "") + ((" Then this exact closing sentence: " + disc) if disc else "")
+    return f"""You are the head writer of a hit animated mystery-adventure series for children and families, like a mix of a detective show and a funny cartoon, that secretly teaches money skills. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
+SERIES "{series.get('name', '')}". World: {series.get('bible', '')}
+{episode_block}
+Style flavour: {genre}
+
+PREVIOUSLY (do not repeat, only build on it):
 {past}
 Twists already used (invent a DIFFERENT one):
 {twists}
 {fix}
 
-CAST (use only these ids; each animal speaks in its own style and may use its catchphrase at most once):
+CAST (use only these ids; each animal speaks in its own style; a catchphrase at most once; 2 to 5 animals in an episode):
 {cast}
 
-CRAFT RULES
-1. HOOK: shot 1 must raise a question in the first 3 seconds (danger, secret, missing friend, ticking clock). No calm description.
-2. WANT AND OBSTACLE: the hero wants something specific, something stands in the way, and the stakes are clear and emotional.
-3. OPEN LOOPS: every 4 shots, open a new small question or raise the danger, so nobody swipes away. Pay them off later.
-4. TWIST around shots 11-13 that the viewer does not expect but that is fair (hinted earlier).
-5. DIALOGUE: at least 8 of the {n} shots contain a spoken line in double quotes with the speaker named next to it ("said Ragnar"). Short, funny or touching lines in each animal's own voice. Do not let a narrator explain what a line already shows.
-6. EMOTION: show fear, pride, shock, laughter, relief through actions and short lines, not by naming the feeling.
-{lesson_rule}
-8. ENDING: shot {n - 1} = {heart} + a one-line teaser. Shot {n} = a warm, funny or surprising last line that echoes shot 1 (so the video loops){end_extra}, {'(the last shot may be a little longer than the others because of these sentences)' if end_extra else ''}.
-9. Simple vivid words, short sentences, storyteller rhythm. Family friendly, no blood, no real brands.
-10. LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. Count carefully.
+HOW TO MAKE IT GRIPPING (follow all of these):
+1. COLD OPEN: shot 1 drops us into the middle of danger or mystery in the first 3 seconds. No scene setting, no 'once upon a time'.
+2. MICRO-HOOKS: end EVERY shot (except 19) on something that pulls forward: an unanswered question, a strange noise, a reveal, a choice, a rising clock. Never end a shot on a calm, finished thought.
+3. TICKING CLOCK: state a deadline with a number early ('before sunset', 'three sunrises left') and remind us of it twice.
+4. RULE OF THREE: the hero tries and fails twice (each failure costs something real), the third attempt wins using the money idea.
+5. DRAMATIC IRONY: in one short narrator line let the viewer see a danger or a clue that the hero does not see yet.
+6. CLUE AND RED HERRING: plant the planned clue (visible but innocent, mentioned in one short line) and one false suspect.
+7. MIDPOINT TWIST around shots 10-12 that flips what we believed. It must be fair, hinted before.
+8. DARKEST MOMENT around shots 14-15: the hero loses something and wants to give up. Then the money idea turns it around.
+9. A rival with charm and a logic of his own. The hero's own flaw (impatience, pride) causes part of the trouble.
+10. HUMOUR: a specific, visual comic moment every 4-5 shots, usually Bholu or Tinku. Funny, not silly.
+11. DIALOGUE: at least 8 shots with a spoken line in double quotes and the speaker named next to it ("said Ragnar"). Lines are short (5-12 words), with subtext, in each animal's own voice. The narrator never explains what a line already shows.
+12. SPECIFIC: concrete numbers and objects (7 nuts, 3 days, the cracked acorn), never vague words.
+13. NEVER USE: 'little did he know', 'suddenly', 'everything changed', 'and they lived happily ever after', vague morals, a lecture.
+14. Family friendly: no blood, no real brands, scary but warm.
 
-GOOD STYLE (only the style, do not copy):
-"Tiny Milo stared at the dry riverbed. Behind him, the whole herd was already leaving." / Ragnar did not even turn his head. "Water does not run away, little fox," said Ragnar. "It hides. Like courage." / "Then I will find it," whispered Milo, and his voice shook.
+{lesson}
 
-Return ONLY JSON: {{"title": "<gripping honest {language} title, max 60 characters>", "description": "<2-3 sentences>", "tags": ["<10 short tags>"], "logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<one sentence teaser>",
+STRUCTURE OF THE {n} SHOTS:
+1-2 cold open and catch-up | 3-5 the problem, the stakes and the clock | 6-8 first attempt fails (the wrong money move) | 9-11 consequences grow, the clue appears | 12 midpoint twist |
+13-15 second failure, darkest moment | 16-17 the hero discovers the money idea through action | 18 the hero wins cleverly using it, with numbers |
+19 'Today we learned' with three short points | {n} one question for the viewers (a choice about today's money idea, to answer in the comments), then the cliffhanger of the episode as one short mystery line.{end_extra}
+
+LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. The last shot may be longer. Count carefully.
+
+PLAN FIRST: fill in "beat_sheet" before you write the shots, then make the shots follow it exactly.
+
+Return ONLY JSON: {{"beat_sheet": {{"previously": "<how this episode opens by answering the last cliffhanger>", "hook": "<the first-3-seconds hook>", "want": "<what the hero wants>", "obstacle": "<what stands in the way>", "money_in_plot": "<how the money idea causes the problem and then solves it>", "clue": "<the clue planted>", "red_herring": "<the false suspect>", "midpoint_twist": "<the twist>", "darkest_moment": "<the low point>", "cliffhanger": "<the ending hook>"}},
+"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags>"], "logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the cliffhanger in one sentence>", "viewer_question": "<the question for the comments>",
 "shots": [{{"id": 1, "narration": "...", "quote_speakers": ["<id of each quoted line in order>"], "speaker": "<id or null>", "tone": "<2-4 words for the voice actor>"}}, ... {n} shots ...]}}
 """
 
@@ -759,7 +810,7 @@ def check_story(story, cfg, strict=True):
             raise Reject(f"shot {i} narration must be written in {language}")
         u = count_units(s["narration"], unit)
         lo, hi = tg["shot"]
-        extra = (14 if unit == "words" else 90) if i == n else 4 if unit == "words" else 20
+        extra = (26 if unit == "words" else 170) if i == n else 4 if unit == "words" else 20
         if strict and not (lo - 2 <= u <= hi + extra):
             raise Reject(f"shot {i} narration has {u} {unit}, each shot must have {lo} to {hi} {unit}")
         total += u
@@ -813,7 +864,8 @@ def build_unified_prompt(cfg, topic, genre, history, feedback):
             + rules + f"SELF-CHECK before you answer: shots = {n}; narration {cfg['targets'][cfg.get('language', 'English')]['unit']} in range; at least 8 shots with spoken lines; "
             "quote_speakers matches the quotes one by one; every named animal is in that shot's characters; every walk/run has \"to\"; at most 10 moving shots; "
             "at most 4 close-ups; at least 4 different looks; some shots with 1 animal, some with 3; nobody stands behind another animal.\n\n"
-            + ret.replace('"recap":', '"logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap":', 1))
+            + ret.replace('{"title":', story_part[story_part.index('{"beat_sheet"'):story_part.index('"title":')] + '"title":', 1)
+            .replace('"recap":', '"logline": "<one sentence>", "twist": "<the twist in one sentence>", "viewer_question": "<question for the comments>", "recap":', 1))
 
 
 # ------------------------------------------------------------------ continuity pass
@@ -913,7 +965,11 @@ def main():
         except Exception:
             pass
     topics = cfg.get("themes_" + cfg.get("story_mode", "adventure")) or cfg.get("themes") or cfg.get("topics") or []
-    if a.topic:
+    cfg["_episode"] = None if (a.topic or cfg.get("story_mode") != "money") else pick_episode(cfg, prog["next_topic"])
+    if cfg["_episode"]:
+        topic = cfg["_episode"]["concept"]
+        print(f"Season episode {cfg['_episode']['number']} of {cfg['_episode']['total']}: {topic}")
+    elif a.topic:
         topic = a.topic
     elif prog["next_topic"] < len(topics):
         topic = topics[prog["next_topic"]]
@@ -989,10 +1045,11 @@ def main():
     plan["topic"], plan["genre"], plan["director_model"] = topic, genre, state["model"]
     json.dump(plan, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     if not a.no_progress:
-        if not a.topic and prog["next_topic"] < len(topics):
+        if not a.topic and (prog["next_topic"] < len(topics) or cfg.get("_episode")):
             prog["next_topic"] += 1
         prog["history"].append({"date": date, "title": plan["title"], "topic": topic, "file": path,
-                                "recap": plan.get("recap", ""), "cliffhanger": plan.get("cliffhanger", ""), "twist": plan.get("twist", "")})
+                                "recap": plan.get("recap", ""), "cliffhanger": plan.get("cliffhanger", ""), "twist": plan.get("twist", ""),
+                                "episode": plan.get("episode"), "clue": (plan.get("beat_sheet") or {}).get("clue", "")})
         json.dump(prog, open(a.progress, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     md = report_md(plan, topic, genre, state["model"], total, unit, notes, path)
     open("director_report.md", "w", encoding="utf-8").write(md)
