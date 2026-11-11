@@ -53,6 +53,9 @@ jobs:
           check() { grep -q "$2" "$1" || { echo "ERROR: $1 is not the right file (it does not contain: $2). Copy the new $1 from Claude into the repo root, replacing the old one."; exit 1; }; }
           nocheck() { grep -q "$2" "$1" && { echo "ERROR: $1 contains the wrong code ($2). A different script was pasted into this file. Copy the right one."; exit 1; }; return 0; }
           check story_director.py "def build_story_prompt"
+          check story_director.py "def pick_episode"
+          check story_director.py "class QuotaOut"
+          check animal_studio.json '"season"'
           nocheck story_director.py "import bpy"
           check shorts_core.py "def cut_camera"
 
@@ -69,10 +72,19 @@ jobs:
           [ -n "$TOPIC" ] && ARGS+=(--topic "$TOPIC")
           ok=0
           for i in 1 2 3; do
-            python3 story_director.py "${ARGS[@]}" && ok=1 && break
-            echo "Director attempt $i failed, waiting 90 s"; sleep 90
+            if python3 story_director.py "${ARGS[@]}"; then
+              ok=1; break
+            else
+              code=$?
+            fi
+            if [ "$code" = 75 ]; then
+              echo "The Gemini daily quota is used up. Nothing more can be done today. Run this workflow again after the quota resets, or switch on billing for the Gemini key."
+              echo "### Gemini daily quota used up. Run again later." >> "$GITHUB_STEP_SUMMARY"
+              break
+            fi
+            echo "Director attempt $i failed (code $code), waiting 90 s"; sleep 90
           done
-          [ "$ok" = 1 ] || { echo "Director failed 3 times"; exit 1; }
+          [ "$ok" = 1 ] || { echo "No story was made"; exit 1; }
 
       - name: Show the story and direction
         if: always()
