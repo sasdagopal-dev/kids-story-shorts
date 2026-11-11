@@ -1,5 +1,5 @@
 {
- "next_topic": 12,
+ "next_topic": 13,
  "history": [
   {
    "date": "2026-11-07",
@@ -134,6 +134,17 @@
    "twist": "Drakon was not hoarding wealth; he lent out all his food for interest and had zero emergency reserves to save himself.",
    "episode": null,
    "clue": "Milo notices Drakon's thin ribs and empty food racks inside the lending den."
+  },
+  {
+   "date": "2026-11-11",
+   "title": "The Vanishing Nuts: Pay Yourself First | Jungle Money Tales Ep 1 #shorts",
+   "topic": "Pay yourself first: save a part of every earning before you spend (Milo earns 10 nuts and saves 3)",
+   "file": "plans/episode_2026-11-11_2.json",
+   "recap": "Milo saved three of his ten earned nuts before the main storehouse was raided, saving his family from hunger.",
+   "cliffhanger": "Fresh muddy paw prints lead straight inside Drakon's dark hidden den.",
+   "twist": "The storehouse door wasn't forced open from outside; it was unlocked from inside.",
+   "episode": 1,
+   "clue": "A shiny golden feather lying near the broken storehouse door."
   }
  ]
 }
