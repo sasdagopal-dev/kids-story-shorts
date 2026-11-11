@@ -1,0 +1,1355 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "The Frozen Wolf and the Secret Buffer #shorts",
+ "description": "When a blizzard crushes the Fang Den, Milo discovers Drakon's dangerous money secret. Can an emergency reserve turn a fierce rival into a loyal friend?",
+ "tags": [
+  "jungle money tales",
+  "kids cartoon",
+  "financial literacy",
+  "emergency fund",
+  "animation",
+  "bedtime story",
+  "fox and wolf",
+  "moral story",
+  "learn savings",
+  "mystery adventure"
+ ],
+ "twist": "Drakon was not hoarding wealth; he lent out all his food for interest and had zero emergency reserves to save himself.",
+ "episode": null,
+ "viewer_question": "Would you keep an emergency fund of three nuts, or spend them immediately?",
+ "beat_sheet": {
+  "previously": "The valley survived the sickness by buying bitter roots, but their emergency savings were completely depleted.",
+  "hook": "A sudden winter blizzard threatens to crush the weakened roof of the Valley Storehouse before nightfall.",
+  "want": "Milo wants to secure ten acorns to repair the beam before sunset.",
+  "obstacle": "Drakon offers a crushing debt deal, but disaster strikes before anyone can sign.",
+  "money_in_plot": "Drakon lent all his food without keeping emergency reserves; Milo's saved walnut buffer saves both of them.",
+  "clue": "Milo notices Drakon's thin ribs and empty food racks inside the lending den.",
+  "red_herring": "Tinku suspects Drakon is hoarding food secretly inside a hollow pine trunk.",
+  "midpoint_twist": "A rockslide crushes Drakon's den, revealing he kept zero emergency savings for himself.",
+  "darkest_moment": "Pinned under fallen timber and freezing, Drakon has no energy to push, and Milo cannot lift it alone.",
+  "cliffhanger": "A pair of glowing yellow eyes watches the Great Oak from the deep shadows of the pine ridge."
+ },
+ "recap": "Milo shared his nine emergency walnuts to rescue a trapped Drakon, proving that emergency reserves protect everyone.",
+ "cliffhanger": "Deep inside the frozen woods, a shadowy silhouette with silver claws stepped toward the Great Oak.",
+ "disclaimer": "This story is for education only and is not financial advice.",
+ "credits": "3D models by Quaternius (CC0).",
+ "story_mode": "money",
+ "made_for_kids": true,
+ "target_seconds": 167,
+ "flexible_length": true,
+ "estimated_voice_seconds": 151.4,
+ "cast": [
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "tinku",
+   "name": "Tinku",
+   "model": "Husky",
+   "role": "Milo's loyal best friend, young husky, scared of everything but surprisingly brave, comic relief",
+   "behaviour": "jumps at every noise, hides behind Milo, big shock and relief reactions, runs in late",
+   "voice_style": "nervous, fast, squeaky",
+   "catchphrase": "I am not scared. My legs are just excited!"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Howling Cold",
+   "look": "snow_pines",
+   "narration": "The fever herbs had drained the valley, but now a freezing blizzard rattled the Great Oak storehouse roof.",
+   "tone": "urgent, chilly, tense",
+   "visual": "Milo stands outside the shivering Great Oak as dark blizzard clouds swirl across the valley.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Tinku Shivers",
+   "look": "snow_pines",
+   "narration": "Hail pounded down. Tinku shook behind Milo. \"I am not scared. My legs are just excited!\" said Tinku.",
+   "tone": "nervous, funny, trembling",
+   "visual": "Tinku huddles close behind Milo in the deep snow, chattering his teeth as icy wind blows.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.4,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 44,
+     "end": 88,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "The Elder's Clock",
+   "look": "snow_pines",
+   "narration": "Ragnar stood on the boulder. \"Three hours remain before sunset to secure the roof,\" said Ragnar.",
+   "tone": "slow, calm, grave",
+   "visual": "Ragnar stands motionless on an icy rock, looking down gravely at Milo and Tinku.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 0.97
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -0.8,
+      3.5
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 29,
+     "end": 83,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Milo's Quick Thought",
+   "look": "storm_dusk",
+   "narration": "Milo leaped forward with fiery eyes. \"Ten acorns can patch the beam! But I have a plan!\" shouted Milo.",
+   "tone": "quick, eager, bold",
+   "visual": "Milo puffs out his chest eagerly, pointing his paw toward the dark pine path.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 37,
+     "end": 88,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "The Wolf Steps Out",
+   "look": "storm_dusk",
+   "narration": "Drakon paced from his dark den, sneering. \"Nobody beats Drakon! Borrow ten acorns, but pay twenty tomorrow,\" said Drakon.",
+   "tone": "sneering, proud, intimidating",
+   "visual": "Drakon walks slowly out of his cave, looming large over Milo in the blowing sleet.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.6,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.2
+      },
+      {
+       "action": "talk",
+       "at": 0.33
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.33
+    }
+   ],
+   "quotes": [
+    {
+     "start": 42,
+     "end": 108,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "The Cost of Debt",
+   "look": "storm_dusk",
+   "narration": "Milo hesitated, gripping the quill. \"Twenty acorns tomorrow is too much to repay,\" whispered Milo.",
+   "tone": "whispered, cautious, thoughtful",
+   "visual": "Milo pulls back from the snow-covered contract slate, shaking his head with worry.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.4,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.38
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.38
+    }
+   ],
+   "quotes": [
+    {
+     "start": 36,
+     "end": 82,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "A Strange Detail",
+   "look": "storm_dusk",
+   "narration": "Milo noticed Drakon's ribs showing and empty walnut shells scattered across the barren den floor.",
+   "tone": "quiet, observant, curious",
+   "visual": "Milo walks closer to the cave opening, glancing at bare stone racks and splintered shells.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.2,
+        2.8
+       ]
+      },
+      {
+       "action": "idle",
+       "at": 0.6
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "The False Hoard",
+   "look": "storm_dusk",
+   "narration": "Tinku whispered that Drakon was hiding a secret hoard, but the hollow log held only frozen dust.",
+   "tone": "tense, surprised, hushed",
+   "visual": "Tinku walks quickly to an old hollow log, peeking inside with wide disappointed eyes.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.4,
+        3.0
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.14
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.14
+    }
+   ],
+   "quotes": []
+  },
+  {
+   "id": 9,
+   "title": "Trembling Paws",
+   "look": "storm_dusk",
+   "narration": "Drakon shivered in the biting frost. \"Take the deal now or freeze tonight,\" snarled Drakon.",
+   "tone": "harsh, strained, desperate",
+   "visual": "Drakon barks fiercely, but his paws shudder in the snow as wind lashes his coat.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.39
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.39
+    }
+   ],
+   "quotes": [
+    {
+     "start": 37,
+     "end": 75,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "The Elder's Riddle",
+   "look": "snow_pines",
+   "narration": "Ragnar looked down calmly through the howling wind. \"Patience is also a path,\" said Ragnar.",
+   "tone": "slow, profound, steady",
+   "visual": "Ragnar looks down from his high rock while storm gusts blow snow past the pack.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "pull_out",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.5
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.03
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.8,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      4.0
+     ],
+     "size": 1.6
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.5
+    }
+   ],
+   "quotes": [
+    {
+     "start": 52,
+     "end": 78,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "The Ridge Collapses",
+   "look": "storm_dusk",
+   "narration": "A loud crack split the ridge above, sending heavy pine logs crashing straight into the Fang Den.",
+   "tone": "explosive, terrifying, loud",
+   "visual": "A massive pine timber crashes down right over the entrance of Drakon's den in a cloud of snow.",
+   "camera": {
+    "framing": "wide",
+    "angle": "high",
+    "move": "static",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "hurt"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "thumb": true
+  },
+  {
+   "id": 12,
+   "title": "The Truth Revealed",
+   "look": "snow_pines",
+   "narration": "Drakon had no secret hoard; he had lent out every single nut, keeping zero reserves for emergencies!",
+   "tone": "shocked, dramatic, revealing",
+   "visual": "Milo walks toward the shattered cave mouth, seeing empty baskets overturned in the rubble.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.5,
+        2.5
+       ]
+      },
+      {
+       "action": "shock",
+       "at": 0.6
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "The Trapped Rival",
+   "look": "snow_pines",
+   "narration": "Drakon groaned beneath the heavy trunk. \"I have no strength left to push,\" whispered Drakon.",
+   "tone": "broken, feeble, humbled",
+   "visual": "Drakon lies trapped under a frozen log, his head bowed low in the freezing drifts.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.4,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 40,
+     "end": 74,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Tinku's Panic",
+   "look": "snow_pines",
+   "narration": "\"Leave him, Milo, before the ridge collapses!\" squeaked Tinku, backing into the freezing snow.",
+   "tone": "squeaky, panicked, fast",
+   "visual": "Tinku runs backwards toward the trees, eyes wide with fear as ice pelted his tail.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -1.8,
+        3.5
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.06
+      },
+      {
+       "action": "talk",
+       "at": 0.06
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.06
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 46,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "The Low Point",
+   "look": "misty_morning",
+   "narration": "Without food or strength, Milo could not move the trunk, and the sunset deadline ticked closer.",
+   "tone": "heavy, hopeless, bleak",
+   "visual": "Milo stands alone in the blowing fog, his ears dropping as the sky darkens further.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "The Spark of Memory",
+   "look": "misty_morning",
+   "narration": "Milo remembered his three emergency hollows where he had steadily saved three walnuts in each spot.",
+   "tone": "sharp, sudden, hopeful",
+   "visual": "Milo suddenly lifts his snout, his eyes widening with excitement and understanding.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Unearthing the Buffer",
+   "look": "autumn_gold",
+   "narration": "Milo ran to the hollows, digging up nine fresh walnuts to share with his freezing rival.",
+   "tone": "energetic, determined, brisk",
+   "visual": "Milo runs fast across the clearing, carrying a leafy pouch full of rich brown walnuts.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        0.8,
+        2.8
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.6
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.0,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "A Pact Forged",
+   "look": "golden_sunset",
+   "narration": "\"You saved me when I had nothing,\" said Drakon, standing beside Milo in true friendship.",
+   "tone": "noble, warm, sincere",
+   "visual": "Drakon walks up beside Milo as golden light breaks, nodding with deep newfound respect.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.4,
+        2.6
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.14
+      },
+      {
+       "action": "talk",
+       "at": 0.14
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.6,
+      0.4
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.14
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 34,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "The Three Rules",
+   "look": "golden_sunset",
+   "narration": "Today we learned: save emergency reserves, never lend everything away, and help your neighbors. Who watches from the shadows?",
+   "tone": "clear, warm, reflective",
+   "visual": "Milo and Ragnar stand beside Drakon as the golden sun dips behind the snowy ridge.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "The Eyes in the Dark",
+   "look": "night_moon",
+   "narration": "If you liked this story, subscribe for the next one! This story is for education only and is not financial advice.",
+   "tone": "friendly, brisk, mysterious",
+   "visual": "Ragnar stands tall under the full moon as twin yellow sparks glow in the dark pine branches.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 0.9
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "size": 1.4
+    }
+   ]
+  }
+ ],
+ "topic": "Invent a NEW animal adventure that is different from the earlier stories list",
+ "genre": "a friendship story where an enemy becomes a friend",
+ "director_model": "gemini-3.8-flash"
+}
