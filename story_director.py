@@ -14,11 +14,12 @@ New in v4
   talk timing counts pauses, walkers arrive before the dialogue starts
 * animals never stand behind each other (camera view), boulders never hide an animal
 """
-import argparse, datetime, json, math, os, re, sys, time, urllib.error, urllib.request
+import argparse, datetime, json, math, os, random, re, sys, time, urllib.error, urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import shorts_core as core
 
+VERSION = "v5 (season, one call, tolerant checks, busy-model rotation)"
 BASE = "https://generativelanguage.googleapis.com/v1beta"
 SLEEP = time.sleep
 
@@ -27,6 +28,10 @@ class GErr(Exception):
     def __init__(self, msg, code=None, retryable=True, wait=None, text=""):
         super().__init__(msg)
         self.code, self.retryable, self.wait, self.text = code, retryable, wait, text
+
+
+class QuotaOut(Exception):
+    """Every Gemini model has used up its daily quota: more attempts are pointless."""
 
 
 class Reject(Exception):
@@ -39,7 +44,7 @@ def gcall(model, body, key):
         f"{BASE}/models/{model}:generateContent", data=json.dumps(body).encode("utf-8"),
         headers={"Content-Type": "application/json", "x-goog-api-key": key})
     try:
-        with urllib.request.urlopen(req, timeout=300) as r:
+        with urllib.request.urlopen(req, timeout=200) as r:
             return json.load(r)
     except urllib.error.HTTPError as e:
         text = e.read().decode("utf-8", "replace")
@@ -71,12 +76,24 @@ def pick_models(key, override):
     return [n for _, _, n in found][:4] or ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
 
 
-def ask_json(prompt, models, key, state, temperature=0.85):
+def short_err(e):
+    try:
+        msg = json.loads(e.text).get("error", {}).get("message", "")
+        return f"HTTP {e.code}: {msg[:90]}"
+    except Exception:
+        return str(e)[:110]
+
+
+def ask_json(prompt, models, key, state, temperature=0.85, cycles=5):
+    """Ask Gemini. A busy model (503) is not retried again and again: we move to the next model at once, and after a full
+    round of busy models we wait a little longer and start a new round (up to `cycles` rounds)."""
     last = None
-    for model in models:
-        if model in state["dead"]:
-            continue
-        for attempt in range(1, 4):
+    for cycle in range(1, cycles + 1):
+        alive = [m for m in models if m not in state["dead"]]
+        if not alive:
+            break
+        transient = False
+        for model in alive:
             body = {"contents": [{"parts": [{"text": prompt}]}],
                     "generationConfig": {"temperature": temperature, "responseMimeType": "application/json"}}
             try:
@@ -98,16 +115,27 @@ def ask_json(prompt, models, key, state, temperature=0.85):
                     sys.exit(f"FAIL: Gemini rejected the key or access: {str(e)[:200]}")
                 if e.code == 404 or (e.code == 429 and ("perday" in t or "per day" in t)):
                     state["dead"].add(model)
-                    print(f"  {model}: not usable now, trying the next model", file=sys.stderr)
-                    break
-                if not e.retryable and e.code != 400:
-                    state["dead"].add(model)
-                    break
-                wait = min(90, (e.wait or 0) + 3) if e.code == 429 else 8 * attempt
-                print(f"  {model}: attempt {attempt}/3 failed ({str(e)[:100]}), waiting {wait:.0f}s", file=sys.stderr)
-                if attempt < 3:
-                    SLEEP(wait)
-    raise RuntimeError(f"no Gemini model answered: {last}")
+                    if e.code == 429:
+                        state["quota_hit"] = True
+                    print(f"  {model}: not usable today ({'daily quota used up' if e.code == 429 else 'not found'})", flush=True)
+                    continue
+                if e.code == 400 or (not e.retryable and e.code is not None):
+                    print(f"  {model}: refused the request ({short_err(e)})", flush=True)
+                    continue
+                transient = True
+                if e.code == 429 and e.wait and e.wait <= 45:          # per-minute limit: a short wait is enough
+                    print(f"  {model}: per-minute limit, waiting {e.wait:.0f}s", flush=True)
+                    SLEEP(e.wait + 2)
+                else:
+                    print(f"  {model}: busy ({short_err(e)}), trying the next model", flush=True)
+        if not transient or cycle == cycles:
+            break
+        wait = min(90, 15 * cycle) + random.uniform(0, 5)
+        print(f"  all models are busy, waiting {wait:.0f}s, then round {cycle + 1}/{cycles}", flush=True)
+        SLEEP(wait)
+    if state.get("quota_hit") and all(m in state["dead"] for m in models):
+        raise QuotaOut(str(last)[:200])
+    raise RuntimeError(f"no Gemini model answered: {str(last)[:160]}")
 
 
 # ------------------------------------------------------------------ text helpers
@@ -115,6 +143,13 @@ def count_units(text, unit):
     if unit == "chars":
         return len(text)
     return len(re.findall(r"[A-Za-z0-9][A-Za-z0-9'’\-]*", text))
+
+
+def lang_ok(text, language, cast):
+    t = text
+    for c in cast:
+        t = re.sub(r"\b" + re.escape(c["name"]) + r"\b", "", t, flags=re.I)
+    return lang_ratio(t, language) >= 0.6
 
 
 def lang_ratio(text, language):
@@ -194,11 +229,11 @@ def repair_plan(raw, cfg, strict=True):
         text = (s.get("narration") or "").strip()
         if not text:
             raise Reject(f"shot {n} has no narration")
-        if lang_ratio(text, language) < 0.75:
+        if not lang_ok(text, language, cfg["cast"]):
             raise Reject(f"shot {n} narration must be written in {language}")
         units = count_units(text, unit)
         lo, hi = tg["shot"]
-        if strict and not (lo - 2 <= units <= hi + 4):
+        if strict and not (int(lo * 0.6) <= units <= int(hi * 1.6) + 4):
             raise Reject(f"shot {n} narration has {units} {unit}, each shot must have {lo} to {hi} {unit}")
         look = s.get("look") if s.get("look") in core.LOOKS else prev_look
         if s.get("look") not in core.LOOKS:
@@ -321,19 +356,37 @@ def repair_plan(raw, cfg, strict=True):
             cam["move"] = "push_in"
     moving_shots = sum(1 for sh in shots if any(core.ACTIONS[b["action"]]["speed"] > 0 and "to" in b
                                                  for c in sh["characters"] for b in c["beats"]))
-    if strict and moving_shots > 10:
-        raise Reject(f"{moving_shots} shots have walking or running animals. Too much movement: at most 10 shots may move, "
-                     f"in all other shots the animals stand still and the story is told by the narration and the camera")
+    if moving_shots > 10:                                   # calm the last ones down instead of asking Gemini again
+        extra_moves = moving_shots - 10
+        for sh in reversed(shots):
+            if extra_moves <= 0:
+                break
+            movers = [c for c in sh["characters"] if any(core.ACTIONS[b["action"]]["speed"] > 0 and "to" in b for b in c["beats"])]
+            if not movers:
+                continue
+            speakers = {x["id"] for x in sh.get("speakers", [])}
+            for c in movers:
+                dest = [b["to"] for b in c["beats"] if b.get("to")][-1]
+                c["pos"] = [round(core.clamp(dest[0], -2.4, 2.4), 2), round(core.clamp(dest[1], 0.0, 5.5), 2)]
+                c["beats"] = [{"action": "talk" if c["id"] in speakers else "listen"}]
+            if sh["camera"]["move"] == "follow":
+                sh["camera"]["move"] = "push_in"
+            extra_moves -= 1
+        notes.append(f"{moving_shots} shots had movement, calmed down to 10")
 
-    if strict:
-        looks_used = [sh["look"] for sh in shots]
-        if len(set(looks_used)) < 3 or max(looks_used.count(x) for x in set(looks_used)) > 10:
-            raise Reject("use more variety of places and times: at least 4 different looks, none for more than 8 shots")
-        if sum(1 for sh in shots if len(sh["characters"]) >= 3) < 3:
-            raise Reject("show more group moments: at least 3 shots with 3 animals in the picture (and some shots with 1 animal alone for emotion)")
+    looks_used = [sh["look"] for sh in shots]
+    if len(set(looks_used)) < 3:
+        notes.append("the story uses few different places (looks)")
+    if sum(1 for sh in shots if len(sh["characters"]) >= 3) < 3:
+        notes.append("few group shots with 3 animals")
     framings = {sh["camera"]["framing"] for sh in shots}
-    if strict and len(framings) < 3:
-        raise Reject("use more camera variety: at least 3 different framings (close, medium, wide)")
+    if len(framings) < 3:                                   # fix the camera variety ourselves
+        for i, sh in enumerate(shots):
+            if i % 4 == 1:
+                sh["camera"]["framing"] = "medium"
+            elif i % 4 == 3 and sum(1 for x in shots if x["camera"]["framing"] in ("close", "extreme_close")) < 4:
+                sh["camera"]["framing"] = "close"
+        notes.append("camera variety added")
     for i in range(2, len(shots)):
         a, b, c = (shots[i - 2]["camera"], shots[i - 1]["camera"], shots[i]["camera"])
         if (a["framing"], a["move"]) == (b["framing"], b["move"]) == (c["framing"], c["move"]):
@@ -360,7 +413,7 @@ def repair_plan(raw, cfg, strict=True):
 
     total = sum(count_units(sh["narration"], unit) for sh in shots)
     tlo, thi = tg["total"]
-    if strict and not (tlo <= total <= thi):
+    if strict and not (0.75 * tlo <= total <= 1.4 * thi):
         raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi} "
                      f"({'shorten' if total > thi else 'lengthen'} it)")
 
@@ -806,12 +859,12 @@ def check_story(story, cfg, strict=True):
             raise Reject(f"shot {i} has no narration")
         s["id"] = i
         s["narration"] = s["narration"].strip()
-        if lang_ratio(s["narration"], language) < 0.75:
+        if not lang_ok(s["narration"], language, cfg["cast"]):
             raise Reject(f"shot {i} narration must be written in {language}")
         u = count_units(s["narration"], unit)
         lo, hi = tg["shot"]
         extra = (26 if unit == "words" else 170) if i == n else 4 if unit == "words" else 20
-        if strict and not (lo - 2 <= u <= hi + extra):
+        if strict and not (int(lo * 0.6) <= u <= int(hi * 1.6) + extra):
             raise Reject(f"shot {i} narration has {u} {unit}, each shot must have {lo} to {hi} {unit}")
         total += u
         nq = len(QUOTE_RE.findall(s["narration"]))
@@ -822,9 +875,9 @@ def check_story(story, cfg, strict=True):
         s["quote_speakers"] = qs
         talking += 1 if nq else 0
     tlo, thi = tg["total"]
-    if strict and not (tlo <= total <= thi):
+    if strict and not (0.75 * tlo <= total <= 1.4 * thi):
         raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi}")
-    if strict and talking < 6:
+    if strict and talking < 4:
         raise Reject(f"only {talking} shots have spoken lines in quotes, I need at least 8: more dialogue, less narrator")
     return story
 
@@ -944,6 +997,10 @@ def main():
     language = cfg["language"]
     unit = cfg["targets"][language]["unit"]
 
+    seasons = len((cfg.get("season") or {}).get("episodes") or [])
+    print(f"story_director.py {VERSION} | story mode: {cfg.get('story_mode', 'adventure')} | season episodes in config: {seasons} | language: {language}", flush=True)
+    if cfg.get("story_mode") == "money" and not seasons:
+        print("WARNING: animal_studio.json has no 'season'. It is an OLD file. Copy the newest animal_studio.json into the repo.", flush=True)
     if a.validate_only:
         plan = json.load(open(a.validate_only, encoding="utf-8"))
         try:
@@ -965,7 +1022,9 @@ def main():
         except Exception:
             pass
     topics = cfg.get("themes_" + cfg.get("story_mode", "adventure")) or cfg.get("themes") or cfg.get("topics") or []
-    cfg["_episode"] = None if (a.topic or cfg.get("story_mode") != "money") else pick_episode(cfg, prog["next_topic"])
+    season_done = sum(1 for h in prog["history"] if h.get("episode"))
+    cfg["_episode"] = None if (a.topic or cfg.get("story_mode") != "money") else pick_episode(cfg, season_done)
+    hist = [h for h in prog["history"] if h.get("episode")] if cfg["_episode"] else prog["history"]
     if cfg["_episode"]:
         topic = cfg["_episode"]["concept"]
         print(f"Season episode {cfg['_episode']['number']} of {cfg['_episode']['total']}: {topic}")
@@ -989,18 +1048,18 @@ def main():
         try:
             if a.calls == "single":
                 print("  ONE call: story and direction together", flush=True)
-                raw = ask_json(build_unified_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state)
+                raw = ask_json(build_unified_prompt(cfg, topic, genre, hist, feedback), models, key, state)
                 check_story(raw, cfg)
                 plan, notes, total = repair_plan(raw, cfg, strict=True)
                 break
             if story is None:
                 print("  pass 1: writing the story", flush=True)
-                story = check_story(ask_json(build_story_prompt(cfg, topic, genre, prog["history"], feedback), models, key, state), cfg)
+                story = check_story(ask_json(build_story_prompt(cfg, topic, genre, hist, feedback), models, key, state), cfg)
                 print("  pass 2: editing the story", flush=True)
                 story = polish_story(story, cfg, models, key, state)
             stage = "direction"
             print("  pass 3: directing the story", flush=True)
-            raw = ask_json(build_prompt(cfg, topic, genre, prog["history"], dir_feedback, story), models, key, state)
+            raw = ask_json(build_prompt(cfg, topic, genre, hist, dir_feedback, story), models, key, state)
             if not isinstance(raw, dict) or not isinstance(raw.get("shots"), list) or len(raw["shots"]) != len(story["shots"]):
                 raise Reject(f"return exactly {len(story['shots'])} shots, one for every shot of the finished story")
             for rs, ss in zip(raw["shots"], story["shots"]):          # the words are locked
@@ -1026,6 +1085,10 @@ def main():
             else:
                 dir_feedback = str(e)
             plan = None
+        except QuotaOut as e:
+            print(f"STOP: every Gemini model has used up its daily quota ({str(e)[:120]}). Nothing more can be done today: run again after the quota resets "
+                  "(Google resets free-tier daily quotas at midnight Pacific time) or switch on billing for the key.", flush=True)
+            sys.exit(75)
         except RuntimeError as e:
             print("  ", e, flush=True)
             if attempt == a.attempts:
