@@ -28,6 +28,16 @@ on:
         type: choice
         default: high
         options: [high, ultra, balanced, fast]
+      upload_youtube:
+        description: "yes = upload the finished Short to YouTube automatically when it is ready"
+        type: choice
+        default: "yes"
+        options: ["yes", "no"]
+      youtube_privacy:
+        description: "private = only you see it, check it in YouTube Studio and press Publish (recommended). unlisted / public = visible at once"
+        type: choice
+        default: private
+        options: [private, unlisted, public]
       only_plan:
         description: "Only write the story and plan, do not render (for testing)"
         type: boolean
@@ -109,7 +119,10 @@ jobs:
           PLAN: ${{ steps.plan.outputs.plan_file }}
           GENDER: ${{ inputs.voice_gender || 'male' }}
           QUALITY: ${{ inputs.quality || 'high' }}
+          UPLOAD: ${{ inputs.upload_youtube || 'yes' }}
+          PRIVACY: ${{ inputs.youtube_privacy || 'private' }}
         run: |
           gh workflow run shorts-render.yml --ref "${{ github.ref_name }}" \
-            -f plan_file="$PLAN" -f voice_gender="$GENDER" -f quality="$QUALITY"
+            -f plan_file="$PLAN" -f voice_gender="$GENDER" -f quality="$QUALITY" \
+            -f upload_youtube="$UPLOAD" -f youtube_privacy="$PRIVACY"
           echo "Render started for $PLAN. Follow it in Actions; the Short is the artifact shorts-final." >> "$GITHUB_STEP_SUMMARY"
