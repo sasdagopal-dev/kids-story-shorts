@@ -84,7 +84,7 @@ def short_err(e):
         return str(e)[:110]
 
 
-def ask_json(prompt, models, key, state, temperature=0.85, cycles=5):
+def ask_json(prompt, models, key, state, temperature=0.85, cycles=3):
     """Ask Gemini. A busy model (503) is not retried again and again: we move to the next model at once, and after a full
     round of busy models we wait a little longer and start a new round (up to `cycles` rounds)."""
     last = None
@@ -208,7 +208,7 @@ def shot_cap(hi, unit, is_last):
     """Highest allowed size of one shot. More words are fine: the last shot carries the outro and the
     closing sentence, so it gets a lot of room (v5 allowed only hi+4 there in repair_plan = the rejects you saw)."""
     if unit == "words":
-        return int(hi * 1.9) + (60 if is_last else 8)
+        return int(hi * 1.9) + (45 if is_last else 8)
     return int(hi * 1.9) + (400 if is_last else 40)
 
 
@@ -421,7 +421,7 @@ def repair_plan(raw, cfg, strict=True):
 
     total = sum(count_units(sh["narration"], unit) for sh in shots)
     tlo, thi = tg["total"]
-    if strict and not (0.7 * tlo <= total <= 1.2 * thi):
+    if strict and not (0.9 * tlo <= total <= 1.2 * thi):
         raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi} "
                      f"({'shorten' if total > thi else 'lengthen'} it)")
 
@@ -688,7 +688,7 @@ def build_prompt(cfg, topic, genre, history, feedback, story=None):
             {"id": other["id"], "pos": [-1.0, 3.6], "face": hero["id"], "beats": [{"action": "talk"}]},
             {"id": hero["id"], "pos": [1.2, 3.0], "face": other["id"], "beats": [{"action": "sad", "at": 0.5}]}]}
     closing = (f"Shot {n}: a warm closing image, a friendly 'follow for the next adventure' line" + (f" and this sentence: {disc}" if disc else "") + ".")
-    full = f"""You are an award-winning animation director and a gripping storyteller for families.
+    full = f"""You are an award-winning animation director and a gripping storyteller for adult learners.
 Make a vertical (9:16) YouTube Short of about {int(cfg.get('target_seconds', 150))} seconds (the real length follows the story, a little shorter or longer is fine). It is episode {len(history) + 1} of the series "{series.get('name', '')}": a dramatic, funny and touching ANIMAL ADVENTURE, like a mini movie. The animals live like animals in nature (herd, pack, den, river, drought, storm, hunters, rivals, rescue, migration, lost young ones) and the story secretly carries ONE gentle life lesson (courage, friendship, honesty, teamwork, patience, kindness ...). It must feel like a story people cannot stop watching, never like a lecture.
 Audience: families and children in India and the US. Narration language: {language}.
 Story idea of today: {topic}
@@ -733,7 +733,7 @@ DIRECTION RULES (the renderer follows them exactly)
 SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal is in that shot's characters; every walk/run has "to"; at most 10 moving shots; at most 4 close-ups; nobody stands behind another animal; quote_speakers matches the quotes one by one.
 
 Return ONLY JSON:
-{{"title": "<curiosity-hook {language} title, max 60 characters: a question or a surprising claim, plain words a 10-year-old knows, NO finance jargon (not buffer, liquidity, portfolio), include the money idea in simple words, honest to the story>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags>"], "recap": "<one sentence: what happened in this episode>", "cliffhanger": "<one sentence teaser for the next episode>", "shots": [ ... {n} shots ... ]}}
+{{"title": "<curiosity-hook {language} title, max 60 characters: a question or a surprising claim a US adult beginner would click, plain words, include the money or investing idea, honest to the story>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "recap": "<one sentence: what happened in this episode>", "cliffhanger": "<one sentence teaser for the next episode>", "shots": [ ... {n} shots ... ]}}
 One shot looks like this:
 {json.dumps(example, ensure_ascii=False)}
 """
@@ -793,17 +793,19 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
     else:
         episode_block = (f"Story idea of today: {topic}\nThis is a continuing series. Open by answering the cliffhanger of the last episode listed below in a surprising way (one short catch-up line), "
                          "plant one new clue, and end on a new cliffhanger.")
-    lesson = (f"MONEY LEARNING (the purpose of the series, but it must never feel like school):\n"
+    lesson = (f"INVESTING AND MONEY LEARNING (the purpose of the series; US audience of adult beginners; it must never feel like school):\n"
               "- The money idea is the KEY of the plot: the problem is caused by ignoring it, and the hero wins by using it. Never explain it in a speech.\n"
-              "- Use ANIMAL-NATIVE money (nuts, berries, honey, a hollow-tree storehouse) and small numbers a child can follow (10 nuts, save 3, 3 + 3 + 3 = 9). "
-              "Show the wrong way costing something real, then the right way with a clear, correct calculation.\n"
-              "- Be accurate. Never name real banks, apps, brands, stocks or funds, never promise returns, never tell anyone to buy something. Scams and traps are shown as dangerous.\n"
-              "- Shot 18: the hero uses the idea with the numbers. Shot 19: the recap starts with 'Today we learned' and gives exactly three short points in plain words.") if money else (
+              "- Inside the story the animals use animal money (nuts, berries, honey, a hollow-tree storehouse) and small clear numbers (10 nuts, save 3). "
+              "Show the wrong way costing something real, then the right way with a clear, CORRECT calculation.\n"
+              "- Accuracy matters more than drama. Use only well-established ideas (compound growth, diversification, index funds in general, 401(k) employer match, IRA in general, emergency fund, inflation, fees, risk and market ups and downs, dollar-cost averaging, credit card interest, scams). "
+              "Never name real banks, brokers, apps, brands, tickers or specific funds. Never promise or guarantee returns, never say 'buy this', always keep the idea that investing can lose money. Do not give tax or legal specifics beyond general ideas.\n"
+              "- Shot 18: the hero uses the idea with the animal numbers. Shot 19: starts with 'Today we learned' and gives exactly three short points in plain words; "
+              "at least one point must translate the idea into real US dollars using the real-world example given in the money idea above, said as a clearly hypothetical example ('for example', 'if'), never as a promise.\n") if money else (
               "LESSON: one gentle life lesson, shown by events and one short wise line, never a speech.")
     lang_note = ("Write natural spoken Hindi in Devanagari, short sentences, simple words a child knows, no heavy Sanskrit words. Write the animal names exactly as in the cast list, in Latin letters (Milo, Drakon, Gulab)."
                  if language == "Hindi" else "Write natural spoken English with simple words, short sentences and a storyteller's rhythm.")
     end_extra = ((" Then this exact outro sentence: " + outro) if outro else "") + ((" Then this exact closing sentence: " + disc) if disc else "")
-    return f"""You are the head writer of a hit animated mystery-adventure series for children and families, like a mix of a detective show and a funny cartoon, that secretly teaches money skills. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
+    return f"""You are the head writer of a hit animated mystery series for US adults (ages 20 to 45) who are beginners in personal finance and investing, like a mix of a detective show and a witty cartoon, that teaches real money and investing skills through animal characters. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
 SERIES "{series.get('name', '')}". World: {series.get('bible', '')}
 {episode_block}
 Style flavour: {genre}
@@ -831,7 +833,7 @@ HOW TO MAKE IT GRIPPING (follow all of these):
 11. DIALOGUE: at least 8 shots with a spoken line in double quotes and the speaker named next to it ("said Ragnar"). Lines are short (5-12 words), with subtext, in each animal's own voice. The narrator never explains what a line already shows.
 12. SPECIFIC: concrete numbers and objects (7 nuts, 3 days, the cracked acorn), never vague words.
 13. NEVER USE: 'little did he know', 'suddenly', 'everything changed', 'and they lived happily ever after', vague morals, a lecture.
-14. Family friendly: no blood, no real brands, scary but warm.
+14. Keep it clean: no blood, no real brands; tension and humour, not horror.
 
 {lesson}
 
@@ -845,7 +847,7 @@ LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the w
 PLAN FIRST: fill in "beat_sheet" before you write the shots, then make the shots follow it exactly.
 
 Return ONLY JSON: {{"beat_sheet": {{"previously": "<how this episode opens by answering the last cliffhanger>", "hook": "<the first-3-seconds hook>", "want": "<what the hero wants>", "obstacle": "<what stands in the way>", "money_in_plot": "<how the money idea causes the problem and then solves it>", "clue": "<the clue planted>", "red_herring": "<the false suspect>", "midpoint_twist": "<the twist>", "darkest_moment": "<the low point>", "cliffhanger": "<the ending hook>"}},
-"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags>"], "logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the cliffhanger in one sentence>", "viewer_question": "<the question for the comments>",
+"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the cliffhanger in one sentence>", "viewer_question": "<the question for the comments>",
 "shots": [{{"id": 1, "narration": "...", "quote_speakers": ["<id of each quoted line in order>"], "speaker": "<id or null>", "tone": "<2-4 words for the voice actor>"}}, ... {n} shots ...]}}
 """
 
@@ -882,10 +884,10 @@ def check_story(story, cfg, strict=True):
         s["quote_speakers"] = qs
         talking += 1 if nq else 0
     tlo, thi = tg["total"]
-    if strict and not (0.7 * tlo <= total <= 1.2 * thi):
+    if strict and not (0.9 * tlo <= total <= 1.2 * thi):
         raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi}")
     if strict and talking < 3:
-        raise Reject(f"only {talking} shots have spoken lines in quotes, I need at least 8: more dialogue, less narrator")
+        raise Reject(f"only {talking} shots have spoken lines in quotes, I need at least 3: more dialogue, less narrator")
     return story
 
 
