@@ -1,0 +1,1359 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "Stop Timing the Market! The Secret to Buying Low | Ep 4 #shorts",
+ "description": "When seed prices spike before a devastating winter storm, Milo tries to time the market to save his mother. Learn why dollar-cost averaging beats market timing every single time in this animated mini-movie.",
+ "tags": [
+  "dollar cost averaging",
+  "timing the market",
+  "investing for beginners",
+  "personal finance",
+  "stock market tips",
+  "investing basics",
+  "financial literacy",
+  "market volatility",
+  "smart investing",
+  "jungle money tales"
+ ],
+ "twist": "Lakshmi accumulated twice as many heat-roots at half the average cost simply by buying five nuts worth every week without ever looking at Gulab's price board.",
+ "episode": null,
+ "viewer_question": "Do you invest regular amounts continuously, or try to time market dips?",
+ "beat_sheet": {
+  "hook": "Frost threatens to freeze the mountain pass in three sunrises while Milo's mother lies sick.",
+  "want": "Milo wants to buy ten heat-root pouches to save his shivering mother Mira before she freezes.",
+  "clock": "Three sunrises until the mountain pass freezes shut completely.",
+  "obstacle": "Gulab's seed prices fluctuate wildly: 2 nuts, then 4 nuts, then a peak spike of 10 nuts per pouch.",
+  "wrong_habit_cost": "Milo tries to time the market drop, panics, and buys at the absolute peak, losing 80% of his purchasing power.",
+  "lowest_point": "Milo sits weeping in the snow with only two pouches as the pass begins to freeze shut.",
+  "the_turn": "Lakshmi arrives with a full sled, showing how dollar-cost averaging (regular buying) beat market timing.",
+  "time_skip_proof": "Five years later, prices hit 15 nuts, but Milo's steady automated purchases leave him fully stocked.",
+  "clue": "Gulab's price signs were fluctuating based on how panicked the animals looked rushing up the hill.",
+  "cliffhanger": "A silver shadow watched Milo's full basket from the dark pine forest."
+ },
+ "recap": "Milo learned that dollar-cost averaging protects your buying power against unpredictable price spikes.",
+ "cliffhanger": "A dark shadow watched Milo's full basket from the thick pine forest.",
+ "disclaimer": "For education only, not financial advice. Investing involves risk, including loss of money.",
+ "credits": "3D models by Quaternius (CC0). Voice: Google Gemini text-to-speech. Animated story for education only.",
+ "story_mode": "adventure",
+ "made_for_kids": false,
+ "target_seconds": 171,
+ "flexible_length": true,
+ "estimated_voice_seconds": 155.4,
+ "cast": [
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "mira",
+   "name": "Mira",
+   "model": "Fox",
+   "tint": [
+    1.35,
+    1.15,
+    0.95
+   ],
+   "role": "Milo's mother, a gentle older fox, strong and loving, the person Milo most wants to protect",
+   "voice_style": "warm, soft, calm even in danger",
+   "catchphrase": "Look after yourself first, my son",
+   "behaviour": "stays close to Milo, comforts him, never complains"
+  },
+  {
+   "id": "gulab",
+   "name": "Gulab",
+   "model": "Alpaca",
+   "role": "charming trader who runs the Trading Post, always smiling, everybody trusts him (hidden mastermind, never reveal before the reveal episode)",
+   "behaviour": "calm, smooth, always smiling, walks slowly, never raises his voice, filmed from a friendly eye-level angle until the reveal",
+   "voice_style": "silky, warm, slow",
+   "catchphrase": "Trust is the best currency, my friend."
+  },
+  {
+   "id": "tinku",
+   "name": "Tinku",
+   "model": "Husky",
+   "role": "Milo's loyal best friend, young husky, scared of everything but surprisingly brave, comic relief",
+   "behaviour": "jumps at every noise, hides behind Milo, big shock and relief reactions, runs in late",
+   "voice_style": "nervous, fast, squeaky",
+   "catchphrase": "I am not scared. My legs are just excited!"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind honest cow, saves a little every day, protects the young",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one.",
+   "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+   "voice_name": "Sulafat"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Shivering Den",
+   "look": "snow_pines",
+   "narration": "Frost roared down the dark mountain valley. Milo clutched his shiver-shaken mother Mira inside their freezing stone den.",
+   "tone": "fearful, urgent",
+   "visual": "Milo sits close to his mother Mira inside a cold stone den as icy wind howls outside.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "mira"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ],
+   "fx": [
+    "storm",
+    "snow"
+   ],
+   "cue": "riser"
+  },
+  {
+   "id": 2,
+   "title": "The Three Sunrise Clock",
+   "look": "snow_pines",
+   "narration": "\"Fetch heat-roots before the pass freezes in three sunrises,\" Mira whispered weakly, touching his cold paw.",
+   "tone": "whispered, weak",
+   "visual": "Mira looks up at Milo with tired eyes, touching his paw gently in the dark den.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "mira",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      0.4,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "mira"
+    }
+   ],
+   "fx": [
+    "storm",
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "mira",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 61,
+     "id": "mira"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "The Trading Post Board",
+   "look": "autumn_gold",
+   "narration": "Milo rushed to Gulab's trading post. A wooden price board clearly read: SEED 2 NUTS per pouch.",
+   "tone": "determined, hurried",
+   "visual": "Milo runs up to Gulab's trading post where a price sign stands prominently.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.5,
+        3.0
+       ]
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      1.8,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      7.04
+     ],
+     "size": 1.1,
+     "text": "SEED 2 NUTS"
+    }
+   ],
+   "cue": "boom"
+  },
+  {
+   "id": 4,
+   "title": "The Greed Plan",
+   "look": "autumn_gold",
+   "narration": "Milo held twenty saved nuts. \"Prices will drop tomorrow, I will wait,\" Milo said, keeping his heavy pouch.",
+   "tone": "confident, cheeky",
+   "visual": "Milo holds his pouch of twenty nuts, smiling confidently at Gulab.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.28
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      5.44
+     ],
+     "size": 1.1,
+     "text": "SEED 2 NUTS"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.28
+    }
+   ],
+   "quotes": [
+    {
+     "start": 29,
+     "end": 70,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "The Sudden Spike",
+   "look": "autumn_gold",
+   "narration": "Two sunrises left. Milo ran back, but Gulab's sign now read: SEED 4 NUTS. The price doubled overnight!",
+   "tone": "shocked, stressed",
+   "visual": "Milo returns the next day to see Gulab flipping the price sign to double.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -5.5,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -0.5,
+        3.5
+       ],
+       "at": 0.0
+      },
+      {
+       "action": "idle"
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      5.44
+     ],
+     "size": 1.1,
+     "text": "SEED 4 NUTS"
+    }
+   ],
+   "cue": "alarm"
+  },
+  {
+   "id": 6,
+   "title": "Walking Away",
+   "look": "autumn_gold",
+   "narration": "\"I refuse to pay double, it must crash,\" Milo declared stubbornly, walking away without buying a single seed.",
+   "tone": "stubborn, angry",
+   "visual": "Milo turns his back stubbornly on Gulab's trading post and walks away.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.57
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      5.84
+     ],
+     "size": 1.1,
+     "text": "SEED 4 NUTS"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.57
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 40,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Peak Panic",
+   "look": "storm_dusk",
+   "narration": "One sunrise left! Milo sprinted back in panic. Gulab's sign now read: SEED 10 NUTS per pouch!",
+   "tone": "panicked, desperate",
+   "visual": "Snow pours down as Milo runs frantically to the post where the price sign has shot up to 10.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -5.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.0,
+        3.0
+       ]
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.6,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      5.44
+     ],
+     "size": 1.1,
+     "text": "SEED 10 NUTS"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "riser"
+  },
+  {
+   "id": 8,
+   "title": "Buying at the Peak",
+   "look": "storm_dusk",
+   "narration": "Panic struck. \"Take all twenty nuts now!\" shouted Milo, panic-buying at the absolute peak for two tiny pouches.",
+   "tone": "shouting, panicked",
+   "visual": "Milo pours all twenty nuts onto Gulab's table in total desperation.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.3,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      5.04
+     ],
+     "size": 1.1,
+     "text": "SEED 10 NUTS"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "coin",
+   "thumb": true,
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.18
+    }
+   ],
+   "quotes": [
+    {
+     "start": 14,
+     "end": 41,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "The Math Realization",
+   "look": "storm_dusk",
+   "narration": "He tried to time the market, losing eighty percent of his buying power as the ticking clock expired.",
+   "tone": "crushed, guilty",
+   "visual": "Milo holds only two tiny seed pouches, looking down in complete despair.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "fx": [
+    "snow"
+   ]
+  },
+  {
+   "id": 10,
+   "title": "The Lowest Point",
+   "look": "snow_pines",
+   "narration": "Milo collapsed in the deep snow outside Mira's den, weeping over his two tiny useless heat-root pouches.",
+   "tone": "heartbroken, sobbing",
+   "visual": "Milo sits weeping in the snow outside his mother's den as frost seals the entrance.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "mira"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "heartbeat"
+  },
+  {
+   "id": 11,
+   "title": "Tinku's Fear",
+   "look": "snow_pines",
+   "narration": "Tinku shivered beside him in fear. \"My legs are excited... I mean scared!\" whimpered Tinku, hugging his tail.",
+   "tone": "squeaky, nervous",
+   "visual": "Tinku shivers violently beside Milo, whimpering softly with wide nervous eyes.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tinku",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.26
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.26
+    }
+   ],
+   "quotes": [
+    {
+     "start": 35,
+     "end": 74,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Lakshmi's Arrival",
+   "look": "snow_pines",
+   "narration": "Kind Lakshmi walked through the snowstorm, calmly pulling a heavy sled filled with thirty golden heat-root pouches.",
+   "tone": "warm, peaceful",
+   "visual": "Lakshmi walks calmly through the snowstorm, dragging a huge wooden sled filled with heat-roots.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -4.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        0.0,
+        3.2
+       ]
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.6,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "fx": [
+    "snow"
+   ]
+  },
+  {
+   "id": 13,
+   "title": "The Shocking Supply",
+   "look": "snow_pines",
+   "narration": "\"How did you afford thirty pouches during a price spike?\" asked Milo, staring at her huge warm pile.",
+   "tone": "amazed, curious",
+   "visual": "Milo looks up in total astonishment at Lakshmi's overflowing sled of heat-roots.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.4,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.6,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 57,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "The Turn: Dollar-Cost Averaging",
+   "look": "snow_pines",
+   "narration": "\"I bought five nuts worth every single week,\" said Lakshmi. \"Steady regular buying averages out market swings.\"",
+   "tone": "wise, calm",
+   "visual": "Lakshmi stands beside her sled, nodding gently to Milo with a motherly smile.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.2,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      0.8,
+      6.6
+     ],
+     "size": 1.0
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.0
+    },
+    {
+     "id": "lakshmi",
+     "at": 0.51
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 45,
+     "id": "lakshmi"
+    },
+    {
+     "start": 60,
+     "end": 111,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "The Life-Saving Gift",
+   "look": "snow_pines",
+   "narration": "Lakshmi placed ten heat-root pouches into Milo's paws. \"Come here, little one, warm your mother,\" said Lakshmi softly.",
+   "tone": "warm, gentle",
+   "visual": "Lakshmi hands ten glowing heat-root pouches into Milo's trembling paws.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.3,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 55,
+     "end": 97,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Saved in Time",
+   "look": "golden_sunset",
+   "narration": "Milo ran inside, feeding Mira the glowing roots just as the icy mountain pass froze shut completely.",
+   "tone": "relieved, triumphant",
+   "visual": "Milo rushes into the den and feeds the glowing roots to Mira as warm light fills the room.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -3.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -0.4,
+        3.0
+       ]
+      }
+     ],
+     "face": "mira"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ],
+   "fx": [
+    "snow"
+   ]
+  },
+  {
+   "id": 17,
+   "title": "The Promise",
+   "look": "golden_sunset",
+   "narration": "Milo promised to invest a fixed amount every week, ignoring short-term market spikes and emotional panic forever.",
+   "tone": "determined, proud",
+   "visual": "Milo stands beside his healthy mother in the warm den, making a solemn pledge.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "mira"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Five Years Later",
+   "look": "autumn_gold",
+   "narration": "Five winters later, prices soared to fifteen nuts, yet Milo's steady weekly buying kept his den warm and rich.",
+   "tone": "confident, joyful",
+   "visual": "Five years later, Milo stands proudly next to a massive pile of seed pouches despite high prices on the sign.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      4.0
+     ],
+     "size": 1.1,
+     "text": "SEED 15 NUTS"
+    },
+    {
+     "type": "coins",
+     "pos": [
+      -0.5,
+      4.88
+     ],
+     "size": 1.2
+    }
+   ],
+   "cue": "coin"
+  },
+  {
+   "id": 19,
+   "title": "Today We Learned",
+   "look": "golden_sunset",
+   "narration": "Today we learned: dollar-cost averaging beats timing markets, reduces buying risk, and builds wealth over time steadily.",
+   "tone": "educational, clear",
+   "visual": "Milo, Lakshmi, and Tinku stand together under the golden valley trees.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      1.0,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.2,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Call to Action and Teaser",
+   "look": "night_moon",
+   "narration": "Do you invest regular amounts or try to time market dips? Tell us below! A silver shadow watched from the pines. Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money.",
+   "tone": "engaging, intriguing",
+   "visual": "Milo looks out over the valley night as a dark silhouette watches from the trees.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "fx": [
+    "mist"
+   ]
+  }
+ ],
+ "topic": "Invent a NEW animal adventure that is different from the earlier stories list",
+ "genre": "a rescue with a ticking clock",
+ "director_model": "gemini-3.6-flash"
+}
