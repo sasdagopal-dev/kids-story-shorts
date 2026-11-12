@@ -70,6 +70,28 @@ def build_captions(plan, tl):
     return cues
 
 
+def build_description(plan, money):
+    """Search-friendly first line, the story, a question for comments (engagement), a teaser for the next episode
+    (people come back), then the disclaimer, credits and hashtags. #Shorts comes first (YouTube shows the first 3 above the title)."""
+    topic = (plan.get("topic") or "").split(":")[0].strip()
+    series = ""
+    ep = plan.get("episode")
+    if isinstance(ep, dict):
+        series = ep.get("series") or ""
+    first = plan.get("logline") or ""
+    if not first and topic:
+        first = f"A short animal story that teaches: {topic}."
+    parts = [first, plan.get("description", "")]
+    if plan.get("viewer_question"):
+        parts.append("\U0001F4AC " + str(plan["viewer_question"]).strip())
+    if plan.get("cliffhanger"):
+        parts.append("\u25B6 Next episode: " + str(plan["cliffhanger"]).strip() + "\nSubscribe so you do not miss it!")
+    parts += [plan.get("disclaimer", ""), plan.get("credits", "")]
+    hashtags = ("#Shorts #MoneyLessons #FinancialLiteracy #AnimalStories #StoriesForKids" if money
+                else "#Shorts #AnimalStories #CartoonStories #StoriesForKids")
+    return "\n\n".join(x.strip() for x in parts if x and x.strip()) + "\n\n" + hashtags
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", default="scene_plan_timed.json")
@@ -182,18 +204,16 @@ def main():
     th = next((t for t in tl["shots"] if t.get("thumb")), tl["shots"][len(tl["shots"]) // 2])
     run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{th['start_time'] + th['duration'] / 2:.2f}", "-i", out_path,
          "-frames:v", "1", "-q:v", "2", os.path.join(out_dir, "thumbnail.jpg")])
-    desc = "\n\n".join(x for x in [plan.get("description", ""), plan.get("disclaimer", ""), plan.get("credits", "")] if x)
     tags = list(plan.get("tags") or [])
     kids = a.made_for_kids or ("yes" if plan.get("made_for_kids", True) else "no")
     money = plan.get("story_mode") == "money"
-    hashtags = ("#Shorts #MoneyLessons #FinancialLiteracy #AnimalStories #StoriesForKids" if money
-                else "#Shorts #AnimalStories #CartoonStories #StoriesForKids")
+    desc = build_description(plan, money)
     category = a.category or ("27" if money else "1")
-    meta = {"title": plan["title"][:100], "description": desc + "\n\n" + hashtags,
+    meta = {"title": plan["title"][:100], "description": desc,
             "tags": tags, "categoryId": category, "language": "en" if plan.get("language") == "English" else "hi",
             "privacyStatus": "private", "selfDeclaredMadeForKids": kids == "yes",
             "containsSyntheticMedia": True, "captionFile": "subtitles.srt", "thumbnail": "thumbnail.jpg",
-            "durationSeconds": round(fd, 2)}
+            "durationSeconds": round(fd, 2), "firstComment": str(plan.get("viewer_question") or "").strip()}
     json.dump(meta, open(os.path.join(out_dir, "youtube_meta.json"), "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     shutil.rmtree(work, ignore_errors=True)
     print(f"DONE: {out_path} ({fd:.2f} s), {len(cues)} caption cues, made-for-kids: {kids}, mode: {plan.get('story_mode', 'adventure')}")
