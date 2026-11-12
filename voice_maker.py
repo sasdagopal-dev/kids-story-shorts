@@ -485,6 +485,18 @@ def pick_cuts(T, texts, sil, llm):
     return cuts[::-1]
 
 
+def voice_looks_ok(seconds, texts, language, rate):
+    """A single Gemini call for the whole story can come back CUT OFF (the last shots silent) or with extra noise.
+    Compare the length with what the text needs. Returns (ok, message). Wide limits: only clear failures are caught."""
+    units = sum(units_of(t, language) for t in texts)
+    exp = units / max(0.5, rate)
+    if seconds < 0.55 * exp:
+        return False, f"voice is only {seconds:.0f}s but the text needs about {exp:.0f}s: it looks cut off"
+    if seconds > 2.3 * exp + 8:
+        return False, f"voice is {seconds:.0f}s but the text needs about {exp:.0f}s: it looks wrong (extra sound or repeats)"
+    return True, ""
+
+
 def voice_single(shots, ctx, a):
     texts = [s["narration"].strip() for s in shots]
     voice = ctx["voices"]["narrator"]
@@ -501,8 +513,15 @@ def voice_single(shots, ctx, a):
                 pcm += b"\x00\x00" * int(rate * 0.7)
         else:
             print(f"Voice: ONE Gemini call for the whole story, voice {voice}", flush=True)
-            pcm, rate, model = speak("\n\n".join(texts), single_cfg(voice), ctx["key"], ctx["state"])
-            calls = 1
+            for tryno in (1, 2, 3):                          # check the answer is complete; ask again (max 3 calls), then the caller falls back
+                pcm, rate, model = speak("\n\n".join(texts), single_cfg(voice), ctx["key"], ctx["state"])
+                calls += 1
+                ok, why = voice_looks_ok(len(pcm) / 2.0 / rate, texts, ctx["language"], ctx["rate"])
+                if ok:
+                    break
+                print(f"  voice check {tryno}/3: {why}", flush=True)
+                if tryno == 3:
+                    raise RuntimeError("Gemini voice kept coming back incomplete: " + why)
         write_wav(raw, pcm, rate)
     trim_silence(raw, full)
     T = wav_seconds(full)
