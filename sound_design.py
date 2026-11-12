@@ -221,6 +221,36 @@ def sfx(mix, kind, t, rng, length=0.0):
             mix.add(t + q * 0.59, sweep(95, 60, 0.1, 0.16, 8))
 
 
+def cue(mix, kind, t, t_end, rng):
+    """Story sounds placed on the shot: a coin jingle when money matters, a boom for a shock, a riser into a twist,
+    a heartbeat for fear, a splash, a whoosh, an alarm bell."""
+    if kind == "coin":
+        for q, m in enumerate((88, 95, 100)):
+            mix.add(t + q * 0.11, pluck(hz(m), 0.7, 0.26))
+    elif kind == "boom":
+        mix.add(t, sweep(90, 28, 0.9, 0.75, 4.0))
+        mix.add(t, noise(0.18, 0.35, rng, 7))
+    elif kind == "riser":
+        length = min(2.2, max(0.8, t_end - t))
+        st = max(t, t_end - length)
+        n = int(length * SR)
+        mix.add(st, [0.22 * (k / n) * math.sin(TAU * (180 + 700 * (k / n) ** 2) * k / SR) for k in range(n)])
+        mix.add(st, noise(length, 0.12, rng, 0.5))
+    elif kind == "heartbeat":
+        for q in range(int(min(6.0, max(1.2, t_end - t)) / 0.8)):
+            mix.add(t + q * 0.8, sweep(70, 40, 0.14, 0.6, 9))
+            mix.add(t + q * 0.8 + 0.2, sweep(60, 38, 0.12, 0.42, 9))
+    elif kind == "splash":
+        mix.add(t, noise(0.45, 0.4, rng, 5))
+        mix.add(t, sweep(600, 200, 0.3, 0.2))
+    elif kind == "whoosh":
+        mix.add(t, noise(0.5, 0.22, rng, 3.0))
+        mix.add(t, sweep(300, 1200, 0.45, 0.14, 4.0))
+    elif kind == "alarm":
+        for q in range(4):
+            mix.add(t + q * 0.3, pluck(hz(96 if q % 2 == 0 else 91), 0.5, 0.28))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--plan", default="scene_plan_timed.json")
@@ -239,18 +269,22 @@ def main():
     starts = {t["id"]: (t["start_time"], t["duration"]) for t in tl["shots"]}
 
     parts = {"music": Mix(total), "amb": Mix(total), "sfx": Mix(total)}
-    runs = []                                                   # runs of equal look
+    runs = []                                                   # runs of equal look and equal fire state
     for s in shots:
         st, du = starts[s["id"]]
-        if runs and runs[-1]["look"] == s["look"]:
+        fire = "fire" in (s.get("fx") or [])
+        if runs and runs[-1]["look"] == s["look"] and runs[-1]["fire"] == fire:
             runs[-1]["t1"] = st + du
         else:
-            runs.append({"look": s["look"], "t0": st, "t1": st + du})
-    for r in runs:
-        mood, amb = MOOD_OF.get(r["look"], "happy"), AMBIENT_OF.get(r["look"], "wind")
+            runs.append({"look": s["look"], "fire": fire, "t0": st, "t1": st + du})
+    for idx, r in enumerate(runs):
+        mood = "tense" if r["fire"] else MOOD_OF.get(r["look"], "happy")
+        amb = "fire" if r["fire"] else AMBIENT_OF.get(r["look"], "wind")
         if not a.no_music and not a.music_file:
             music(parts["music"], r["t0"], r["t1"], mood, rng)
         ambience(parts["amb"], r["t0"], r["t1"], amb, rng)
+        if idx > 0 and not a.no_sfx:                            # a whoosh into every new place or time
+            cue(parts["sfx"], "whoosh", max(0.0, r["t0"] - 0.15), r["t0"] + 0.3, rng)
         print(f"  {r['t0']:6.1f}-{r['t1']:6.1f}s {r['look']:15s} music: {mood:6s} ambience: {amb}", flush=True)
     last_t = {}
     if not a.no_sfx:
@@ -266,6 +300,14 @@ def main():
                         continue
                     last_t[(act,)] = t
                     sfx(parts["sfx"], act, t, rng, seg["t1"] - seg["t0"])
+
+    if not a.no_sfx:
+        for s in shots:
+            c = s.get("cue")
+            if c:
+                st, du = starts[s["id"]]
+                cue(parts["sfx"], c, st + 0.05, st + du, rng)
+                print(f"  cue {c} in shot {s['id']}", flush=True)
 
     n = parts["music"].n
     final = array.array("d", bytes(8 * n))
