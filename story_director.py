@@ -204,6 +204,14 @@ def free_spot(chars, near, dx):
 
 
 # ------------------------------------------------------------------ validation and repair
+def shot_cap(hi, unit, is_last):
+    """Highest allowed size of one shot. More words are fine: the last shot carries the outro and the
+    closing sentence, so it gets a lot of room (v5 allowed only hi+4 there in repair_plan = the rejects you saw)."""
+    if unit == "words":
+        return int(hi * 1.9) + (60 if is_last else 8)
+    return int(hi * 1.9) + (400 if is_last else 40)
+
+
 def repair_plan(raw, cfg, strict=True):
     notes = []
     language = cfg.get("language", "English")
@@ -233,7 +241,7 @@ def repair_plan(raw, cfg, strict=True):
             raise Reject(f"shot {n} narration must be written in {language}")
         units = count_units(text, unit)
         lo, hi = tg["shot"]
-        if strict and not (int(lo * 0.6) <= units <= int(hi * 1.6) + 4):
+        if strict and not (int(lo * 0.5) <= units <= shot_cap(hi, unit, n == want)):
             raise Reject(f"shot {n} narration has {units} {unit}, each shot must have {lo} to {hi} {unit}")
         look = s.get("look") if s.get("look") in core.LOOKS else prev_look
         if s.get("look") not in core.LOOKS:
@@ -413,7 +421,7 @@ def repair_plan(raw, cfg, strict=True):
 
     total = sum(count_units(sh["narration"], unit) for sh in shots)
     tlo, thi = tg["total"]
-    if strict and not (0.75 * tlo <= total <= 1.4 * thi):
+    if strict and not (0.7 * tlo <= total <= 1.2 * thi):
         raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi} "
                      f"({'shorten' if total > thi else 'lengthen'} it)")
 
@@ -725,7 +733,7 @@ DIRECTION RULES (the renderer follows them exactly)
 SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal is in that shot's characters; every walk/run has "to"; at most 10 moving shots; at most 4 close-ups; nobody stands behind another animal; quote_speakers matches the quotes one by one.
 
 Return ONLY JSON:
-{{"title": "<gripping honest {language} title, max 60 characters>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags>"], "recap": "<one sentence: what happened in this episode>", "cliffhanger": "<one sentence teaser for the next episode>", "shots": [ ... {n} shots ... ]}}
+{{"title": "<curiosity-hook {language} title, max 60 characters: a question or a surprising claim, plain words a 10-year-old knows, NO finance jargon (not buffer, liquidity, portfolio), include the money idea in simple words, honest to the story>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags>"], "recap": "<one sentence: what happened in this episode>", "cliffhanger": "<one sentence teaser for the next episode>", "shots": [ ... {n} shots ... ]}}
 One shot looks like this:
 {json.dumps(example, ensure_ascii=False)}
 """
@@ -863,21 +871,20 @@ def check_story(story, cfg, strict=True):
             raise Reject(f"shot {i} narration must be written in {language}")
         u = count_units(s["narration"], unit)
         lo, hi = tg["shot"]
-        extra = (26 if unit == "words" else 170) if i == n else 4 if unit == "words" else 20
-        if strict and not (int(lo * 0.6) <= u <= int(hi * 1.6) + extra):
+        if strict and not (int(lo * 0.5) <= u <= shot_cap(hi, unit, i == n)):
             raise Reject(f"shot {i} narration has {u} {unit}, each shot must have {lo} to {hi} {unit}")
         total += u
         nq = len(QUOTE_RE.findall(s["narration"]))
         raw_q = s.get("quote_speakers") if isinstance(s.get("quote_speakers"), list) else []
         qs = [cid.get(str(x).lower()) for x in raw_q]
         if nq != len(qs) or any(x is None for x in qs):
-            raise Reject(f"shot {i}: it has {nq} quoted line(s) but quote_speakers lists {len(qs)} valid id(s); list the speaker id of every quoted line, in order")
+            qs = []          # tolerant: repair_plan finds the speaker from the text (name next to the speech verb)
         s["quote_speakers"] = qs
         talking += 1 if nq else 0
     tlo, thi = tg["total"]
-    if strict and not (0.75 * tlo <= total <= 1.4 * thi):
+    if strict and not (0.7 * tlo <= total <= 1.2 * thi):
         raise Reject(f"total narration is {total} {unit}, it must be between {tlo} and {thi}")
-    if strict and talking < 4:
+    if strict and talking < 3:
         raise Reject(f"only {talking} shots have spoken lines in quotes, I need at least 8: more dialogue, less narrator")
     return story
 
@@ -1042,6 +1049,7 @@ def main():
     print("Gemini models:", ", ".join(models))
     state = {"dead": set(), "model": ""}
     feedback, dir_feedback, story, plan, notes, total = "", "", None, None, [], 0
+    last_raw = None
     for attempt in range(1, a.attempts + 1):
         print(f"Director attempt {attempt}/{a.attempts}", flush=True)
         stage = "story"
@@ -1049,6 +1057,7 @@ def main():
             if a.calls == "single":
                 print("  ONE call: story and direction together", flush=True)
                 raw = ask_json(build_unified_prompt(cfg, topic, genre, hist, feedback), models, key, state)
+                last_raw = raw
                 check_story(raw, cfg)
                 plan, notes, total = repair_plan(raw, cfg, strict=True)
                 break
@@ -1080,6 +1089,15 @@ def main():
             break
         except Reject as e:
             print("  rejected:", e, flush=True)
+            if a.calls == "single" and last_raw is not None and attempt >= a.attempts - 1:
+                try:                                   # last chance: use the story Gemini already wrote, repair it, do not burn more quota
+                    check_story(last_raw, cfg, strict=False)
+                    plan, notes, total = repair_plan(last_raw, cfg, strict=False)
+                    notes.append("accepted by the lenient fallback: " + str(e))
+                    print("  lenient fallback used, the story is usable", flush=True)
+                    break
+                except Reject as e2:
+                    print("  lenient fallback also failed:", e2, flush=True)
             if stage == "story" or a.calls == "single":
                 feedback, story = str(e), None
             else:
