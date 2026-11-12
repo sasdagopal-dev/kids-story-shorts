@@ -21,7 +21,7 @@ on:
       voice_gender:
         description: "Narrator"
         type: choice
-        default: female
+        default: male
         options: [male, female]
       quality:
         description: "Render quality"
@@ -81,7 +81,7 @@ jobs:
           [ "$STORY_MODE" != "config" ] && ARGS+=(--story-mode "$STORY_MODE")
           [ -n "$TOPIC" ] && ARGS+=(--topic "$TOPIC")
           ok=0
-          for i in 1 2 3; do
+          for i in 1 2; do
             if python3 story_director.py "${ARGS[@]}"; then
               ok=1; break
             else
