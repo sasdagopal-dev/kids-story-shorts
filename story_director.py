@@ -204,6 +204,10 @@ def free_spot(chars, near, dx):
 
 
 # ------------------------------------------------------------------ validation and repair
+FX_ALLOWED = ("fire", "smoke", "embers", "rain", "snow", "storm", "fireflies", "leaves", "pollen", "mist")
+CUES = ("coin", "boom", "riser", "heartbeat", "splash", "whoosh", "alarm")
+
+
 def shot_cap(hi, unit, is_last):
     """Highest allowed size of one shot. More words are fine: the last shot carries the outro and the
     closing sentence, so it gets a lot of room (v5 allowed only hi+4 there in repair_plan = the rejects you saw)."""
@@ -291,10 +295,17 @@ def repair_plan(raw, cfg, strict=True):
 
         props = []
         for p in (s.get("props") or [])[:3]:
-            if isinstance(p, dict) and p.get("type") == "rock":
-                pp = p.get("pos") if isinstance(p.get("pos"), (list, tuple)) and len(p["pos"]) >= 2 else [0, 4]
-                props.append({"type": "rock", "pos": [round(core.clamp(num(pp[0], 0), -5, 5), 2), round(core.clamp(num(pp[1], 4), 0, 9), 2)],
-                              "size": round(core.clamp(num(p.get("size"), 1.5), 0.6, 3.0), 2)})
+            if not isinstance(p, dict) or p.get("type") not in ("rock", "sign", "coins"):
+                continue
+            pp = p.get("pos") if isinstance(p.get("pos"), (list, tuple)) and len(p["pos"]) >= 2 else [0, 4]
+            item = {"type": p["type"], "pos": [round(core.clamp(num(pp[0], 0), -5, 5), 2), round(core.clamp(num(pp[1], 4), 0, 9), 2)],
+                    "size": round(core.clamp(num(p.get("size"), 1.5 if p["type"] == "rock" else 1.0), 0.6, 3.0), 2)}
+            if p["type"] == "sign":
+                txt = "".join(ch for ch in str(p.get("text") or "").upper() if ch.isalnum() or ch in " $:+-./%")[:14].strip()
+                if not txt:
+                    continue
+                item["text"] = txt
+            props.append(item)
         cam_in = s.get("camera") if isinstance(s.get("camera"), dict) else {}
         focus = cam_in.get("focus") if cam_in.get("focus") in [c["id"] for c in chars] else chars[0]["id"]
         cam = {"framing": cam_in.get("framing") if cam_in.get("framing") in core.FRAMINGS else "medium",
@@ -315,6 +326,13 @@ def repair_plan(raw, cfg, strict=True):
                 "camera": cam, "characters": chars}
         if props:
             shot["props"] = props
+        fx_in = s.get("fx") if isinstance(s.get("fx"), list) else []
+        fx = [str(f).lower() for f in fx_in if str(f).lower() in FX_ALLOWED][:3]
+        if fx:
+            shot["fx"] = list(dict.fromkeys(fx))
+        cue = str(s.get("cue") or "").lower()
+        if cue in CUES:
+            shot["cue"] = cue
         if s.get("thumb"):
             shot["thumb"] = True
         shots.append(shot)
@@ -337,7 +355,13 @@ def repair_plan(raw, cfg, strict=True):
         az = core.az_of(sh["camera"]["side"])
         if not core.fix_collisions(sh["characters"], 6.5, az=az):
             notes.append(f"shot {sh['id']}: animals are very close, check the picture")
-        for pr in sh.get("props", []):                   # a boulder is only allowed where an animal stands on it
+        for pr in sh.get("props", []):
+            if pr["type"] in ("sign", "coins"):          # story props: beside the animals, never in front of them
+                far = max(c["pos"][1] for c in sh["characters"])
+                if any(math.hypot(c["pos"][0] - pr["pos"][0], c["pos"][1] - pr["pos"][1]) < 1.2 + 0.4 * pr["size"] for c in sh["characters"]):
+                    pr["pos"][1] = round(min(9.0, far + 1.4 + 0.4 * pr["size"]), 2)
+                    notes.append(f"shot {sh['id']}: {pr['type']} moved behind the animals so it hides nobody")
+                continue
             on_it = any(math.hypot(c["pos"][0] - pr["pos"][0], c["pos"][1] - pr["pos"][1]) < 0.9 * pr["size"]
                         and not any(core.ACTIONS[b["action"]]["speed"] > 0 for b in c["beats"]) for c in sh["characters"])
             if not on_it:
@@ -351,6 +375,12 @@ def repair_plan(raw, cfg, strict=True):
                         and not any(core.ACTIONS[b["action"]]["speed"] > 0 for b in c["beats"]):
                     c["z"] = round(0.7 * pr["size"] * 0.92, 2)
 
+    cue_seen = 0
+    for sh in shots:                                     # sound cues are seasoning: keep the first 7
+        if sh.get("cue"):
+            cue_seen += 1
+            if cue_seen > 7:
+                sh.pop("cue")
     closeups = 0
     for sh in shots:
         cam = sh["camera"]
@@ -364,8 +394,8 @@ def repair_plan(raw, cfg, strict=True):
             cam["move"] = "push_in"
     moving_shots = sum(1 for sh in shots if any(core.ACTIONS[b["action"]]["speed"] > 0 and "to" in b
                                                  for c in sh["characters"] for b in c["beats"]))
-    if moving_shots > 10:                                   # calm the last ones down instead of asking Gemini again
-        extra_moves = moving_shots - 10
+    if moving_shots > 14:                                   # calm the last ones down instead of asking Gemini again
+        extra_moves = moving_shots - 14
         for sh in reversed(shots):
             if extra_moves <= 0:
                 break
@@ -380,7 +410,7 @@ def repair_plan(raw, cfg, strict=True):
             if sh["camera"]["move"] == "follow":
                 sh["camera"]["move"] = "push_in"
             extra_moves -= 1
-        notes.append(f"{moving_shots} shots had movement, calmed down to 10")
+        notes.append(f"{moving_shots} shots had movement, calmed down to 14")
 
     looks_used = [sh["look"] for sh in shots]
     if len(set(looks_used)) < 3:
@@ -676,21 +706,21 @@ def build_prompt(cfg, topic, genre, history, feedback, story=None):
     n = cfg.get("shots", 20)
     hero, other = cfg["cast"][0], cfg["cast"][min(1, len(cfg["cast"]) - 1)]
     example = {
-        "id": 9, "title": "The Frozen River", "look": "storm_dusk",
-        "visual": f"{other['name']} stands tall on a boulder above the roaring river while {hero['name']} looks up, scared.",
-        "narration": f"{other['name']} lifted his head. \"The river will not wait for you, {hero['name']}.\"" if language == "English"
-        else f"{other['name']} ने सिर उठाया। “नदी तुम्हारा इंतज़ार नहीं करेगी, {hero['name']}.”",
-        "tone": "deep, slow, serious",
-        "quote_speakers": [other["id"]],
-        "camera": {"framing": "medium", "angle": "low", "move": "push_in", "focus": other["id"], "side": "left"},
-        "props": [{"type": "rock", "pos": [-1.0, 3.6], "size": 1.4}],
+        "id": 3, "title": "The Price Sign", "look": "ember_sky", "fx": ["fire", "smoke"], "cue": "boom",
+        "visual": f"{hero['name']} freezes in front of a wooden price board that reads WATER 10; red fire glows on the horizon.",
+        "narration": (f"At the Watering Post, {hero['name']} froze. Yesterday a bucket cost two nuts. Today the sign said ten." if language == "English"
+                      else f"वॉटरिंग पोस्ट पर {hero['name']} ठिठक गया। कल एक बाल्टी दो मेवे की थी। आज बोर्ड पर दस लिखा था।"),
+        "tone": "shocked, quiet",
+        "quote_speakers": [],
+        "camera": {"framing": "medium", "angle": "eye", "move": "push_in", "focus": hero["id"], "side": "left"},
+        "props": [{"type": "sign", "pos": [2.2, 4.4], "text": "WATER 10", "size": 1.1}],
         "characters": [
-            {"id": other["id"], "pos": [-1.0, 3.6], "face": hero["id"], "beats": [{"action": "talk"}]},
-            {"id": hero["id"], "pos": [1.2, 3.0], "face": other["id"], "beats": [{"action": "sad", "at": 0.5}]}]}
+            {"id": hero["id"], "pos": [-0.8, 3.0], "face": other["id"], "beats": [{"action": "shock"}]},
+            {"id": other["id"], "pos": [0.9, 3.6], "face": hero["id"], "beats": [{"action": "listen"}]}]}
     closing = (f"Shot {n}: a warm closing image, a friendly 'follow for the next adventure' line" + (f" and this sentence: {disc}" if disc else "") + ".")
     full = f"""You are an award-winning animation director and a gripping storyteller for adult learners.
 Make a vertical (9:16) YouTube Short of about {int(cfg.get('target_seconds', 150))} seconds (the real length follows the story, a little shorter or longer is fine). It is episode {len(history) + 1} of the series "{series.get('name', '')}": a dramatic, funny and touching ANIMAL ADVENTURE, like a mini movie. The animals live like animals in nature (herd, pack, den, river, drought, storm, hunters, rivals, rescue, migration, lost young ones) and the story secretly carries ONE gentle life lesson (courage, friendship, honesty, teamwork, patience, kindness ...). It must feel like a story people cannot stop watching, never like a lecture.
-Audience: families and children in India and the US. Narration language: {language}.
+Audience: US adults who are beginners in personal finance and investing. Narration language: {language}.
 Story idea of today: {topic}
 Story style today: {genre}
 
@@ -719,9 +749,14 @@ CAST (use ONLY these ids; 2 to 5 different animals in the whole story, same anim
 DIRECTION RULES (the renderer follows them exactly)
 - Every verb in the narration that an animal does must be visible. "ran" = run with a destination "to". "walked in" = walk with "to". "said" = that animal's action is talk and the others listen. Surprise = shock. Sadness or worry = sad. Eating = eat. Hit = kick or fight, hurt = hurt.
 - Actions allowed: {', '.join(core.ACTIONS)}. Only walk and run move; they REQUIRE "to":[x,y]. Walking is 1.4 m/s and running 5.5 m/s.
-- CALM MOVEMENT: at most 10 of the {n} shots may have a walking or running animal. In all other shots the animals stand still (talk, listen, shock, sad ...). No pacing, no wandering.
+- PURPOSEFUL MOVEMENT: at most 14 of the {n} shots may have a walking or running animal, and every movement must MEAN something: running to flee the fire, rushing to a place, carrying on, approaching someone to ask for help. Never wander or pace. In the other shots the animals stand still (talk, listen, shock, sad ...).
 - Each animal has 1 to 3 "beats" in time order. "at" = when the beat starts as a fraction of the shot (0 = when the narration starts, 0.5 = half way). Start every action when the narration mentions it. An animal that walks in must arrive BEFORE it talks.
 - The frame is VERTICAL and narrow. Keep every animal at x from -2.4 to 2.4 and y from 0 to 5.5 (y = distance from the camera). Animals are BIG: a horse is 2.4 m long. Place animals ACROSS the picture (left and right of each other, depth difference at most 1.5 m) so that nobody stands directly behind another animal: the camera must see every animal fully. VARY the number of animals: 1 animal alone for strong emotion (at least 2 shots), 2 for a conversation, 3 for group moments (at least 4 shots), 4 only for a pack or crowd scene. An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
+- VISUAL STORYTELLING: every shot is ONE clear picture of what the narration says. Use the environment to tell the story:
+  * "fx": a list (0 to 3) from fire, smoke, embers, rain, snow, storm, fireflies, leaves, pollen, mist. Use ["fire","smoke"] for a wildfire or disaster in the distance, ["rain"] or ["storm"] for trouble, ["snow"] for a cold winter, and no fx for calm scenes. Keep the same fx across the shots of one scene and change it when the situation changes.
+  * "cue": one optional sound cue per shot, only where it matters: coin (money is paid or counted), boom (a shock), riser (tension before a twist), heartbeat (fear), splash, whoosh, alarm. At most 7 cues in the whole story.
+  * props "sign": a wooden price board with a short text (max 14 characters, letters, digits and $ : + - . / %), e.g. {{"type":"sign","pos":[2.2,4.4],"text":"WATER 10","size":1.1}}. Use it every time a PRICE, a BALANCE or a NUMBER matters (at least 2 shots in a money story). Place it at the side (x beyond 1.8 or -1.8), never in front of an animal.
+  * props "coins": a pile of gold coins {{"type":"coins","pos":[x,y],"size":1.0}} for savings or payment, placed beside the animals.
 - props: optional boulder {{"type":"rock","pos":[x,y],"size":1.0-2.5}}. Use a boulder ONLY when an animal stands on top of it (same x,y as the animal): good for a wise elder or a leader watching from above.
 - WHO SPEAKS: every quoted line must be written between double quotes and must name the speaker right next to it with a speech verb ("said Ragnar", "Milo whispered"). Give each shot "quote_speakers": the ids of the speaker of each quoted line, in the order the lines appear ([] if nobody speaks). Only that animal talks while its line is read; all the others listen. Never let another animal move or talk while a line is spoken. Also give each shot "speaker" = the id of the first speaker (null if nobody) and "tone" = 2-4 words telling the voice actor how to read the shot (for example "whispered, scared", "proud, loud", "warm, gentle").
 - "face": the id of the animal this one looks at.
@@ -730,7 +765,7 @@ DIRECTION RULES (the renderer follows them exactly)
 - look = one of {list(core.LOOKS)}. Meanings: meadow_day (normal day), forest_day, flower_field (happy, spring), misty_morning (calm, mystery), autumn_gold (change, warm), golden_sunset (ending of a day, hope), riverbank_dawn, snow_pines (cold, lonely, hard times), rainy_forest (sadness, trouble), storm_dusk (danger), ember_sky (fiery red sky = big danger), night_moon (secret, fear, quiet). Use AT LEAST 4 different looks in the story, change the look whenever the place or the time changes, and never use one look for more than 8 shots.
 - Put "thumb": true on the single most dramatic shot.
 
-SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal is in that shot's characters; every walk/run has "to"; at most 10 moving shots; at most 4 close-ups; nobody stands behind another animal; quote_speakers matches the quotes one by one.
+SELF-CHECK before you answer: shots = {n}; total {unit} in range; every named animal is in that shot's characters; every walk/run has "to"; at most 14 moving shots; at most 4 close-ups; nobody stands behind another animal; quote_speakers matches the quotes one by one.
 
 Return ONLY JSON:
 {{"title": "<curiosity-hook {language} title, max 60 characters: a question or a surprising claim a US adult beginner would click, plain words, include the money or investing idea, honest to the story>", "description": "<2-3 sentence {language} description>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "recap": "<one sentence: what happened in this episode>", "cliffhanger": "<one sentence teaser for the next episode>", "shots": [ ... {n} shots ... ]}}
@@ -783,34 +818,37 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
     fix = ("FIX THIS PROBLEM FROM YOUR LAST ANSWER: " + feedback) if feedback else ""
     money = cfg.get("story_mode", "adventure") == "money"
     if ep:
-        opening = (f"Answer the previous cliffhanger in a surprising way in shots 1-2 (previous episode ended on: {ep['previous_cliffhanger']}). Include ONE short catch-up line so a new viewer understands."
-                   if ep["previous_cliffhanger"] else "This is the first episode: shot 1 starts in the middle of the mystery, the vanished food, with no calm introduction.")
         episode_block = (f"SEASON \"{season.get('name', '')}\": {season.get('premise', '')}\n"
-                         f"HIDDEN TRUTH (for your planning ONLY, never reveal it before episode {season.get('reveal_episode', 11)}): {season.get('secret', '')}\n"
-                         f"THIS IS EPISODE {ep['number']} OF {ep['total']}.\n"
-                         f"- Money idea of this episode: {ep['concept']}\n- Story beat you must deliver: {ep['beat']}\n- Clue to plant (visible but innocent): {ep['clue']}\n"
-                         f"- The episode MUST END on this cliffhanger: {ep['cliffhanger']}\n- Opening: {opening}")
+                         f"THIS IS EPISODE {ep['number']} OF {ep['total']}. It is a STANDALONE mini movie: a new viewer understands everything without having seen earlier episodes.\n"
+                         f"- Money idea of this episode: {ep['concept']}\n"
+                         f"- The dramatic situation you must deliver (keep its stakes, its clock and its set-pieces): {ep['beat']}\n"
+                         f"- Cold open (the first picture and line): {ep.get('hook', 'open in the middle of the crisis')}\n"
+                         f"- Teaser for the next episode (one short line at the very end): {ep['cliffhanger']}")
     else:
-        episode_block = (f"Story idea of today: {topic}\nThis is a continuing series. Open by answering the cliffhanger of the last episode listed below in a surprising way (one short catch-up line), "
-                         "plant one new clue, and end on a new cliffhanger.")
+        episode_block = (f"Story idea of today: {topic}\nMake it a STANDALONE mini movie with a real emotional crisis where this money idea decides the outcome. "
+                         "End with a one-line teaser for a next episode.")
     lesson = (f"INVESTING AND MONEY LEARNING (the purpose of the series; US audience of adult beginners; it must never feel like school):\n"
               "- The money idea is the KEY of the plot: the problem is caused by ignoring it, and the hero wins by using it. Never explain it in a speech.\n"
               "- Inside the story the animals use animal money (nuts, berries, honey, a hollow-tree storehouse) and small clear numbers (10 nuts, save 3). "
               "Show the wrong way costing something real, then the right way with a clear, CORRECT calculation.\n"
               "- Accuracy matters more than drama. Use only well-established ideas (compound growth, diversification, index funds in general, 401(k) employer match, IRA in general, emergency fund, inflation, fees, risk and market ups and downs, dollar-cost averaging, credit card interest, scams). "
               "Never name real banks, brokers, apps, brands, tickers or specific funds. Never promise or guarantee returns, never say 'buy this', always keep the idea that investing can lose money. Do not give tax or legal specifics beyond general ideas.\n"
-              "- Shot 18: the hero uses the idea with the animal numbers. Shot 19: starts with 'Today we learned' and gives exactly three short points in plain words; "
+              "- The wrong money habit must cost the hero something REAL and visible twice; the right habit (shown by a mentor or a neighbour) must visibly save the day later; a time-skip shot proves it with numbers.\n"
+              "- Shot 19: starts with 'Today we learned' and gives exactly three short points in plain words; "
               "at least one point must translate the idea into real US dollars using the real-world example given in the money idea above, said as a clearly hypothetical example ('for example', 'if'), never as a promise.\n") if money else (
               "LESSON: one gentle life lesson, shown by events and one short wise line, never a speech.")
     lang_note = ("Write natural spoken Hindi in Devanagari, short sentences, simple words a child knows, no heavy Sanskrit words. Write the animal names exactly as in the cast list, in Latin letters (Milo, Drakon, Gulab)."
                  if language == "Hindi" else "Write natural spoken English with simple words, short sentences and a storyteller's rhythm.")
     end_extra = ((" Then this exact outro sentence: " + outro) if outro else "") + ((" Then this exact closing sentence: " + disc) if disc else "")
-    return f"""You are the head writer of a hit animated mystery series for US adults (ages 20 to 45) who are beginners in personal finance and investing, like a mix of a detective show and a witty cartoon, that teaches real money and investing skills through animal characters. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
+    gx = cfg.get("gold_example") or []
+    gold = ("\nEXAMPLE OF THE LEVEL AND THE RHYTHM EXPECTED (a different story, its narration only; never copy its events, names or sentences):\n"
+            + "\n".join(f"{i}. {t}" for i, t in enumerate(gx, 1)) + "\n" + (cfg.get("gold_example_note") or "") + "\n") if gx else ""
+    return f"""You are the head writer of a hit animated series for US adults (ages 20 to 45) who are beginners in personal finance and investing. Every episode is a MINI MOVIE: a real emotional crisis told with animals, where one money decision decides what happens. Think of a film trailer, not a nature walk. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
 SERIES "{series.get('name', '')}". World: {series.get('bible', '')}
 {episode_block}
 Style flavour: {genre}
 
-PREVIOUSLY (do not repeat, only build on it):
+PREVIOUSLY (do not repeat, only for variety):
 {past}
 Twists already used (invent a DIFFERENT one):
 {twists}
@@ -819,35 +857,34 @@ Twists already used (invent a DIFFERENT one):
 CAST (use only these ids; each animal speaks in its own style; a catchphrase at most once; 2 to 5 animals in an episode):
 {cast}
 
-HOW TO MAKE IT GRIPPING (follow all of these):
-1. COLD OPEN: shot 1 drops us into the middle of danger or mystery in the first 3 seconds. No scene setting, no 'once upon a time'.
-2. MICRO-HOOKS: end EVERY shot (except 19) on something that pulls forward: an unanswered question, a strange noise, a reveal, a choice, a rising clock. Never end a shot on a calm, finished thought.
-3. TICKING CLOCK: state a deadline with a number early ('before sunset', 'three sunrises left') and remind us of it twice.
-4. RULE OF THREE: the hero tries and fails twice (each failure costs something real), the third attempt wins using the money idea.
-5. DRAMATIC IRONY: in one short narrator line let the viewer see a danger or a clue that the hero does not see yet.
-6. CLUE AND RED HERRING: plant the planned clue (visible but innocent, mentioned in one short line) and one false suspect.
-7. MIDPOINT TWIST around shots 10-12 that flips what we believed. It must be fair, hinted before.
-8. DARKEST MOMENT around shots 14-15: the hero loses something and wants to give up. Then the money idea turns it around.
-9. A rival with charm and a logic of his own. The hero's own flaw (impatience, pride) causes part of the trouble.
-10. HUMOUR: a specific, visual comic moment every 4-5 shots, usually Bholu or Tinku. Funny, not silly.
-11. DIALOGUE: at least 8 shots with a spoken line in double quotes and the speaker named next to it ("said Ragnar"). Lines are short (5-12 words), with subtext, in each animal's own voice. The narrator never explains what a line already shows.
-12. SPECIFIC: concrete numbers and objects (7 nuts, 3 days, the cracked acorn), never vague words.
-13. NEVER USE: 'little did he know', 'suddenly', 'everything changed', 'and they lived happily ever after', vague morals, a lecture.
-14. Keep it clean: no blood, no real brands; tension and humour, not horror.
+HOW TO MAKE IT A MOVIE (follow all of these):
+1. COLD OPEN: shot 1 starts with someone we care about in danger, or a clock already running. No scene setting, no 'once upon a time'. The first 3 seconds must raise a question.
+2. ONE HERO, ONE URGENT WANT with an emotional reason (save his mother, keep the den, feed the little ones). Say what is lost if he fails.
+3. ONE TICKING CLOCK with a number ('three sunrises', 'before the river freezes'); remind us of it at least twice.
+4. MONEY IS THE OBSTACLE, SHOWN IN NUMBERS: a price on a sign, an empty pouch, a bill, a debt. The viewer must be able to do the maths: 'yesterday 2 nuts, today 10 nuts'.
+5. EVERY SHOT CHANGES SOMETHING: the stakes rise, a door closes, a choice is made, a price is paid. Forbidden: shots where animals only travel, look around, or are described. If a shot could be deleted and the story would not change, rewrite it.
+6. THE WRONG MONEY HABIT COSTS SOMETHING REAL TWICE (two failed attempts), then the LOWEST POINT: the loved one in real danger and the hero has nothing left.
+7. THE TURN: a mentor or neighbour who did it right shows the right habit by ACTION and one short rule; the hero decides and pays the price of the change.
+8. PAYOFF AND PROOF: a TIME-SKIP shot ('Ten years later', 'Next winter') shows the same kind of crisis coming back and the hero calm and safe, with numbers that compare then and now.
+9. FEELINGS: fear, guilt, relief, pride. One touching moment (a hug, a whispered promise) and one funny moment (specific and visual, never silly).
+10. DIALOGUE: at least 8 shots with a spoken line in double quotes and the speaker named next to it ("said Ragnar"). Lines are short (4 to 12 words), urgent, in each animal's own voice. The narrator never explains what a line already shows.
+11. SPECIFIC: concrete numbers and objects (3 buckets, 30 nuts, the silver bell), never vague words.
+12. NEVER USE: 'little did he know', 'suddenly', 'everything changed', 'and they lived happily ever after', vague morals, a lecture.
+13. Keep it clean: no blood, no real brands; tension and heart, not horror.
 
 {lesson}
-
+{gold}
 STRUCTURE OF THE {n} SHOTS:
-1-2 cold open and catch-up | 3-5 the problem, the stakes and the clock | 6-8 first attempt fails (the wrong money move) | 9-11 consequences grow, the clue appears | 12 midpoint twist |
-13-15 second failure, darkest moment | 16-17 the hero discovers the money idea through action | 18 the hero wins cleverly using it, with numbers |
-19 'Today we learned' with three short points | {n} one question for the viewers (a choice about today's money idea, to answer in the comments), then the cliffhanger of the episode as one short mystery line.{end_extra}
+1-2 cold open: the crisis and the clock | 3-4 the want and the money obstacle in numbers | 5-7 first wrong attempt, it fails and costs something |
+8-10 second failure, pressure grows, the clock is repeated | 11-12 lowest point | 13-15 the turn: the right habit is shown and chosen | 16-17 the hero acts, the cost of the change and the first result |
+18 time-skip proof with numbers | 19 'Today we learned' with three short points | {n} one question for the viewers (a choice about today's money idea, to answer in the comments), then the teaser for the next episode as one short line.{end_extra}
 
 LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. The last shot may be longer. Count carefully.
 
 PLAN FIRST: fill in "beat_sheet" before you write the shots, then make the shots follow it exactly.
 
-Return ONLY JSON: {{"beat_sheet": {{"previously": "<how this episode opens by answering the last cliffhanger>", "hook": "<the first-3-seconds hook>", "want": "<what the hero wants>", "obstacle": "<what stands in the way>", "money_in_plot": "<how the money idea causes the problem and then solves it>", "clue": "<the clue planted>", "red_herring": "<the false suspect>", "midpoint_twist": "<the twist>", "darkest_moment": "<the low point>", "cliffhanger": "<the ending hook>"}},
-"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "logline": "<one sentence>", "twist": "<the twist in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the cliffhanger in one sentence>", "viewer_question": "<the question for the comments>",
+Return ONLY JSON: {{"beat_sheet": {{"hook": "<the first-3-seconds hook>", "want": "<what the hero wants and why it matters>", "clock": "<the deadline with a number>", "obstacle": "<the money obstacle in numbers>", "wrong_habit_cost": "<what the wrong habit costs, twice>", "lowest_point": "<the low point>", "the_turn": "<who shows the right habit and how>", "time_skip_proof": "<the later crisis and the numbers that prove it>", "clue": "<one detail planted early that pays off in the time-skip>", "cliffhanger": "<the teaser line>"}},
+"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "logline": "<one sentence>", "twist": "<the turning point in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the teaser in one sentence>", "viewer_question": "<the question for the comments>",
 "shots": [{{"id": 1, "narration": "...", "quote_speakers": ["<id of each quoted line in order>"], "speaker": "<id or null>", "tone": "<2-4 words for the voice actor>"}}, ... {n} shots ...]}}
 """
 
@@ -921,11 +958,11 @@ def build_unified_prompt(cfg, topic, genre, history, feedback):
     rules = direct[direct.index("DIRECTION RULES"):direct.index("SELF-CHECK")]
     ret = direct[direct.index("Return ONLY JSON"):]
     n = cfg.get("shots", 20)
-    head = head.replace("Write ONLY the story (no camera, no positions) of a vertical YouTube Short", "Write AND direct a vertical YouTube Short")
+    head = head.replace("Write ONLY the story (no camera, no positions) of one episode:", "Write AND direct one episode:")
     return (head + "\nNow the DIRECTION. You are also the director: for every shot you give the narration and also what is seen.\n"
             + rules + f"SELF-CHECK before you answer: shots = {n}; narration {cfg['targets'][cfg.get('language', 'English')]['unit']} in range; at least 8 shots with spoken lines; "
-            "quote_speakers matches the quotes one by one; every named animal is in that shot's characters; every walk/run has \"to\"; at most 10 moving shots; "
-            "at most 4 close-ups; at least 4 different looks; some shots with 1 animal, some with 3; nobody stands behind another animal.\n\n"
+            "quote_speakers matches the quotes one by one; every named animal is in that shot's characters; every walk/run has \"to\"; at most 14 moving shots; "
+            "at most 4 close-ups; at least 4 different looks; some shots with 1 animal, some with 3; nobody stands behind another animal; fx used for fire, rain or snow scenes; at least 2 shots with a price sign in a money story; no more than 7 sound cues.\n\n"
             + ret.replace('{"title":', story_part[story_part.index('{"beat_sheet"'):story_part.index('"title":')] + '"title":', 1)
             .replace('"recap":', '"logline": "<one sentence>", "twist": "<the twist in one sentence>", "viewer_question": "<question for the comments>", "recap":', 1))
 
