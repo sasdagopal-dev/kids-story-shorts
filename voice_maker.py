@@ -699,6 +699,13 @@ def main():
             lead = a.lead
             durs.append(max(a.min_shot, a.lead + secs + (a.end_pause if i == len(results) - 1 else a.pause)))
         leads.append(lead)
+    min_total = float(os.environ.get("MIN_VIDEO_SECONDS", "120") or 0)         # the channel wants at least 2 minutes (no fixed maximum below 3 minutes)
+    if min_total and durs and sum(durs) < min_total:
+        add = min(10.0, min_total - sum(durs))
+        print(f"NOTE: the story is {sum(durs):.0f} s, below the {min_total:.0f} s minimum: the last shot is held {add:.1f} s longer.", flush=True)
+        durs[-1] += add
+        if sum(durs) < min_total - 0.5:
+            print(f"WARNING: still only {sum(durs):.0f} s. The story was too short; the director should write more (target 300 to 380 words).", flush=True)
     bounds, acc = [], 0.0
     for dsec in durs:
         bounds.append((int(round(acc * fps)), int(round((acc + dsec) * fps))))
