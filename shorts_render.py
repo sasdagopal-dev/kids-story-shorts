@@ -419,7 +419,7 @@ def add_backdrop(look, rng, haze):
             no_shadow(o)
 
 
-def build_env(look_name):
+def build_env(look_name, extra_fx=None):
     look = core.LOOKS.get(look_name, core.LOOKS["meadow_day"])
     haze = haze_of(look)
     build_world(look)
@@ -464,151 +464,235 @@ def build_env(look_name):
         size = rng.uniform(1.0, 2.6)
         y = rng.uniform(4, 36)
         register(make_rock(x, y, size, seed=k + 11), x, y, size * 0.9, "rock")
-    add_weather(look_name, look)
+    add_weather(look_name, look, extra_fx)
 
 
-# ------------------------------------------------------------------ weather and magic effects (snow, rain, embers, fireflies, lightning)
+# ------------------------------------------------------------------ weather, fire and story props
 # Every particle is placed from the time t alone (no simulation), so each shard of the render agrees and nothing can drift.
 # Everything is wrapped in try/except: an effect can never stop a render.
-FX = {"items": [], "kind": None, "world_bg": None, "base_strength": 1.0, "light": None}
+FX = {"items": [], "light": None, "world_bg": None, "base_strength": 1.0, "storm": False}
 FX_ON = os.environ.get("WEATHER_FX", "1") != "0"
 FX_VOLUME = (-10.0, 10.0, -5.0, 16.0, 0.0, 9.0)          # x0, x1, y0, y1, z0, z1: the area the camera sees
+FX_ALLOWED = ("snow", "rain", "storm", "embers", "fireflies", "leaves", "pollen", "mist", "fire", "smoke")
+FX_OF_LOOK = {"snow_pines": "snow", "rainy_forest": "rain", "storm_dusk": "storm", "ember_sky": "embers",
+              "night_moon": "fireflies", "autumn_gold": "leaves", "misty_morning": "mist", "flower_field": "pollen"}
 
 
-def fx_kind(look_name):
-    return {"snow_pines": "snow", "rainy_forest": "rain", "storm_dusk": "storm", "ember_sky": "embers",
-            "night_moon": "fireflies", "autumn_gold": "leaves", "misty_morning": "mist", "flower_field": "pollen"}.get(look_name)
+def fx_kinds(look_name, extra):
+    kinds = []
+    if FX_OF_LOOK.get(look_name):
+        kinds.append(FX_OF_LOOK[look_name])
+    for k in (extra or []):
+        if k in FX_ALLOWED and k not in kinds:
+            kinds.append(k)
+    if "fire" in kinds and "embers" not in kinds:
+        kinds.append("embers")                            # a fire always throws sparks
+    return kinds[:4]
 
 
-def _fx_spawn(n, shape, mat, rng, params):
-    for _ in range(n):
+def _fx_item(o, kind, rng, size, x=None, y=None, z=None):
+    FX["items"].append(dict(obj=o, kind=kind, ph=rng.uniform(0, 6.28), sp=rng.uniform(0.7, 1.3), sz=rng.uniform(*size),
+                            x=rng.uniform(FX_VOLUME[0], FX_VOLUME[1]) if x is None else x,
+                            y=rng.uniform(FX_VOLUME[2], FX_VOLUME[3]) if y is None else y,
+                            z=rng.uniform(FX_VOLUME[4], FX_VOLUME[5]) if z is None else z))
+
+
+def _fx_spawn(n, kind, shape, mat, rng, size, spots=None):
+    for i in range(n):
         if shape == "streak":
             bpy.ops.mesh.primitive_cube_add(size=1)
+        elif shape == "flame":
+            bpy.ops.mesh.primitive_cone_add(vertices=8, radius1=1.0, radius2=0.0, depth=2.0)
         else:
             bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=1)
         o = bpy.context.active_object
         o.data.materials.append(mat)
         no_shadow(o)
-        try:
-            o.visible_glossy = False
-            o.visible_transmission = False
-        except Exception:
-            pass
-        FX["items"].append(dict(obj=o, x=rng.uniform(FX_VOLUME[0], FX_VOLUME[1]), y=rng.uniform(FX_VOLUME[2], FX_VOLUME[3]),
-                                z=rng.uniform(FX_VOLUME[4], FX_VOLUME[5]), ph=rng.uniform(0, 6.28), sp=rng.uniform(0.7, 1.3),
-                                sz=rng.uniform(*params["size"])))
+        for attr in ("visible_glossy", "visible_transmission"):
+            try:
+                setattr(o, attr, False)
+            except Exception:
+                pass
+        sx, sy = spots[i] if spots else (None, None)
+        _fx_item(o, kind, rng, size, x=sx, y=sy)
 
 
-def add_weather(look_name, look):
+def _fx_fire_light():
+    if FX["light"] is not None:
+        return
+    lamp = bpy.data.lights.new("Fire", "POINT")
+    lamp.energy = 900
+    lamp.color = (1.0, 0.45, 0.15)
+    lamp.shadow_soft_size = 2.0
+    lo = bpy.data.objects.new("Fire", lamp)
+    link(lo)
+    lo.location = (0.0, -2.0, 2.5)
+    FX["light"] = lo
+
+
+def add_weather(look_name, look, extra=None):
     FX["items"].clear()
-    FX["kind"] = None
     FX["light"] = None            # the scene is rebuilt for every shot: old Blender objects must not be reused
     FX["world_bg"] = None
     FX["base_strength"] = 1.0
+    FX["storm"] = False
     if not FX_ON:
         return
-    kind = fx_kind(look_name)
-    if not kind:
+    kinds = fx_kinds(look_name, extra)
+    if not kinds:
         return
-    try:
-        rng = random.Random(7 + sum(ord(c) for c in look_name))
-        FX["kind"] = kind
-        if kind == "snow":
-            _fx_spawn(170, "ball", make_emissive((1.0, 1.0, 1.0), 2.2), rng, {"size": (0.025, 0.07)})
-        elif kind in ("rain", "storm"):
-            _fx_spawn(150 if kind == "rain" else 220, "streak", make_emissive((0.75, 0.85, 1.0), 1.4), rng, {"size": (0.012, 0.02)})
-        elif kind == "embers":
-            _fx_spawn(110, "ball", make_emissive((1.0, 0.38, 0.08), 9.0), rng, {"size": (0.02, 0.06)})
-            lamp = bpy.data.lights.new("Fire", "POINT")
-            lamp.energy = 900
-            lamp.color = (1.0, 0.45, 0.15)
-            lamp.shadow_soft_size = 2.0
-            lo = bpy.data.objects.new("Fire", lamp)
-            link(lo)
-            lo.location = (0.0, -2.0, 2.5)
-            FX["light"] = lo
-        elif kind == "fireflies":
-            _fx_spawn(36, "ball", make_emissive((0.95, 1.0, 0.45), 14.0), rng, {"size": (0.03, 0.06)})
-        elif kind == "leaves":
-            _fx_spawn(55, "ball", make_emissive((0.95, 0.55, 0.15), 1.3), rng, {"size": (0.04, 0.08)})
-        elif kind == "pollen":
-            _fx_spawn(40, "ball", make_emissive((1.0, 0.95, 0.6), 3.0), rng, {"size": (0.02, 0.04)})
-        elif kind == "mist":
-            _fx_spawn(24, "ball", make_emissive((0.85, 0.9, 0.95), 0.25), rng, {"size": (0.5, 1.1)})
-        if kind == "storm":
-            for n in bpy.data.worlds[0].node_tree.nodes:
-                if n.type == "BACKGROUND":
-                    FX["world_bg"] = n
-                    FX["base_strength"] = n.inputs["Strength"].default_value
-    except Exception as e:
-        print("weather effect skipped:", e, flush=True)
-        FX["items"].clear()
-        FX["kind"] = None
+    rng = random.Random(7 + sum(ord(c) for c in look_name) + 31 * len(kinds))
+    for kind in kinds:
+        try:
+            if kind == "snow":
+                _fx_spawn(170, kind, "ball", make_emissive((1.0, 1.0, 1.0), 2.2), rng, (0.025, 0.07))
+            elif kind in ("rain", "storm"):
+                _fx_spawn(150 if kind == "rain" else 220, kind, "streak", make_emissive((0.75, 0.85, 1.0), 1.4), rng, (0.012, 0.02))
+                if kind == "storm":
+                    FX["storm"] = True
+                    for n in bpy.data.worlds[0].node_tree.nodes:
+                        if n.type == "BACKGROUND":
+                            FX["world_bg"] = n
+                            FX["base_strength"] = n.inputs["Strength"].default_value
+            elif kind == "embers":
+                _fx_spawn(110, kind, "ball", make_emissive((1.0, 0.38, 0.08), 9.0), rng, (0.02, 0.06))
+                _fx_fire_light()
+            elif kind == "fire":
+                # a wall of flames far behind the animals, plus flames at the edges of the picture (never in front of the animals)
+                spots = [(rng.uniform(-14, 14), rng.uniform(13, 19)) for _ in range(22)]
+                spots += [(rng.choice((-1, 1)) * rng.uniform(4.2, 9.0), rng.uniform(8.0, 13.0)) for _ in range(10)]
+                _fx_spawn(len(spots), kind, "flame", make_emissive((1.0, 0.45, 0.06), 7.0), rng, (0.7, 1.6), spots)
+                _fx_fire_light()
+            elif kind == "smoke":
+                spots = [(rng.uniform(-12, 12), rng.uniform(9, 18)) for _ in range(26)]
+                _fx_spawn(len(spots), kind, "ball", make_material((0.07, 0.07, 0.08), 1.0), rng, (0.9, 1.8), spots)
+            elif kind == "fireflies":
+                _fx_spawn(36, kind, "ball", make_emissive((0.95, 1.0, 0.45), 14.0), rng, (0.03, 0.06))
+            elif kind == "leaves":
+                _fx_spawn(55, kind, "ball", make_emissive((0.95, 0.55, 0.15), 1.3), rng, (0.04, 0.08))
+            elif kind == "pollen":
+                _fx_spawn(40, kind, "ball", make_emissive((1.0, 0.95, 0.6), 3.0), rng, (0.02, 0.04))
+            elif kind == "mist":
+                _fx_spawn(24, kind, "ball", make_emissive((0.85, 0.9, 0.95), 0.25), rng, (0.5, 1.1))
+        except Exception as e:
+            print("weather effect skipped:", kind, e, flush=True)
 
 
 def update_weather(t):
-    kind = FX["kind"]
-    if not kind:
+    if not FX["items"] and FX["light"] is None:
         return
     x0, x1, y0, y1, z0, z1 = FX_VOLUME
     H = z1 - z0
     try:
         for it in FX["items"]:
-            o, sp, ph = it["obj"], it["sp"], it["ph"]
-            sz = it["sz"]
+            o, sp, ph, sz, kind = it["obj"], it["sp"], it["ph"], it["sz"], it["kind"]
+            rot = None
             if kind == "snow":
                 z = z1 - ((it["z"] - z0 + t * 0.9 * sp) % H)
                 x = it["x"] + 0.5 * math.sin(t * 0.8 * sp + ph)
                 y = it["y"] + 0.3 * math.cos(t * 0.6 * sp + ph)
-                o.scale = (sz, sz, sz)
+                sc = (sz, sz, sz)
             elif kind in ("rain", "storm"):
-                v = 13.0 * sp
-                z = z1 - ((it["z"] - z0 + t * v) % H)
-                x = it["x"] - 0.12 * (z1 - z)           # slanted rain
+                z = z1 - ((it["z"] - z0 + t * 13.0 * sp) % H)
+                x = it["x"] - 0.12 * (z1 - z)
                 y = it["y"]
-                o.scale = (sz, sz, 0.55)
-                o.rotation_euler = (0.0, 0.17, 0.0)
+                sc = (sz, sz, 0.55)
+                rot = (0.0, 0.17, 0.0)
             elif kind == "embers":
                 z = z0 + ((it["z"] - z0 + t * 1.3 * sp) % H)
                 x = it["x"] + 0.8 * math.sin(t * 1.4 * sp + ph) + 0.12 * (z - z0)
                 y = it["y"]
-                k = 1.0 - (z - z0) / H                   # embers shrink as they cool
+                k = 1.0 - (z - z0) / H
                 s2 = sz * (0.35 + 0.65 * k)
-                o.scale = (s2, s2, s2)
+                sc = (s2, s2, s2)
+            elif kind == "fire":                          # flickering flames: height and width pulse at different speeds
+                h = sz * (0.8 + 0.28 * math.sin(t * 7.3 * sp + ph) + 0.14 * math.sin(t * 13.1 * sp + ph * 2.0))
+                w = sz * (0.9 + 0.12 * math.sin(t * 5.1 * sp + ph))
+                x, y, z = it["x"] + 0.12 * math.sin(t * 3.0 * sp + ph), it["y"], 2.2 * h
+                sc = (w * 1.4, w * 1.4, h * 2.2)
+            elif kind == "smoke":
+                rise = (t * 0.55 * sp + ph) % 7.0
+                z = 2.0 + rise * 1.1
+                x = it["x"] + 0.35 * rise + 0.4 * math.sin(t * 0.5 * sp + ph)
+                y = it["y"]
+                s2 = sz * (0.6 + 0.35 * rise)
+                sc = (s2, s2, s2 * 0.8)
             elif kind == "fireflies":
                 x = it["x"] + 1.2 * math.sin(t * 0.5 * sp + ph)
                 y = it["y"] + 1.0 * math.cos(t * 0.4 * sp + ph * 1.7)
                 z = 0.8 + 0.5 * it["z"] / z1 * 3 + 0.5 * math.sin(t * 0.9 * sp + ph)
-                blink = max(0.0, math.sin(t * 2.2 * sp + ph))
-                s2 = sz * (0.2 + 0.8 * blink)
-                o.scale = (s2, s2, s2)
+                s2 = sz * (0.2 + 0.8 * max(0.0, math.sin(t * 2.2 * sp + ph)))
+                sc = (s2, s2, s2)
             elif kind == "leaves":
                 z = z1 - ((it["z"] - z0 + t * 0.7 * sp) % H)
                 x = it["x"] + 1.0 * math.sin(t * 1.1 * sp + ph)
                 y = it["y"]
-                o.scale = (sz * 1.5, sz * 0.4, sz)
-                o.rotation_euler = (t * 1.5 + ph, t * 0.9, ph)
+                sc = (sz * 1.5, sz * 0.4, sz)
+                rot = (t * 1.5 + ph, t * 0.9, ph)
             elif kind == "pollen":
                 x = it["x"] + 0.9 * math.sin(t * 0.4 * sp + ph)
                 y = it["y"] + 0.6 * math.cos(t * 0.3 * sp + ph)
                 z = 0.5 + 2.5 * (0.5 + 0.5 * math.sin(t * 0.35 * sp + ph * 2))
-                o.scale = (sz, sz, sz)
-            else:                                        # mist: slow drifting soft blobs
+                sc = (sz, sz, sz)
+            else:                                         # mist: slow drifting soft blobs
                 x = ((it["x"] - x0 + t * 0.35 * sp) % (x1 - x0)) + x0
                 y = it["y"]
                 z = 0.5 + 0.4 * math.sin(ph)
-                o.scale = (sz * 3.0, sz * 1.6, sz * 0.5)
+                sc = (sz * 3.0, sz * 1.6, sz * 0.5)
+            o.scale = sc
+            if rot is not None:
+                o.rotation_euler = rot
             o.location = (x, y, z)
-        if FX["light"] is not None:                       # flickering fire light
+        if FX["light"] is not None:                        # flickering fire light
             f = 0.75 + 0.18 * math.sin(t * 9.0) + 0.12 * math.sin(t * 15.7 + 1.0) + 0.06 * math.sin(t * 27.0)
             FX["light"].data.energy = 900 * f
-        if kind == "storm" and FX["world_bg"] is not None:   # lightning: two quick flashes every ~6 seconds
+        if FX["storm"] and FX["world_bg"] is not None:     # lightning: two quick flashes every ~6 seconds
             ph6 = t % 6.0
             flash = 1.0 if (2.0 < ph6 < 2.07 or 2.18 < ph6 < 2.26) else 0.0
             FX["world_bg"].inputs["Strength"].default_value = FX["base_strength"] + 9.0 * flash
     except Exception as e:
         print("weather update skipped:", e, flush=True)
-        FX["kind"] = None
+        FX["items"].clear()
+        FX["light"] = None
+
+
+def make_sign(x, y, text, size=1.0):
+    """A wooden price board with big letters, e.g. 'WATER 10'. Tells the money story with a number the viewer can read."""
+    text = "".join(ch for ch in str(text).upper() if ch.isalnum() or ch in " $:+-./%")[:14].strip() or "?"
+    wood = make_material((0.42, 0.27, 0.13), 0.8)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=8, radius=0.06 * size, depth=1.3 * size, location=(x, y, 0.65 * size))
+    bpy.context.active_object.data.materials.append(wood)
+    bpy.ops.mesh.primitive_cube_add(size=1, location=(x, y, 1.5 * size))
+    board = bpy.context.active_object
+    board.scale = (1.55 * size, 0.07 * size, 0.7 * size)
+    board.data.materials.append(make_material((0.78, 0.62, 0.38), 0.85))
+    cu = bpy.data.curves.new("price", "FONT")
+    cu.body = text
+    cu.align_x = "CENTER"
+    cu.align_y = "CENTER"
+    cu.size = 2.4 * size / max(5, len(text))
+    cu.extrude = 0.012 * size
+    to = bpy.data.objects.new("price", cu)
+    link(to)
+    to.rotation_euler = (math.radians(90), 0.0, 0.0)       # stands upright, readable from the camera side (-Y)
+    to.location = (x, y - 0.06 * size, 1.5 * size)
+    to.data.materials.append(make_material((0.06, 0.03, 0.02), 0.6))
+
+
+def make_coins(x, y, size=1.0):
+    """Three stacks of gold coins (the valley's savings)."""
+    gold = make_material((1.0, 0.76, 0.12), 0.3)
+    try:
+        for n in gold.node_tree.nodes:
+            if n.type == "BSDF_PRINCIPLED":
+                n.inputs["Metallic"].default_value = 0.85
+    except Exception:
+        pass
+    for i, (dx, cnt) in enumerate(((-0.34, 7), (0.0, 11), (0.34, 5))):
+        for k in range(max(1, int(cnt * min(1.6, size)))):
+            bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.17 * size, depth=0.045 * size,
+                                                location=(x + dx * size, y - 0.1 * i, 0.03 * size + k * 0.05 * size))
+            bpy.context.active_object.data.materials.append(gold)
 
 
 def setup_render():
@@ -907,8 +991,15 @@ def build_shot(shot, dur):
     bpy.ops.wm.read_factory_settings(use_empty=True)
     ENV.clear()
     sc = setup_render()
-    build_env(shot.get("look", "meadow_day"))
+    build_env(shot.get("look", "meadow_day"), shot.get("fx"))
     for pr in shot.get("props", []):
+        try:
+            if pr.get("type") == "sign":
+                make_sign(pr["pos"][0], pr["pos"][1], pr.get("text", ""), pr.get("size", 1.0))
+            elif pr.get("type") == "coins":
+                make_coins(pr["pos"][0], pr["pos"][1], pr.get("size", 1.0))
+        except Exception as e:
+            print("prop skipped:", pr.get("type"), e, flush=True)
         if pr.get("type") == "rock":
             x, y, size = pr["pos"][0], pr["pos"][1], pr.get("size", 1.5)
             rock = make_rock(x, y, size, seed=int(x * 10 + y))
