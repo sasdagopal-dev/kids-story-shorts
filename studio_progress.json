@@ -1,5 +1,5 @@
 {
- "next_topic": 14,
+ "next_topic": 15,
  "history": [
   {
    "date": "2026-11-07",
@@ -156,6 +156,17 @@
    "twist": "The nut pile in Drakon's den was actually his own legitimate savings, proving he did not rob the Great Oak.",
    "episode": 2,
    "clue": "Bholu's shiny feather tokens are stamped with a tiny letter G."
+  },
+  {
+   "date": "2026-11-12",
+   "title": "The High Interest Trap: How Easy Loans Destroy Savings | Jungle Money Tales Ep 3 #shorts",
+   "topic": "Borrowing costs extra: credit card interest and the minimum-payment trap. Real-world example for the 'Today we learned' shot: a $1,000 card balance at 24% APR paid back at $40 a month takes about 3 years and costs roughly $400 in interest.",
+   "file": "plans/episode_2026-11-12_2.json",
+   "recap": "Bholu borrowed nuts with hidden high interest, but Milo calculated the minimum payment trap and helped him clear the balance before winter.",
+   "cliffhanger": "Drakon confessed he is terrified of the mysterious mastermind G who holds his debt.",
+   "twist": "Drakon is not robbing the valley; he is trapped in a massive debt himself, owed to someone named G.",
+   "episode": 3,
+   "clue": "Drakon's ledger shows he owes a huge debt to someone marked with letter G."
   }
  ]
 }

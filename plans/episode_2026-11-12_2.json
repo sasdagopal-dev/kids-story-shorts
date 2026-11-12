@@ -1,0 +1,1461 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "The High Interest Trap: How Easy Loans Destroy Savings | Jungle Money Tales Ep 3 #shorts",
+ "description": "When Bholu takes a fast loan from Drakon, Milo reveals how minimum payment traps double your debt. Learn how credit card interest works and how to pay off debt fast in Episode 3 of Jungle Money Tales.",
+ "tags": [
+  "personal finance",
+  "credit card interest",
+  "minimum payment trap",
+  "debt payoff strategy",
+  "financial literacy",
+  "investing basics",
+  "money management",
+  "understanding apr",
+  "avoiding debt",
+  "jungle money tales"
+ ],
+ "twist": "Drakon is not robbing the valley; he is trapped in a massive debt himself, owed to someone named G.",
+ "episode": 3,
+ "viewer_question": "Which would you pay off first: high-interest credit debt or low-interest loans?",
+ "beat_sheet": {
+  "previously": "Gulab offered to double nuts in seven days, but smart valley animals stayed cautious while food was missing.",
+  "hook": "Bholu panics with winter 20 sunrises away and takes a trap loan from Drakon.",
+  "want": "Bholu wants winter food immediately, and Milo wants to protect Bholu from losing everything.",
+  "obstacle": "Drakon charges extreme interest (8 nuts for 5 borrowed) and offers a minimum payment trap of 1 nut per week forever.",
+  "money_in_plot": "Milo calculates the true compound interest cost of minimum payments and helps Bholu work extra to pay off the principal balance fast.",
+  "clue": "Drakon's ledger shows he owes a huge debt to someone marked with letter G.",
+  "red_herring": "Drakon seems like the villain stealing nuts, but he is actually deeply in debt to a secret party.",
+  "midpoint_twist": "Drakon is not the thief; he is desperate because he owes a massive nut debt to 'G'.",
+  "darkest_moment": "Drakon threatens to take Bholu's den by sunset, and Milo's bark calculation sheet gets destroyed in the rain.",
+  "cliffhanger": "Drakon whispers to Milo: 'I did not steal the nuts. And I am more scared than you.'"
+ },
+ "recap": "Bholu borrowed nuts with hidden high interest, but Milo calculated the minimum payment trap and helped him clear the balance before winter.",
+ "cliffhanger": "Drakon confessed he is terrified of the mysterious mastermind G who holds his debt.",
+ "disclaimer": "For education only, not financial advice. Investing involves risk, including loss of money.",
+ "credits": "3D models by Quaternius (CC0). Voice: Google Gemini text-to-speech. Animated story for education only.",
+ "story_mode": "money",
+ "made_for_kids": false,
+ "target_seconds": 162,
+ "flexible_length": true,
+ "estimated_voice_seconds": 146.2,
+ "cast": [
+  {
+   "id": "gulab",
+   "name": "Gulab",
+   "model": "Alpaca",
+   "role": "charming trader who runs the Trading Post, always smiling, everybody trusts him (hidden mastermind, never reveal before the reveal episode)",
+   "behaviour": "calm, smooth, always smiling, walks slowly, never raises his voice, filmed from a friendly eye-level angle until the reveal",
+   "voice_style": "silky, warm, slow",
+   "catchphrase": "Trust is the best currency, my friend."
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind honest cow, saves a little every day, protects the young",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one.",
+   "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+   "voice_name": "Sulafat"
+  },
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+   "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  },
+  {
+   "id": "tinku",
+   "name": "Tinku",
+   "model": "Husky",
+   "role": "Milo's loyal best friend, young husky, scared of everything but surprisingly brave, comic relief",
+   "behaviour": "jumps at every noise, hides behind Milo, big shock and relief reactions, runs in late",
+   "voice_style": "nervous, fast, squeaky",
+   "catchphrase": "I am not scared. My legs are just excited!"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Alpaca's Promise",
+   "look": "forest_day",
+   "narration": "Gulab offered double nuts, but smart animals hesitated while winter food was still missing.",
+   "tone": "mysterious, intriguing",
+   "visual": "Gulab stands smoothly beside his cart of golden feather tokens while Milo and Lakshmi watch cautiously.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "gulab",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      -0.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -2.2,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Winter Approaches",
+   "look": "autumn_gold",
+   "narration": "Bholu panicked with twenty sunrises left before snow, holding only two tiny acorn caps.",
+   "tone": "tense, desperate",
+   "visual": "Bholu stands alone in the leaf-scattered meadow, staring at two tiny acorn caps in horror.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Desperate Measures",
+   "look": "storm_dusk",
+   "narration": "Bholu ran into Drakon’s dark den. \"I need five nuts right now!\" said Bholu.",
+   "tone": "urgent, foolish",
+   "visual": "Bholu runs into Drakon's dark lending cave while Drakon watches coldly from above.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "bholu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.3,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.05
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ],
+     "z": 0.97
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.4
+    }
+   ],
+   "quotes": [
+    {
+     "start": 34,
+     "end": 63,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "The Lender's Offer",
+   "look": "storm_dusk",
+   "narration": "Drakon sneered sneeringly. \"Take five nuts today, but pay back eight nuts next week.\"",
+   "tone": "sneering, predatory",
+   "visual": "Drakon towers over Bholu, sneering menacingly as he opens his claws.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.33
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ],
+     "z": 0.97
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.33
+    }
+   ],
+   "quotes": [
+    {
+     "start": 27,
+     "end": 85,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "The Minimum Payment Trap",
+   "look": "storm_dusk",
+   "narration": "\"Or pay one nut a week forever!\" sneered Drakon. Bholu happily took the five nuts.",
+   "tone": "sly, cheerful foolishness",
+   "visual": "Drakon leans down while Bholu reaches out happily to take the fresh pile of nuts.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 32,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Milo's Warning",
+   "look": "autumn_gold",
+   "narration": "Milo saw Bholu buying shiny useless berries. \"That easy loan is a trap!\" said Milo.",
+   "tone": "eager, warning",
+   "visual": "Milo walks quickly up to Bholu who is showing off golden berry snacks in the meadow.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.5,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.46
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.46
+    }
+   ],
+   "quotes": [
+    {
+     "start": 45,
+     "end": 72,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Blind Optimism",
+   "look": "autumn_gold",
+   "narration": "Bholu laughed loudly. \"I only owe one small nut per week, Milo!\" said Bholu.",
+   "tone": "dismissive, funny",
+   "visual": "Bholu laughs cheerfully and waves his ears while Milo rubs his forehead in frustration.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 22,
+     "end": 64,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Tinku's Panic",
+   "look": "autumn_gold",
+   "narration": "Tinku jumped behind Milo. \"One nut forever means you pay back twenty nuts!\" squeaked Tinku.",
+   "tone": "squeaky, terrified",
+   "visual": "Tinku runs out from behind a tree, jumping in shock beside Milo and Bholu.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "tinku",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -1.2,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.05
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 26,
+     "end": 75,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "The Math on Bark",
+   "look": "autumn_gold",
+   "narration": "Milo scratched numbers on bark, showing how minimum payments let high interest multiply endlessly.",
+   "tone": "focused, instructional",
+   "visual": "Milo points at scratches on a piece of tree bark while Bholu looks bewildered.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.8,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.5
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "The Secret Ledger",
+   "look": "storm_dusk",
+   "narration": "Milo noticed Drakon's open ledger, showing a huge debt marked with a mysterious letter G.",
+   "tone": "gasping, revelation",
+   "visual": "Close-up of Milo staring in shock at an open stone slab inside Drakon's cave marked with letter G.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Drakon's Own Trap",
+   "look": "storm_dusk",
+   "narration": "Drakon was not just a greedy lender; he owed hundreds of nuts to someone else!",
+   "tone": "dramatic irony, suspenseful",
+   "visual": "Drakon steps into the doorway behind Milo, looking anxious rather than terrifying.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Confrontation",
+   "look": "storm_dusk",
+   "narration": "Milo confronted Drakon bravely. \"You are trapping Bholu while hiding your own secret debt!\" said Milo.",
+   "tone": "bold, defiant",
+   "visual": "Milo turns to face Drakon, walking forward bravely inside the shadowy cave.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.5,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.16
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.6,
+      6.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 32,
+     "end": 91,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Drakon's Threat",
+   "look": "storm_dusk",
+   "narration": "Drakon growled fiercely at Milo. \"Pay eight nuts by sunset or lose your cozy den!\"",
+   "tone": "angry, threatened",
+   "visual": "Drakon roars fiercely down at Milo, kicking the bark calculations to pieces.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "kick"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.6,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "thumb": true,
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.4
+    }
+   ],
+   "quotes": [
+    {
+     "start": 33,
+     "end": 82,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Darkest Hour in Rain",
+   "look": "rainy_forest",
+   "narration": "Milo sat in dark rain with Bholu, feeling completely defeated as winter cold arrived.",
+   "tone": "gloomy, sad",
+   "visual": "Milo and Bholu huddle together under cold falling rain, feeling hopeless.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      6.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        1.2,
+        3.0
+       ],
+       "at": 0.0
+      },
+      {
+       "action": "idle"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Ragnar's Wisdom",
+   "look": "rainy_forest",
+   "narration": "Ragnar stepped from mist calmly. \"Pay off principal fast to stop borrowing costs,\" said Ragnar.",
+   "tone": "calm, authoritative",
+   "visual": "Old Ragnar walks out of the misty forest, standing tall on a mossy boulder.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "follow",
+    "focus": "ragnar",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -2.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -1.2,
+        3.5
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.13
+      },
+      {
+       "action": "talk",
+       "at": 0.35
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.2,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      -1.2,
+      6.74
+     ],
+     "size": 1.4
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.35
+    }
+   ],
+   "quotes": [
+    {
+     "start": 33,
+     "end": 82,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Earning the Freedom",
+   "look": "golden_sunset",
+   "narration": "Lakshmi gave them forage work. Milo and Bholu picked acorns all day without stopping.",
+   "tone": "energetic, determined",
+   "visual": "Lakshmi watches kindly while Milo and Bholu work together gathering wild acorns.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "lakshmi",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.8,
+        3.0
+       ]
+      },
+      {
+       "action": "eat",
+       "at": 0.5
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Debt Wiped Clean",
+   "look": "golden_sunset",
+   "narration": "Bholu paid Drakon eight nuts before sunset, wiping out the debt and saving future nuts.",
+   "tone": "triumphant, relief",
+   "visual": "Bholu walks up to Drakon near the cave entrance and hands over eight full nuts.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        -0.3,
+        3.0
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.5
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "celebrate",
+       "at": 0.6
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Math Wins",
+   "look": "meadow_day",
+   "narration": "Drakon took the nuts silently. Milo’s quick math crushed high interest before it grew.",
+   "tone": "clever, decisive",
+   "visual": "Drakon inspects the eight nuts while Milo celebrates with a jump beside Bholu.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.6,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Today We Learned",
+   "look": "meadow_day",
+   "narration": "Today we learned: borrowing costs extra interest. Minimum payments prolong debt for years. For example, a $1,000 card balance at 24% APR paid at $40 monthly takes about 3 years and costs roughly $400 in interest.",
+   "tone": "clear, warm, educational",
+   "visual": "Milo stands center stage with Bholu and Lakshmi as summary graphics appear.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      2.2,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      -2.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "The Terrifying Confession",
+   "look": "night_moon",
+   "narration": "Which would you pay off first: high interest debt or low interest loans? Tell us below! Drakon whispered to Milo: \"I did not steal the nuts. And I am more scared than you.\" Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money.",
+   "tone": "whispered, scary, mystery hook",
+   "visual": "Extreme close-up of Drakon leaning down in the shadows to whisper nervously into Milo's ear.",
+   "camera": {
+    "framing": "extreme_close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.3,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.35
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.35
+    }
+   ],
+   "quotes": [
+    {
+     "start": 114,
+     "end": 172,
+     "id": "drakon"
+    }
+   ]
+  }
+ ],
+ "topic": "Borrowing costs extra: credit card interest and the minimum-payment trap. Real-world example for the 'Today we learned' shot: a $1,000 card balance at 24% APR paid back at $40 a month takes about 3 years and costs roughly $400 in interest.",
+ "genre": "a legend told by the old wolf",
+ "director_model": "gemini-3.6-flash"
+}
