@@ -70,6 +70,26 @@ def build_captions(plan, tl):
     return cues
 
 
+def measure_loudnorm(path, target=-14.0, tp=-1.0, lra=11.0):
+    """Two-pass loudnorm: measure the narration, then build an exact (linear) filter. A quiet voice becomes as loud as any other.
+    Falls back to a single-pass filter if the measurement fails."""
+    single = f"loudnorm=I={target}:TP={tp}:LRA={lra}"
+    try:
+        r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af", f"loudnorm=I={target}:TP={tp}:LRA={lra}:print_format=json",
+                            "-f", "null", "-"], capture_output=True, text=True, timeout=300)
+        txt = r.stderr
+        j = json.loads(txt[txt.rindex("{"):txt.rindex("}") + 1])
+        vals = {k: float(j[k]) for k in ("input_i", "input_tp", "input_lra", "input_thresh", "target_offset")}
+        if vals["input_i"] < -70:
+            return single
+        print(f"narration loudness {vals['input_i']:.1f} LUFS -> target {target} LUFS (gain {target - vals['input_i']:+.1f} dB)", flush=True)
+        return (f"loudnorm=I={target}:TP={tp}:LRA={lra}:measured_I={vals['input_i']}:measured_TP={vals['input_tp']}:"
+                f"measured_LRA={vals['input_lra']}:measured_thresh={vals['input_thresh']}:offset={vals['target_offset']}:linear=true")
+    except Exception as e:
+        print(f"loudness measurement skipped ({str(e)[:80]}), using single pass", flush=True)
+        return single
+
+
 def build_description(plan, money):
     """Search-friendly first line, the story, a question for comments (engagement), a teaser for the next episode
     (people come back), then the disclaimer, credits and hashtags. #Shorts comes first (YouTube shows the first 3 above the title)."""
@@ -80,15 +100,15 @@ def build_description(plan, money):
         series = ep.get("series") or ""
     first = plan.get("logline") or ""
     if not first and topic:
-        first = f"A short animal story that teaches: {topic}."
+        first = f"Learn this investing and money lesson in a short animated story: {topic}."
     parts = [first, plan.get("description", "")]
     if plan.get("viewer_question"):
         parts.append("\U0001F4AC " + str(plan["viewer_question"]).strip())
     if plan.get("cliffhanger"):
         parts.append("\u25B6 Next episode: " + str(plan["cliffhanger"]).strip() + "\nSubscribe so you do not miss it!")
     parts += [plan.get("disclaimer", ""), plan.get("credits", "")]
-    hashtags = ("#Shorts #MoneyLessons #FinancialLiteracy #AnimalStories #StoriesForKids" if money
-                else "#Shorts #AnimalStories #CartoonStories #StoriesForKids")
+    hashtags = ("#Shorts #Investing #PersonalFinance #FinancialLiteracy #MoneyTips" if money
+                else "#Shorts #AnimalStories #CartoonStories")
     return "\n\n".join(x.strip() for x in parts if x and x.strip()) + "\n\n" + hashtags
 
 
@@ -174,15 +194,16 @@ def main():
             vf += ["fade=t=in:st=0:d=0.3", f"fade=t=out:st={target - 0.5:.2f}:d=0.5"]
         inputs = ["-i", os.path.abspath(a.video), "-i", narr]
         music = os.path.abspath(a.music) if a.music else ""
-        tail = f"afade=t=out:st={target - 0.25:.2f}:d=0.25"
+        tail = f"alimiter=limit=0.95,afade=t=out:st={target - 0.25:.2f}:d=0.25"
+        vnorm = measure_loudnorm(narr)
         if music and os.path.exists(music):
             inputs += ["-stream_loop", "-1", "-i", music]
-            fc = (f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,aformat=sample_rates=44100:channel_layouts=stereo,asplit=2[v][vs];"
+            fc = (f"[1:a]{vnorm},aformat=sample_rates=44100:channel_layouts=stereo,asplit=2[v][vs];"
                   f"[2:a]aformat=sample_rates=44100:channel_layouts=stereo,volume={a.music_level},afade=t=in:d=1.5,atrim=0:{target:.3f}[m0];"
                   f"[m0][vs]sidechaincompress=threshold=0.02:ratio=10:attack=20:release=500[md];"
                   f"[v][md]amix=inputs=2:duration=longest:normalize=0,{tail}[a]")
         else:
-            fc = f"[1:a]loudnorm=I=-16:TP=-1.5:LRA=11,{tail}[a]"
+            fc = f"[1:a]{vnorm},{tail}[a]"
         cmd = ["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", fc, "-map", "0:v", "-map", "[a]",
                "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
                "-c:a", "aac", "-b:a", "192k", "-t", f"{target:.3f}", "-movflags", "+faststart", out_path]
@@ -205,6 +226,14 @@ def main():
     run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{th['start_time'] + th['duration'] / 2:.2f}", "-i", out_path,
          "-frames:v", "1", "-q:v", "2", os.path.join(out_dir, "thumbnail.jpg")])
     tags = list(plan.get("tags") or [])
+    if plan.get("story_mode") == "money":
+        fixed = ["investing for beginners", "personal finance", "financial literacy", "money tips", "stock market for beginners",
+                 "index funds", "compound interest", "401k", "roth ira", "emergency fund", "how to invest", "animated finance"]
+        seen, merged = set(), []
+        for t in fixed + [str(x) for x in tags]:
+            if t.lower() not in seen:
+                seen.add(t.lower()); merged.append(t)
+        tags = merged
     kids = a.made_for_kids or ("yes" if plan.get("made_for_kids", True) else "no")
     money = plan.get("story_mode") == "money"
     desc = build_description(plan, money)
