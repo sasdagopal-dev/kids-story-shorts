@@ -502,6 +502,9 @@ def _fx_spawn(n, shape, mat, rng, params):
 def add_weather(look_name, look):
     FX["items"].clear()
     FX["kind"] = None
+    FX["light"] = None            # the scene is rebuilt for every shot: old Blender objects must not be reused
+    FX["world_bg"] = None
+    FX["base_strength"] = 1.0
     if not FX_ON:
         return
     kind = fx_kind(look_name)
@@ -672,6 +675,48 @@ def is_one_shot(anim):
     return a.startswith(("idle_hitreact", "jump", "gallop_jump", "death"))
 
 
+BLOB_SHADOW = os.environ.get("BLOB_SHADOW", "1") != "0"
+
+
+def make_blob_shadow():
+    """A soft dark spot under an animal (contact shadow). It keeps every animal firmly on the ground in any light,
+    on top of the real sun shadow. Never casts a shadow itself."""
+    bpy.ops.mesh.primitive_circle_add(vertices=48, radius=1.0, fill_type="NGON", location=(0, 0, 0.015))
+    o = bpy.context.active_object
+    m = bpy.data.materials.new("blob")
+    m.use_nodes = True
+    nt = m.node_tree
+    nt.nodes.clear()
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    gr = nt.nodes.new("ShaderNodeTexGradient")
+    gr.gradient_type = "SPHERICAL"                         # 1 in the centre, 0 at the edge of the unit circle
+    pw = nt.nodes.new("ShaderNodeMath")
+    pw.operation = "POWER"
+    pw.inputs[1].default_value = 0.7
+    mul = nt.nodes.new("ShaderNodeMath")
+    mul.operation = "MULTIPLY"
+    mul.inputs[1].default_value = 0.85
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    dk = nt.nodes.new("ShaderNodeBsdfDiffuse")
+    dk.inputs["Color"].default_value = (0.01, 0.01, 0.01, 1)
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    nt.links.new(tc.outputs["Object"], gr.inputs["Vector"])
+    nt.links.new(gr.outputs["Fac"], pw.inputs[0])
+    nt.links.new(pw.outputs[0], mul.inputs[0])
+    nt.links.new(mul.outputs[0], mix.inputs[0])
+    nt.links.new(tr.outputs[0], mix.inputs[1])
+    nt.links.new(dk.outputs[0], mix.inputs[2])
+    nt.links.new(mix.outputs[0], out.inputs["Surface"])
+    o.data.materials.append(m)
+    for attr in ("visible_shadow", "visible_glossy", "visible_transmission"):
+        try:
+            setattr(o, attr, False)
+        except Exception:
+            pass
+    return o
+
+
 class Actor:
     def __init__(self, ch):
         self.id = ch["id"]
@@ -694,6 +739,15 @@ class Actor:
         if h and h > 0.01:
             self.base_scale = max(0.05, min(20.0, want / h))
             SCALE_REPORT[self.model] = f"{h:.2f} m -> {want:.2f} m (x{self.base_scale:.2f})"
+        self.shadow = None
+        if BLOB_SHADOW:
+            try:
+                self.shadow = make_blob_shadow()
+                r = max(0.3, min(0.9, 0.38 * want))
+                self.shadow.scale = (r, r, 1.0)
+            except Exception as e:
+                print("contact shadow skipped:", e, flush=True)
+                self.shadow = None
 
     def pick(self, anim):
         a = self.actions.get(anim.lower())
@@ -899,6 +953,8 @@ def pose_frame(sc, cam, target, chars, shot, t_sec, dur):
             sz = s * (1.0 + bob)
             heading += 2.0 * math.sin(2 * math.pi * 1.3 * t_sec)
         a.wrap.location = (pos[0], pos[1], a.z)
+        if getattr(a, "shadow", None) is not None:
+            a.shadow.location = (pos[0], pos[1], 0.015)
         a.wrap.rotation_euler.z = math.radians(heading + MODEL_FORWARD_OFFSET)
         a.wrap.scale = (sx, sy, sz)
     cs = core.camera_state(core.cut_camera(shot, t_sec, dur), [{"id": c["id"], "height": c["height"], "segs": c["segs"]} for c in chars],
