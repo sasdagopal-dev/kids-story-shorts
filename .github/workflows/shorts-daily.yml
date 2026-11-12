@@ -21,7 +21,7 @@ on:
       voice_gender:
         description: "Narrator"
         type: choice
-        default: male
+        default: female
         options: [male, female]
       quality:
         description: "Render quality"
