@@ -77,7 +77,7 @@ jobs:
           LANGUAGE: ${{ inputs.language || 'English' }}
           STORY_MODE: ${{ inputs.story_mode || 'config' }}
         run: |
-          ARGS=(--language "$LANGUAGE")
+          ARGS=(--language "$LANGUAGE" --attempts 4)     # fewer calls per run = the daily Gemini quota lasts longer
           [ "$STORY_MODE" != "config" ] && ARGS+=(--story-mode "$STORY_MODE")
           [ -n "$TOPIC" ] && ARGS+=(--topic "$TOPIC")
           ok=0
