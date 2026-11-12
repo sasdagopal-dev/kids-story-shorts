@@ -1,0 +1,1567 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "Needs Vs Wants: The Mystery of the Three Baskets | Jungle Money Tales Ep 2 #shorts",
+ "description": "Milo confronts Drakon over stolen nuts, only to discover a bigger mystery. When Bholu wastes all his pay on shiny toys, Milo uses the three-basket system to save his friend before winter.",
+ "tags": [
+  "JungleMoneyTales",
+  "NeedsAndWants",
+  "ThreeBaskets",
+  "FinancialLiteracy",
+  "AnimatedMystery",
+  "KidsCartoons",
+  "MoneySkills",
+  "FoxDetective",
+  "SaveSpendShare",
+  "Shorts"
+ ],
+ "twist": "The nut pile in Drakon's den was actually his own legitimate savings, proving he did not rob the Great Oak.",
+ "episode": 2,
+ "viewer_question": "Would you put your extra nuts in the save basket or spend them on shiny toys?",
+ "beat_sheet": {
+  "previously": "Milo tracked muddy paw prints straight into Drakon's hidden den and saw a massive pile of food.",
+  "hook": "Inside the dark den, Milo gasped at hidden nuts, but Drakon stepped out growling loudly.",
+  "want": "Milo wants to prove Drakon stole the food and count what remains before winter arrives.",
+  "obstacle": "Drakon denies stealing the nuts, and Bholu has wasted all his food on shiny tokens.",
+  "money_in_plot": "Bholu spends all his nuts on wants; Milo uses the three baskets (needs, save, share) to fix Bholu's budget.",
+  "clue": "Bholu's shiny feather tokens are stamped with a tiny letter G.",
+  "red_herring": "Drakon looks guilty with a nut pile, but it turns out to be his own savings from legal loans.",
+  "midpoint_twist": "Drakon's pile isn't stolen; he is innocent of the Great Oak theft, leaving Milo with no clear suspect.",
+  "darkest_moment": "Milo sits in the rain feeling defeated, unable to find the thief while winter draws closer.",
+  "cliffhanger": "Gulab the alpaca arrives promising to double anyone's nuts in seven days."
+ },
+ "recap": "Milo learned that Drakon was innocent and taught Bholu how to separate food into needs, savings, and sharing.",
+ "cliffhanger": "A smooth stranger named Gulab arrived, offering to double ten nuts in just seven days.",
+ "disclaimer": "This story is for education only and is not financial advice.",
+ "credits": "3D models by Quaternius (CC0).",
+ "story_mode": "money",
+ "made_for_kids": true,
+ "target_seconds": 178,
+ "flexible_length": true,
+ "estimated_voice_seconds": 165.0,
+ "cast": [
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "tinku",
+   "name": "Tinku",
+   "model": "Husky",
+   "role": "Milo's loyal best friend, young husky, scared of everything but surprisingly brave, comic relief",
+   "behaviour": "jumps at every noise, hides behind Milo, big shock and relief reactions, runs in late",
+   "voice_style": "nervous, fast, squeaky",
+   "catchphrase": "I am not scared. My legs are just excited!"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  },
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+   "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "lakshmi",
+   "name": "Lakshmi",
+   "model": "Cow",
+   "role": "kind honest cow, saves a little every day, protects the young",
+   "voice_style": "warm, motherly, gentle",
+   "catchphrase": "Come here, little one.",
+   "behaviour": "calm, gentle, eats while she talks, nods, never in a hurry",
+   "voice_name": "Sulafat"
+  },
+  {
+   "id": "veer",
+   "name": "Veer",
+   "model": "Stag",
+   "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
+   "voice_style": "few words, deep and noble",
+   "catchphrase": "The forest listens.",
+   "behaviour": "stands tall and still, arrives fast to protect, serious",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "gulab",
+   "name": "Gulab",
+   "model": "Alpaca",
+   "role": "charming trader who runs the Trading Post, always smiling, everybody trusts him (hidden mastermind, never reveal before the reveal episode)",
+   "behaviour": "calm, smooth, always smiling, walks slowly, never raises his voice, filmed from a friendly eye-level angle until the reveal",
+   "voice_style": "silky, warm, slow",
+   "catchphrase": "Trust is the best currency, my friend."
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "Cornered in the Den",
+   "look": "night_moon",
+   "narration": "Inside the dark den, Milo gasped at hidden nuts, but Drakon stepped out growling loudly.",
+   "tone": "tense, whispered, dramatic",
+   "visual": "Inside the shadowed den, Milo and Tinku look at a pile of nuts while Drakon looms over them.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.2,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "The Accusation",
+   "look": "night_moon",
+   "narration": "\"Someone stole half our winter food, and muddy paws led here!\" shouted Milo, pointing.",
+   "tone": "brave, eager, accusatory",
+   "visual": "Milo points accusingly at Drakon, while Tinku hides behind Milo's back.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.6,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 62,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Drakon's Challenge",
+   "look": "forest_day",
+   "narration": "Drakon laughed darkly. \"Prove I stole it! Only twenty-nine sunrises remain before freezing winter.\"",
+   "tone": "sneering, proud, mocking",
+   "visual": "Outside the den, Drakon sneers while Ragnar stands quietly on a nearby rock watching.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.26
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.2,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      1.8,
+      3.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 0.97
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      1.8,
+      3.8
+     ],
+     "size": 1.5
+    }
+   ],
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.26
+    }
+   ],
+   "quotes": [
+    {
+     "start": 23,
+     "end": 99,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "The Empty Storehouse",
+   "look": "forest_day",
+   "narration": "Milo counted the Great Oak storehouse, but half the valley’s winter food was definitely gone missing.",
+   "tone": "serious, concerned, fast",
+   "visual": "Milo stands inside the Great Oak checking empty hollows while Bholu runs up in distress.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      6.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.1,
+       "to": [
+        0.8,
+        3.0
+       ]
+      },
+      {
+       "action": "sad",
+       "at": 0.7
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Bholu's Shiny Problem",
+   "look": "meadow_day",
+   "narration": "Bholu held shiny golden feather tokens. \"Oh my whiskers... I mean, my ears! I spent everything!\"",
+   "tone": "panicked, funny, loud",
+   "visual": "Bholu holds up shiny golden feather tokens with panic written all over his face.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 40,
+     "end": 96,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Bailout Fails",
+   "look": "meadow_day",
+   "narration": "Milo handed Bholu five fresh acorns, but Bholu instantly ran off to buy more shiny feathers.",
+   "tone": "frustrated, hasty, fast",
+   "visual": "Milo gives nuts to Bholu, but Bholu immediately runs off to buy more shiny trinkets.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "bholu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.6,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.3,
+       "to": [
+        2.6,
+        3.0
+       ]
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "The Ticking Clock",
+   "look": "meadow_day",
+   "narration": "Tinku shivered nervously. \"I am not scared! My legs are just excited about twenty-eight sunrises left!\"",
+   "tone": "squeaky, comic, nervous",
+   "visual": "Tinku shivers with nervous energy next to Milo in the sunny meadow.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "static",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.27
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.27
+    }
+   ],
+   "quotes": [
+    {
+     "start": 26,
+     "end": 103,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "The Golden Clue",
+   "look": "autumn_gold",
+   "narration": "On Bholu’s floor lay golden tokens stamped with a tiny G, paid to buy useless shiny things.",
+   "tone": "mysterious, quiet, focused",
+   "visual": "Milo inspects a dropped golden token on the ground as Lakshmi walks slowly into frame.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      6.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.1,
+       "to": [
+        1.0,
+        3.2
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.6
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.6,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Lakshmi's Wisdom",
+   "look": "autumn_gold",
+   "narration": "\"Come here, little one,\" said Lakshmi. \"Bholu mixed up his needs with his silly wants today.\"",
+   "tone": "warm, gentle, motherly",
+   "visual": "Lakshmi nods gently toward Bholu while munching on autumn grass.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "lakshmi",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "lakshmi"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "lakshmi"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "lakshmi",
+     "at": 0.0
+    },
+    {
+     "id": "lakshmi",
+     "at": 0.44
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 24,
+     "id": "lakshmi"
+    },
+    {
+     "start": 39,
+     "end": 93,
+     "id": "lakshmi"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Sorting Mishap",
+   "look": "autumn_gold",
+   "narration": "Milo tried sorting ten acorns, but Bholu got confused and accidentally ate three acorns at once.",
+   "tone": "funny, lighthearted, surprised",
+   "visual": "Milo tries sorting acorns into piles, but Bholu impulsively gulps down three of them.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      1.4,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "eat"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Ragnar's Rule",
+   "look": "golden_sunset",
+   "narration": "Ragnar spoke calmly. \"Patience is also a path. Divide your food before you spend a single nut.\"",
+   "tone": "slow, calm, wise",
+   "visual": "Ragnar stands majestic on a high boulder in the golden dusk light as Drakon approaches.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "pull_out",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      2.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.57
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar",
+     "z": 1.16
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -6.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        1.52,
+        6.72
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.55
+      }
+     ],
+     "face": "ragnar",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "size": 1.8
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.57
+    }
+   ],
+   "quotes": [
+    {
+     "start": 21,
+     "end": 95,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Drakon Proves His Case",
+   "look": "golden_sunset",
+   "narration": "Drakon dumped his nuts. \"Nobody beats Drakon! This pile is my own savings from loans!\"",
+   "tone": "proud, loud, aggressive",
+   "visual": "Drakon angrily dumps a sack of nuts onto the dirt floor, glaring at Milo.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "thumb": true,
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 24,
+     "end": 86,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Veer Confirms the Truth",
+   "look": "golden_sunset",
+   "narration": "\"The mark is different,\" said Veer. \"Drakon did not rob the Great Oak storehouse after all.\"",
+   "tone": "deep, noble, authoritative",
+   "visual": "Veer the stag inspects Drakon's nut pile carefully, nodding noble and tall.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "veer",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      -2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.0
+    },
+    {
+     "id": "veer",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 24,
+     "id": "veer"
+    },
+    {
+     "start": 36,
+     "end": 92,
+     "id": "veer"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Milo's Darkest Moment",
+   "look": "rainy_forest",
+   "narration": "Milo sat on damp grass, feeling helpless with only twenty-seven sunrises before winter cold.",
+   "tone": "sad, quiet, helpless",
+   "visual": "Milo sits alone in the cold falling rain, ears drooping with frustration and fear.",
+   "camera": {
+    "framing": "extreme_close",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Tinku's Encouragement",
+   "look": "rainy_forest",
+   "narration": "Tinku sat beside his friend. \"But I have a plan! You always figure out the puzzle, Milo!\"",
+   "tone": "eager, loyal, hopeful",
+   "visual": "Tinku sits down beside Milo in the rain, offering his catchphrase to cheer his friend up.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "tinku",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 29,
+     "end": 89,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "The Three Baskets",
+   "look": "flower_field",
+   "narration": "Milo set down three woven baskets. \"We separate ten nuts: five for needs, three for savings, two to share!\"",
+   "tone": "quick, eager, clever",
+   "visual": "Milo arranges three woven baskets in front of Bholu and Lakshmi under bright sunshine.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.31
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.2,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.31
+    }
+   ],
+   "quotes": [
+    {
+     "start": 35,
+     "end": 107,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Bholu Sorts His Pay",
+   "look": "flower_field",
+   "narration": "Bholu put five nuts in spend for needs, saved three nuts, and shared two nuts with hungry friends.",
+   "tone": "warm, triumphant, clear",
+   "visual": "Bholu carefully places acorns into each of the three baskets, smiling proudly.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "Bholu's Victory",
+   "look": "autumn_gold",
+   "narration": "\"I survived today and kept three nuts for tomorrow!\" shouted Bholu, jumping with pure joy.",
+   "tone": "cheerful, excited, joyful",
+   "visual": "Bholu leaps into the air celebrating his newly saved nuts alongside Milo and Tinku.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "static",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 52,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Today We Learned",
+   "look": "golden_sunset",
+   "narration": "Today we learned: cover needs before wants, save three nuts from ten, and share with your neighbors.",
+   "tone": "warm, direct, storyteller",
+   "visual": "Milo, Ragnar, and Lakshmi stand together under the Great Oak as sunset falls.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "lakshmi",
+     "model": "Cow",
+     "pos": [
+      2.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "The Golden Arrival",
+   "look": "misty_morning",
+   "narration": "Would you save your nuts or spend them on shiny toys? A smooth stranger, Gulab the alpaca, arrived with a cart and a promise: \"Give me ten nuts and I will give you twenty back in seven days.\" If you liked this story, subscribe for the next one! This story is for education only and is not financial advice.",
+   "tone": "silky, curious, mysterious",
+   "visual": "Gulab the alpaca walks into the misty clearing towing a colorful cart filled with golden glints.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "gulab",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      -6.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.8,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.55
+      },
+      {
+       "action": "talk",
+       "at": 0.57
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.6,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "gulab",
+     "at": 0.57
+    }
+   ],
+   "quotes": [
+    {
+     "start": 126,
+     "end": 191,
+     "id": "gulab"
+    }
+   ]
+  }
+ ],
+ "topic": "Needs, wants and the three baskets: spend, save, share",
+ "genre": "a funny misunderstanding that turns heroic",
+ "director_model": "gemini-3.5-flash"
+}

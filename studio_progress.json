@@ -1,5 +1,5 @@
 {
- "next_topic": 13,
+ "next_topic": 14,
  "history": [
   {
    "date": "2026-11-07",
@@ -145,6 +145,17 @@
    "twist": "The storehouse door wasn't forced open from outside; it was unlocked from inside.",
    "episode": 1,
    "clue": "A shiny golden feather lying near the broken storehouse door."
+  },
+  {
+   "date": "2026-11-12",
+   "title": "Needs Vs Wants: The Mystery of the Three Baskets | Jungle Money Tales Ep 2 #shorts",
+   "topic": "Needs, wants and the three baskets: spend, save, share",
+   "file": "plans/episode_2026-11-12.json",
+   "recap": "Milo learned that Drakon was innocent and taught Bholu how to separate food into needs, savings, and sharing.",
+   "cliffhanger": "A smooth stranger named Gulab arrived, offering to double ten nuts in just seven days.",
+   "twist": "The nut pile in Drakon's den was actually his own legitimate savings, proving he did not rob the Great Oak.",
+   "episode": 2,
+   "clue": "Bholu's shiny feather tokens are stamped with a tiny letter G."
   }
  ]
 }
