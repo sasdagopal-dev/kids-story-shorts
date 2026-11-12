@@ -154,6 +154,20 @@ def add_captions(token, vid, path, language):
     print("  captions:", "ok" if status == 200 else "skipped (" + explain(status, rb)[:140] + ")", flush=True)
 
 
+def add_to_playlist(token, vid, playlist):
+    body = json.dumps({"snippet": {"playlistId": playlist, "resourceId": {"kind": "youtube#video", "videoId": vid}}}).encode("utf-8")
+    status, _, rb = http(urllib.request.Request(f"{API}/youtube/v3/playlistItems?part=snippet", data=body, method="POST",
+                                                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}))
+    print("  playlist:", "ok" if status == 200 else "skipped (" + explain(status, rb)[:140] + ")", flush=True)
+
+
+def first_comment(token, vid, text):
+    body = json.dumps({"snippet": {"videoId": vid, "topLevelComment": {"snippet": {"textOriginal": text[:500]}}}}).encode("utf-8")
+    status, _, rb = http(urllib.request.Request(f"{API}/youtube/v3/commentThreads?part=snippet", data=body, method="POST",
+                                                headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}))
+    print("  first comment:", "ok (pin it in YouTube Studio)" if status == 200 else "skipped (" + explain(status, rb)[:140] + ")", flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default="out")
@@ -194,6 +208,11 @@ def main():
             set_thumbnail(token, vid, thumb)
         if not a.no_captions and os.path.exists(srt):
             add_captions(token, vid, srt, m.get("language", "en"))
+        playlist = os.environ.get("YT_PLAYLIST_ID", "").strip()        # optional secret: keeps the series together, people binge it
+        if playlist:
+            add_to_playlist(token, vid, playlist)
+        if m.get("firstComment") and not m.get("selfDeclaredMadeForKids", True):     # comments are switched off on made-for-kids videos
+            first_comment(token, vid, m["firstComment"])
         summary = os.environ.get("GITHUB_STEP_SUMMARY")
         if summary:
             with open(summary, "a", encoding="utf-8") as f:
