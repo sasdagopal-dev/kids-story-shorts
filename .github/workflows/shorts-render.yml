@@ -396,6 +396,7 @@ jobs:
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
           YT_CHANNEL_ID: ${{ secrets.YT_CHANNEL_ID }}
           PRIVACY: ${{ inputs.youtube_privacy }}
+          PUBLISH_ET: ${{ vars.PUBLISH_TIME_ET }}
         run: |
           ls -la final/out
-          python3 youtube_upload.py --dir final/out --privacy "${PRIVACY:-private}"
+          python3 youtube_upload.py --dir final/out --privacy "${PRIVACY:-private}" ${PUBLISH_ET:+--publish-at-et "$PUBLISH_ET"}
