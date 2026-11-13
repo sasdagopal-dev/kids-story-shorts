@@ -112,6 +112,71 @@
    "voice_style": "warm, soft, calm even in danger",
    "catchphrase": "Look after yourself first, my son",
    "behaviour": "stays close to Milo, comforts him, never complains"
+  },
+  {
+   "id": "tej",
+   "name": "Tej",
+   "model": "Horse",
+   "role": "proud young stallion, fast and fearless but too proud to ask for help or admit a money mistake",
+   "voice_style": "loud, confident, a little boastful",
+   "catchphrase": "Nobody out-runs me!",
+   "behaviour": "gallops, rears up when excited, hangs his head when ashamed",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "shweta",
+   "name": "Shweta",
+   "model": "Horse_White",
+   "role": "wise white mare, calm judge and storyteller of the valley, asks the one question that reveals the truth",
+   "voice_style": "warm, measured, thoughtful",
+   "catchphrase": "Ask the question first.",
+   "behaviour": "stands tall and still, turns slowly, never panics",
+   "voice_name": "Sulafat"
+  },
+  {
+   "id": "bheem",
+   "name": "Bheem",
+   "model": "Bull",
+   "role": "strong, hot-tempered bull who acts first and thinks later, boasts about big plans, hates waiting",
+   "voice_style": "booming, impatient, proud",
+   "catchphrase": "Why wait? I want it now!",
+   "behaviour": "stamps, snorts, charges when angry, slumps when he loses",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "chitra",
+   "name": "Chitra",
+   "model": "Deer",
+   "role": "gentle, quick young deer who loves her family, careful and kind, learns fast from mistakes",
+   "voice_style": "soft, bright, earnest",
+   "catchphrase": "I will not give up.",
+   "behaviour": "springs lightly, freezes when scared, nuzzles her mother",
+   "voice_name": "Leda"
+  },
+  {
+   "id": "sona",
+   "name": "Sona",
+   "model": "Deer",
+   "role": "Chitra's mother, an older golden deer, loving and brave, the person Chitra most wants to protect",
+   "voice_style": "gentle, calm even in danger",
+   "catchphrase": "Look after yourself first, my child.",
+   "behaviour": "stays close to Chitra, comforts her, never complains",
+   "voice_name": "Vindemiatrix",
+   "tint": [
+    1.25,
+    1.1,
+    0.95
+   ]
+  },
+  {
+   "id": "kiko",
+   "name": "Kiko",
+   "model": "ShibaInu",
+   "role": "small, sharp, cheeky shiba who notices details and loves a clever test, but sometimes bets too big",
+   "voice_style": "quick, witty, teasing",
+   "catchphrase": "Hmm, that does not add up.",
+   "behaviour": "trots, tilts his head, pounces on a clue, shows shock with wide eyes",
+   "voice_name": "Zephyr"
   }
  ],
  "targets": {
@@ -183,7 +248,7 @@
  "pipeline": "single",
  "season": {
   "name": "Jungle Money Tales",
-  "premise": "Every episode is a self-contained animal drama: a real crisis hits, and one money habit decides who is safe.",
+  "premise": "Every episode is a Panchatantra-style animal fable with a different hero: clever and foolish animals, a temptation or a trick, a hard consequence, a wise turn, a moral, and then the plain money lesson.",
   "secret": "",
   "reveal_episode": 99,
   "episodes": [
@@ -201,112 +266,224 @@
    },
    {
     "concept": "Emergency fund and inflation: save 3 to 6 months of costs BEFORE the emergency, because prices jump in a crisis and rise over time. Real-world example: $3,000 of monthly costs means $9,000 to $18,000; at 3% inflation $100 buys what about $74 buys after 10 years.",
-    "hook": "Smoke rises over the valley; Milo bursts into the den where his mother Mira can barely breathe.",
-    "beat": "A wildfire is three sunrises away and Milo's mother Mira is ill. The Watering Post raises the price of water from 2 to 10 nuts a bucket; they need three buckets (30 nuts) and Milo has only 4 because he spent his money on a shiny silver bell. First failure: Drakon offers a loan at huge interest and Milo refuses; neighbour Lakshmi, who kept a small emergency pouch, cannot give hers away. Second failure: Milo sells the bell for 1 nut, still short. Lowest point: no savings, no time, he takes Drakon's loan (25 nuts, repay 40). The fire turns; Mira lives. Ragnar teaches: an emergency fund is paid for before the emergency. Milo saves 3 nuts every harvest first. Time-skip: ten years later smoke rises again, water costs 6 nuts, Milo fills every bucket calmly.",
+    "hook": "Smoke rises over the valley; young deer Chitra runs home to her mother Sona, who can barely breathe.",
+    "beat": "A fable of the well dug too late. A wildfire is three sunrises away and Sona is ill. The Watering Post raises water from 2 to 10 nuts a bucket; they need three buckets (30 nuts) and Chitra has 4 because she bought a shiny silver bell. Drakon, the proud lender, offers 25 nuts 'with tiny interest' (repay 40). Chitra refuses, begs Lakshmi (who kept a small emergency pouch for her own calf), sells the bell for 1 nut, and at the lowest point signs Drakon's loan. The fire turns and Sona lives. Old Ragnar gives her the rule in one sentence and Chitra saves 3 nuts every harvest first. Time-skip: ten years later smoke rises again, water costs 6 nuts, and Chitra fills every bucket calmly.",
     "clue": "",
-    "cliffhanger": "Next: a charming trader promises to double everyone's nuts in one week."
+    "cliffhanger": "Next: a charming trader promises to double everyone's grain in a week.",
+    "moral": "Dig the well before you are thirsty.",
+    "cast": [
+     "chitra",
+     "sona",
+     "drakon",
+     "lakshmi",
+     "ragnar"
+    ]
    },
    {
     "concept": "Investment scams: guaranteed high returns are the biggest red flag (no honest investment can guarantee big returns; ask where the extra money comes from; pressure to hurry is a warning). Real-world example: a promise to double your money every week would turn $100 into an impossible number within a year.",
-    "hook": "Bholu is dragging a cart with his whole barn savings toward the Trading Post at midnight, whispering 'Double by Friday!'",
-    "beat": "Gulab the trader promises to double every animal's nuts in 7 days and shows early 'winners' paid with other animals' deposits. Bholu puts in everything, including the nuts saved for his foal's winter hay; the deadline is Friday moonrise. Veer the guard asks three questions Gulab cannot answer (where does the extra money come from? who checked you? why the hurry?). First failure: Veer warns Bholu and Bholu laughs. Second failure: Bholu even brings his friends. Lowest point: at moonrise the Trading Post is empty, Gulab's cart tracks lead away, the foal has no hay. The turn: Veer teaches the red flags and Lakshmi shows how slow, boring, diversified saving works. Time-skip: next autumn Gulab's cousin arrives with the same promise and the whole valley asks the three questions and sends him away.",
+    "hook": "\"Double your grain by Friday!\" cries Gulab the alpaca, and the valley rushes to his shiny cart.",
+    "beat": "A fable of the sweet bait. Gulab the trader promises to double grain in 7 days and shows early 'winners' who were paid with other animals' deposits. Bholu the donkey brings all 40 sacks saved for his foal's winter. Veer the stag warns that honest traders never promise double; Bholu laughs. On Friday the cart is empty. Kiko, the sharp little shiba, works out the trick (the first winners were paid with the grain of the last), then sets a trap: he and Veer's guards ask Gulab three questions he cannot answer (Who checks you? Where does the profit come from? Why the hurry?) and the stolen grain rolls out. Bholu asks three questions of every offer from then on.",
     "clue": "",
-    "cliffhanger": "Next: Drakon offers a rescue loan, and the interest starts ticking."
+    "cliffhanger": "Next: a proud horse takes a friendly loan, and the interest starts ticking.",
+    "moral": "The fish that loves the sweet bait forgets the hook.",
+    "cast": [
+     "bholu",
+     "gulab",
+     "kiko",
+     "veer",
+     "ragnar"
+    ]
    },
    {
     "concept": "Credit card interest and the minimum-payment trap: borrowed money costs extra every month, and paying only the minimum keeps you stuck. Real-world example: a $1,000 card balance at 24% APR paid at $40 a month takes about 3 years and costs roughly $400 in interest.",
-    "hook": "Rain hammers the den roof. A beam cracks, and Milo has until the first snow to fix it.",
-    "beat": "Milo's den roof is failing and the first snow is in 10 days. Repairs cost 20 nuts; he has 3. Drakon lends the nuts on a 'friendly' card: Milo only needs to repay 2 nuts a month. First failure: he pays only the minimum, the debt barely moves. Second failure: he borrows again for a lamp and the debt grows. Lowest point: at the first snowfall he owes more than he borrowed and the roof leaks again. The turn: Ragnar shows the ledger: the minimum only covers the interest; Milo stops borrowing, pays double, repays the smallest debt first. Time-skip: the next winter Milo's roof is warm and his ledger shows zero.",
+    "hook": "A beam cracks in Tej's stable roof, and the first snow is ten days away.",
+    "beat": "A fable of the borrowed meal. Repairs cost 20 nuts and proud Tej the stallion has 3 and will not ask for help. Drakon the lender smiles and lends 'on a friendly card': Tej only has to pay 2 nuts a month. Tej pays only that minimum and the debt barely moves; he borrows again for a golden saddle and it grows. At the first snowfall he owes more than he borrowed and the roof leaks again. Shweta the wise mare asks one question: where do your 2 nuts go? Most of them are just the interest. Tej outwits the trap by stopping new borrowing, paying double, and clearing the smallest debt first. Next winter his roof is warm and his ledger reads zero.",
     "clue": "",
-    "cliffhanger": "Next: Tinku starts saving one acorn a week, and Milo laughs at him."
+    "cliffhanger": "Next: a patient husky and a boastful bull race to the full moon.",
+    "moral": "A loan eaten today is repaid with a bigger plate tomorrow.",
+    "cast": [
+     "tej",
+     "drakon",
+     "shweta",
+     "tinku"
+    ]
    },
    {
     "concept": "Compound growth and starting early: growth earns growth, so time beats size. Real-world example (hypothetical, not a promise, real returns vary and can be negative): $200 a month at an assumed 7% a year for 30 years could grow to about $244,000; waiting 10 years to start leaves about $104,000.",
-    "hook": "Two groves stand side by side after the great flood; one is a forest, one is a patch of twigs, and Milo and Tinku stare at them.",
-    "beat": "Ten years ago young Tinku began planting one acorn every week while Milo laughed and spent his spare nuts. Milo starts ten years later and plants far more acorns each week to catch up. The clock: the winter food contest ends at the next full moon and the grove with more nuts feeds the valley. First failure: Milo's late acorns are tiny sprouts. Second failure: a drought makes him panic and dig them up. Lowest point: Tinku's grove feeds everyone and Milo's feeds no one. The turn: Ragnar explains that growth grows on growth, and time did the work. Milo keeps planting without digging. Time-skip: years later Milo's grove feeds the valley too; both groves tell the story in numbers.",
+    "hook": "After the great flood, two groves stand side by side: a forest and a patch of twigs.",
+    "beat": "A fable of the slow and the hasty, in the spirit of the hare and the tortoise. Ten years ago patient Tinku the husky began planting one acorn every week while Bheem the bull laughed and spent his spare nuts. Bheem starts ten years later and plants far more each week to catch up. The clock is the next full moon, when Shweta judges the winter food contest. In a dry spell Bheem panics and digs up his sprouts to check them, which undoes his work. Shweta explains how growth earns growth and time did Tinku's work, and proves it by counting both groves. Bheem keeps planting without digging; years later both groves feed the valley.",
     "clue": "",
-    "cliffhanger": "Next: Bholu bets everything on one miracle tree."
+    "cliffhanger": "Next: a small shiba bets everything on one miracle tree.",
+    "moral": "A little every day beats a lot someday.",
+    "cast": [
+     "tinku",
+     "bheem",
+     "shweta"
+    ]
    },
    {
     "concept": "Index funds and diversification: own a tiny slice of the whole forest instead of betting everything on one tree (broad, low-cost, no stock-picking, still not risk-free).",
-    "hook": "A blight creeps through the orchard; every leaf of Bholu's miracle tree turns black while he watches.",
-    "beat": "Bholu put every nut he had into one miracle tree that Gulab's agent swore would triple. A blight hits the orchard with a deadline of two days before winter food is needed. Lakshmi's Forest Fund plants a slice of hundreds of different trees and shrugs off the loss of a few. First failure: Bholu's tree dies; he borrows to buy another single tree. Second failure: the second tree is hit by a storm. Lowest point: Bholu has no tree and no nuts, and his foal watches. The turn: Lakshmi shows the Forest Fund; every animal adds a little and owns a slice of everything; Bholu joins. Time-skip: the next blight kills a few trees but the fund still stands and the orchard stays green.",
+    "hook": "A black blight creeps through the orchard, and Kiko watches every leaf of his miracle tree turn.",
+    "beat": "A fable of the mouse with one hole. Kiko the shiba put every nut into one miracle tree that Gulab's agent swore would triple. A blight strikes two days before the winter food is needed. Lakshmi the cow's Forest Fund owns a small slice of hundreds of different trees and shrugs off a few losses. Kiko's tree dies; he borrows to buy a second single tree and a storm hits that one too. Shweta tells the old tale of the mouse with a hundred holes that escaped the cat; Kiko joins the fund and the orchard stays green when the next blight comes.",
     "clue": "",
-    "cliffhanger": "Next: a freezing night makes the whole forest lose its leaves."
+    "cliffhanger": "Next: a freezing night strips the whole forest of leaves.",
+    "moral": "The mouse with one hole is dinner; the mouse with a hundred holes goes free.",
+    "cast": [
+     "kiko",
+     "lakshmi",
+     "gulab",
+     "shweta"
+    ]
    },
    {
     "concept": "Markets fall and recover: do not panic-sell, and invest a fixed amount regularly (dollar-cost averaging). Real-world example (hypothetical): after a 20% drop, $10,000 becomes $8,000 and needs a 25% rise to get back to $10,000.",
-    "hook": "A freezing wind strips the Forest Fund's trees bare overnight, and Bholu is running to the market shouting 'Sell! Sell!'",
-    "beat": "A cold snap makes every tree in the Forest Fund lose half its leaves (a 20% drop). Panic spreads at the Watering Post. The clock: the market bell rings at dawn and sells are final. First failure: Bholu sells at the bottom. Second failure: Milo almost follows him after a sleepless night. Lowest point: Milo stands at the bell with his finger on it. The turn: Lakshmi keeps adding the same 3 nuts every week and buys more trees while they are cheap; Ragnar shows the scar on an old oak that grew back. Time-skip: spring, the leaves return, Bholu's sale locked in the loss while Milo's and Lakshmi's trees are full again.",
+    "hook": "A freezing wind strips the Forest Fund's trees bare overnight, and Bheem the bull storms through the market shouting 'Sell! Sell!'",
+    "beat": "A fable of the storm and the harvest. A cold snap makes every tree in the Forest Fund lose half its leaves, a 20% drop, and panic spreads. The market bell rings at dawn and every sale is final. Bheem sells at the bottom in a rage. Shweta lies awake and nearly follows him. At the bell, Lakshmi keeps adding her usual 3 nuts and buys more trees while they are cheap, and Ragnar shows the scar on an old oak that grew back. In spring the leaves return: Bheem's sale made the loss permanent, while Lakshmi's and Shweta's trees are full again.",
     "clue": "",
-    "cliffhanger": "Next: the Storehouse owner offers free nuts and nobody takes them."
+    "cliffhanger": "Next: the Storehouse owner offers free nuts and nobody takes them.",
+    "moral": "He who flees the storm in panic leaves his harvest behind.",
+    "cast": [
+     "bheem",
+     "lakshmi",
+     "shweta",
+     "ragnar"
+    ]
    },
    {
     "concept": "Free money first: an employer 401(k) match, and tax-advantaged retirement accounts like an IRA (education only, rules and limits change). Real-world example: on a $60,000 salary, saving 6% is $3,600 and a 50% employer match adds $1,800 for free.",
-    "hook": "The Storehouse owner pushes a pile of shining nuts across the counter; Milo walks past without looking.",
-    "beat": "The Storehouse owner offers to add half of every nut a worker saves for the winter, but only until the first snow, and Milo skips it to buy a new scarf. Lakshmi takes every free nut. The clock: a harsh winter is coming and the offer closes at the first snowfall. First failure: Milo ignores the offer. Second failure: he saves a little but not enough to get the match. Lowest point: in the deep winter Lakshmi's pantry is full and Milo's is half empty. The turn: Ragnar explains that skipping a match is refusing free nuts; Milo saves enough to get the full match. Time-skip: next winter the pantry is full and there is a wooden sign: MATCH 50%.",
+    "hook": "The Storehouse owner pushes a pile of shining nuts across the counter, and Kiko trots past without looking.",
+    "beat": "A fable of the refused gift. Shweta, the generous Storehouse owner, offers to add half of every nut a worker saves for winter, but only until the first snow. Kiko skips it to buy a new scarf, saves a little but never enough to earn the full match, and tells himself he will start next year. Lakshmi takes every free nut. In the deep winter Lakshmi's pantry is full and Kiko's is half empty. Ragnar says one sentence about free gifts. Kiko saves enough to earn the full match; next winter there is a wooden sign: MATCH 50%.",
     "clue": "",
-    "cliffhanger": "Next: two baskets that look the same hide a secret fee."
+    "cliffhanger": "Next: two baskets that look the same hide a secret leak.",
+    "moral": "Refuse a free gift and you pay for it all winter.",
+    "cast": [
+     "kiko",
+     "lakshmi",
+     "shweta",
+     "ragnar"
+    ]
    },
    {
     "concept": "Fees quietly eat growth: read the fine print. Real-world example (hypothetical): $10,000 growing at 7% for 30 years becomes about $76,100, but with a 1% yearly fee it becomes about $57,400.",
-    "hook": "Milo and Tinku race two identical-looking baskets of nuts, and one of them is secretly leaking.",
-    "beat": "Milo and Tinku each put the same nuts into baskets that look the same, but Milo's basket charges a small yearly fee that Gulab's agent called 'only 1%'. The clock: the winter fair in 30 harvests decides who can afford a new den. First failure: Milo ignores the fine print. Second failure: he moves to another 'special' basket with an even higher fee. Lowest point: at the fair Tinku's basket is much fuller. The turn: Ragnar shows the leak with a scale and numbers. Time-skip: Milo moves to a low-cost basket and catches up over the years.",
+    "hook": "Veer and Chitra race two baskets that look identical, and one of them is quietly leaking.",
+    "beat": "A fable of the small leak. Veer the stag and young deer Chitra put the same nuts in baskets that look alike, but Veer's has a small yearly fee that Gulab's agent called 'only 1%'. The clock is the winter fair in thirty harvests, which decides who can afford a new home. Veer ignores the fine print, then moves to a 'special' basket with an even higher fee. At the fair Chitra's basket is far fuller. Ragnar weighs both baskets in front of everyone and shows the leak in numbers. Veer moves to a low-cost basket and slowly catches up.",
     "clue": "",
-    "cliffhanger": "Next: a friendly courier asks Tinku for the secret knock."
+    "cliffhanger": "Next: a sweet-talking courier asks Tinku for the secret knock.",
+    "moral": "Small leaks sink great ships.",
+    "cast": [
+     "veer",
+     "chitra",
+     "gulab",
+     "ragnar"
+    ]
    },
    {
     "concept": "Protect your accounts: never share passwords or one-time codes, turn on two-factor authentication, and distrust urgent messages (phishing).",
-    "hook": "A cloaked courier whispers to Tinku: 'Quick, give me the secret knock, or the chest will be lost forever!'",
-    "beat": "A 'helpful courier' says the Storehouse chest will be sealed forever at sunset unless Tinku gives him the secret knock to open it. The clock: sunset. First failure: Tinku almost gives it. Second failure: the courier uses it to open the chest and empties half of it. Lowest point: the Storehouse is robbed and Tinku is in tears. The turn: Veer teaches the rule: no honest party ever needs your code; Milo adds a second lock (two-factor). Time-skip: the next courier tries again and the whole valley says 'No code, no deal' and Veer catches him.",
+    "hook": "A cloaked courier flatters Tinku: 'Only a hero like you can save the chest. Quick, tell me the secret knock!'",
+    "beat": "A fable of the flatterer's trick, like the crow who dropped her cheese. Gulab, disguised as a 'helpful courier', says the Storehouse chest will be sealed forever at sunset unless Tinku gives him the secret knock. He praises Tinku until the loyal husky almost tells him, then almost does again. The courier opens the chest with the knock and empties half of it. Tinku weeps. Veer says: no honest visitor ever needs your code. Kiko adds a second lock that needs two keys. The next courier tries the same flattery and the whole valley says 'No code, no deal'.",
     "clue": "",
-    "cliffhanger": "Next: Milo gets a raise and his spending grows faster than his nuts."
+    "cliffhanger": "Next: a stallion gets a raise and his spending grows faster than his nuts.",
+    "moral": "Beware the sweet-talking visitor who asks for your keys.",
+    "cast": [
+     "tinku",
+     "gulab",
+     "veer",
+     "kiko"
+    ]
    },
    {
     "concept": "Lifestyle creep: when income rises, spending quietly rises with it. Invest part of every raise. Real-world example: a $4,000 monthly raise of 10% is $400 more a month; saving half of it adds $200 a month.",
-    "hook": "Milo's pouch is heavier than ever, but he is still counting empty days at the end of the month.",
-    "beat": "Milo gets a raise and buys a bigger den, silver bells and a banquet, until every nut is gone before the month ends. The clock: the harsh month before the harvest. First failure: he cannot pay for hay. Second failure: he borrows to keep the banquets going. Lowest point: the den is full of bells and the pantry is empty. The turn: Ragnar shows him to save half of every raise before spending. Time-skip: a year later Milo lives the same but his savings pouch has doubled.",
+    "hook": "Tej's pouch is heavier than ever, but the end of the month finds it empty.",
+    "beat": "A fable of the stallion who ate every raise. Tej gets a raise and buys a bigger stable, golden saddles and a banquet until every nut is gone before the month ends. The clock is the hard month before harvest. He cannot pay for hay, then borrows to keep the banquets going. The stable is full of saddles and the pantry is empty. Ragnar asks him how much of his raise he has kept. Tej learns to save half of every raise before spending; a year later he lives the same but his savings pouch has doubled.",
     "clue": "",
-    "cliffhanger": "Next: a storm tests who has shelter."
+    "cliffhanger": "Next: a storm tests who has shelter.",
+    "moral": "Wealth is what you keep, not what you earn.",
+    "cast": [
+     "tej",
+     "ragnar",
+     "lakshmi"
+    ]
    },
    {
     "concept": "Insurance shares big risks: a small regular payment protects you from a loss you could not afford. Education only; coverage and prices vary.",
-    "hook": "Thunder cracks and the roof of Milo's den flies into the river.",
-    "beat": "A storm destroys Milo's den and he has no shelter fund. Lakshmi's den is damaged too, but she paid a small amount every month into the valley's shared Storm Pouch and gets help right away. The clock: the next storm in 2 days. First failure: Milo tries to rebuild alone and fails. Second failure: he borrows from Drakon and cannot finish. Lowest point: no roof, no money, and the storm is coming. The turn: Veer explains how a shared pouch works. Time-skip: the next storm destroys a few roofs but the Storm Pouch rebuilds them in days.",
+    "hook": "Thunder cracks, and the roof of Bholu's barn flies into the river.",
+    "beat": "A fable of the shared hive. A storm destroys Bholu's barn and he has no shelter fund. Lakshmi's shed is damaged too, but she pays a small amount every month into the valley's shared Storm Pouch and gets help the same day. The next storm is two days away. Bholu tries to rebuild alone and fails, then borrows from Drakon and still cannot finish. Veer explains how a shared pouch works: many pay a little so that no one is ruined alone. The next storm destroys a few roofs but the Storm Pouch rebuilds them within days.",
     "clue": "",
-    "cliffhanger": "Next: the season finale: Milo teaches the whole valley."
+    "cliffhanger": "Next: a deer asks the wise wolf where to start.",
+    "moral": "Many hands share the load; one roof cannot stand alone.",
+    "cast": [
+     "bholu",
+     "lakshmi",
+     "veer",
+     "drakon"
+    ]
    },
    {
     "concept": "Your simple order of steps (education only, not advice): emergency fund, employer match, pay off high-interest debt, low-cost diversified funds, automate it, stay patient.",
-    "hook": "Milo stands on the Great Oak at sunrise while the whole valley waits for him to speak.",
-    "beat": "Years after the fire, Milo is the valley's money teacher. A frightened young animal asks him where to start with her first paycheck. The clock: payday is tomorrow. He walks her through the steps by showing his own scars: the fire, the loan, the late groves. Time-skip: she calmly follows the steps and years later teaches the next one, with Mira smiling.",
+    "hook": "Young Chitra stands before old Ragnar at sunrise with her very first pay in her hooves.",
+    "beat": "A fable of the wise teacher. Chitra, now grown up and earning, asks Ragnar where to start with her first paycheck. Payday is tomorrow. Ragnar teaches the steps by telling the valley's own stories: the fire, the loan, the late grove, the missed match, one short tale for each step. Shweta asks the question that makes her remember the order. Chitra follows the steps in order and years later teaches the next young animal herself.",
     "clue": "",
-    "cliffhanger": "Next: season 2 begins."
+    "cliffhanger": "Next: a greedy bull wants all the gold at once.",
+    "moral": "First the roof, then the garden.",
+    "cast": [
+     "chitra",
+     "ragnar",
+     "shweta"
+    ]
+   },
+   {
+    "cast": [
+     "bheem",
+     "lakshmi",
+     "gulab",
+     "ragnar"
+    ],
+    "hook": "A cow who gives golden milk, and a bull who cannot wait: Bheem raises the hammer.",
+    "beat": "A fable of the golden milk, like the goose and the golden eggs. Lakshmi's cow gives one golden coin of milk every day. Bheem the bull, urged by Gulab, wants it all now and tries to take everything from the source at once. The clock is Gulab's offer, which ends at moonrise. Bheem drains the source, gets one big pile of coins and loses the cow's daily gold forever. Ragnar shows a simple count: living on the daily gold lasts forever, while spending the source ends in a year. Bheem rebuilds with Lakshmi and learns to live on the growth only.",
+    "moral": "Kill the goose and you lose the golden eggs.",
+    "cliffhanger": "Next: two kingdoms go to war over a single road.",
+    "clue": "",
+    "concept": "Protect the source: live on the growth, not the principal. Real-world example (hypothetical, not a promise): $100,000 earning an assumed 4% a year could pay about $4,000 a year while the principal stays untouched, but spending the principal in a few years leaves nothing."
+   },
+   {
+    "cast": [
+     "tej",
+     "shweta",
+     "drakon",
+     "ragnar",
+     "kiko"
+    ],
+    "hook": "A war horn sounds over the valley: the road to the only granary has just been cut.",
+    "beat": "A fable of two kingdoms at war. Tej's kingdom of horses gets all its grain from one road; Drakon's kingdom of wolves has three granaries on three roads. Drakon cuts the one road and the horses begin to starve. The clock is five sunrises before the herd weakens. Tej's proud generals refuse to change plans (first failure), then try to fight for the road and lose (second failure). Kiko the scout and Shweta the wise mare convince Tej to ask Ragnar for help and to open two new routes. Months later the kingdom has three sources and a road cut no longer decides who eats.",
+    "moral": "A kingdom with one road falls with one blow.",
+    "cliffhanger": "Next: season 2 begins.",
+    "clue": "",
+    "concept": "Do not depend on a single source of income or a single investment: several income streams and a diversified portfolio keep you standing when one is cut. Education only, not advice."
    }
   ]
  },
  "audience": "US adults, beginners in personal finance and investing",
  "gold_example": [
-  "Smoke was rising over the valley. Milo burst into the den, where his mother Mira could barely breathe.",
-  "\"Fetch water, Milo, before the fire reaches the river,\" Mira whispered. The flames were three sunrises away.",
-  "At the Watering Post, Milo froze. Yesterday a bucket cost two nuts. Today the sign said ten.",
-  "They needed three buckets, thirty nuts. Milo had four. The rest had gone on a shiny silver bell.",
-  "\"Four nuts buys nothing,\" grinned Drakon. \"But I can lend you twenty-five. With tiny interest.\"",
-  "Milo refused, and ran to Lakshmi, the cow who saved a little every single week.",
-  "\"I'm sorry, Milo,\" said Lakshmi, hugging her pouch. \"This emergency fund is for my own calf.\"",
-  "Milo sold the bell for one nut. Five nuts. Smoke blackened the sky. Two sunrises left.",
-  "Back home, Mira's cough grew worse. \"Leave me,\" she said. \"Never,\" said Milo. \"Not while I can run.\"",
-  "He had no savings, no plan and no time. So he walked back to Drakon's den.",
-  "\"Twenty-five nuts,\" Drakon smiled, \"and you repay forty.\" Milo signed with shaking paws.",
-  "Three buckets of cold water saved the den. The fire turned, and the valley breathed again.",
-  "Old Ragnar found Milo sitting in the ashes. \"An emergency fund is paid for before the emergency.\"",
-  "\"Three to six months of costs, kept safe,\" Ragnar said. \"Start tiny. But start this week.\"",
-  "Milo made a promise. Each harvest, three nuts went into the pouch first, before the bell, before everything.",
-  "The loan took two years to repay, and the interest alone cost him fifteen nuts.",
-  "Slowly the pouch grew. Ten nuts. Thirty. A hundred. Milo stopped flinching when the wind smelled of smoke.",
-  "Ten years later, smoke rose again. The sign said six nuts a bucket, triple the old price. Milo smiled.",
-  "Today we learned: keep three to six months of costs saved first. Prices rise over time. For example, at 3% inflation, $100 buys what about $74 buys in ten years.",
-  "Milo filled every bucket calmly, and Mira watched the sunset from a safe hill. Which comes first for you: emergency fund or shiny bell? Tell us below! Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money."
+  "Guys, listen: one promise cost a donkey his winter grain. \"Double your grain by Friday!\" cried Gulab.",
+  "Bholu hauled his entire winter grain to the cart. Forty sacks, saved for his hungry foal.",
+  "\"Why the hurry, Bholu?\" asked Kiko, the little Shiba. \"Because the offer ends at moonrise!\" Bholu panted.",
+  "Gulab smiled and pointed at a cheering line of winners, all paid back double. Nobody asked who paid them.",
+  "\"Doubling is magic,\" Gulab whispered. \"Tell your friends. The more grain comes in, the better.\"",
+  "Veer the stag frowned. \"Honest traders never promise double,\" he said. Bholu only laughed, and signed.",
+  "By moonrise a mountain of sacks sat in the cart. Kiko counted them and felt a cold shiver.",
+  "Friday came. Gulab's cart was empty, wheel tracks led east, and Bholu's forty sacks were gone.",
+  "Bholu fell to his knees. \"My foal will starve this winter,\" he cried. No one answered.",
+  "The worst was still coming: the first winners were paid with the grain of the last. Kiko finally understood.",
+  "\"Where does the extra grain come from?\" Kiko asked the crowd. \"Nobody can promise double. Nobody.\"",
+  "The valley went silent. Every animal who had trusted Gulab stared at an empty sack.",
+  "Kiko called Veer. \"Follow the wheel marks,\" he said. \"And bring the guards, before he sells again.\"",
+  "At dawn the trap was set. Veer's guards hid behind the Great Oak while Kiko waited by a new cart.",
+  "Gulab arrived, smiling. \"Double by Friday!\" Kiko asked, \"Who checks you? Where does the profit come from?\"",
+  "Gulab had no answers. Veer's guards surrounded him, and the stolen grain rolled out of his cart.",
+  "Bholu got most of his sacks back, and a lesson. From then on he asked every offer three questions.",
+  "Old Ragnar nodded. \"The fish that loves the sweet bait,\" he said, \"forgets the hook.\"",
+  "The money lesson: no honest investment can guarantee big returns. Ask where the profit comes from. For example, doubling money every week would turn $100 into an impossible number.",
+  "Hurry and pressure are red flags. Would you have signed? Tell us below! Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money."
  ],
- "gold_example_note": "VISUAL PLAN of that example (so you see how the picture, the looks, the effects and the sounds carry the story): shots 1-12 look ember_sky with fx [\"fire\",\"smoke\"]; shot 2 cue riser; shot 3 a price sign WATER 10 and cue boom; shots 4 and 11 cue coin; shot 9 cue heartbeat; shots 13-14 look misty_morning, no fx (ashes, calm, Ragnar teaching); shots 15-17 look golden_sunset with a coins prop in 17 and cue coin; shot 18 look ember_sky with fx [\"smoke\"] only, sign WATER 6, a wide calm shot; shots 19-20 look golden_sunset."
+ "gold_example_note": "VISUAL PLAN of that example: shot 1 is the spoken hook to the viewer; shots 1-6 look meadow_day (a cheerful temptation), a sign DOUBLE 7 DAYS in shot 4 and a coins prop in shot 5 with cue coin; shot 7 look night_moon with cue riser; shot 8 look misty_morning (empty cart) with cue boom; shots 9-12 look rainy_forest with fx [\"rain\"]; shots 13-15 look riverbank_dawn, sign DOUBLE 7 DAYS again in 15; shot 16 look forest_day with cue alarm; shot 17 look golden_sunset with a coins prop and cue coin; shots 18-20 look golden_sunset. The drama lives in what the animals SAY and DECIDE (a bargain, a warning, a bluff, a question that exposes the lie), in their reactions (shock, sad, celebrate) and in what we SEE (the price board, the empty cart, the rain)."
 }
