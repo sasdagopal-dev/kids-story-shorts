@@ -1,5 +1,5 @@
 {
- "next_topic": 15,
+ "next_topic": 16,
  "history": [
   {
    "date": "2026-11-07",
@@ -189,6 +189,17 @@
    "twist": "Milo avoids an 80% fire-sale loss by bargaining future labor instead of selling his locked assets in panic.",
    "episode": null,
    "clue": "Drakon was desperate for log haulers because his primary transport wolves suddenly deserted him."
+  },
+  {
+   "date": "2026-11-13",
+   "title": "Is a Guaranteed Double Investment Always a Scam? | Jungle Money Tales Ep 4 #shorts",
+   "topic": "Investment scams: guaranteed high returns are the biggest red flag (no honest investment can guarantee big returns; ask where the extra money comes from; pressure to hurry is a warning). Real-world example: a promise to double your money every week would turn $100 into an impossible number within a year.",
+   "file": "plans/episode_2026-11-13_2.json",
+   "recap": "Bholu fell for Gulab's guaranteed return offer, but Kiko trapped the scammer using three critical questions.",
+   "cliffhanger": "Next: a proud horse takes a friendly loan, and the interest starts ticking.",
+   "twist": "The early winners were not paid from investment growth, but directly from new victims' deposits.",
+   "episode": 4,
+   "clue": "Gulab paid early winners using new deposits instead of real earnings."
   }
  ]
 }

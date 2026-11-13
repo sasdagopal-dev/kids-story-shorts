@@ -1,0 +1,1556 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "Is a Guaranteed Double Investment Always a Scam? | Jungle Money Tales Ep 4 #shorts",
+ "description": "When Gulab promises to double food in seven days, Bholu risks his foal's entire winter supply. See how Kiko uncovers the sweet bait trick before it is too late.",
+ "tags": [
+  "personal finance",
+  "investing for beginners",
+  "investment scams",
+  "red flags in investing",
+  "ponzi scheme explained",
+  "financial literacy",
+  "money mistakes",
+  "guaranteed returns scam",
+  "wealth building",
+  "smart investing"
+ ],
+ "twist": "The early winners were not paid from investment growth, but directly from new victims' deposits.",
+ "episode": 4,
+ "viewer_question": "Have you ever seen an investment promise that sounded too good to be true?",
+ "beat_sheet": {
+  "hook": "Wait, before you invest: one promise cost a donkey forty sacks.",
+  "trait_conflict": "Bholu's foolish impatience collides with Gulab's deceptive guaranteed returns.",
+  "want_and_stake": "Bholu wants to double his food for his foal; risks losing all 40 sacks of winter grain.",
+  "clock": "Double grain in 7 days (by Friday).",
+  "money_in_numbers": "40 sacks invested to double in 7 days; doubling $100 weekly yields millions.",
+  "the_trick": "Gulab pays early investors using grain deposited by later victims.",
+  "warning_ignored": "Veer warns that honest traders never guarantee double returns; Bholu ignores him.",
+  "lowest_point": "Friday arrives, the cart is empty, and Bholu's 40 sacks are gone.",
+  "wit_turn": "Kiko uses three hard questions to trap Gulab and uncover the stolen grain.",
+  "moral": "The fish that loves the sweet bait forgets the hook.",
+  "money_lesson": "Guaranteed high returns are a red flag; always ask where profits come from.",
+  "clue": "Gulab paid early winners using new deposits instead of real earnings.",
+  "cliffhanger": "Next: a proud horse takes a friendly loan, and the interest starts ticking."
+ },
+ "moral": "The fish that loves the sweet bait forgets the hook.",
+ "on_screen_hook": "DOUBLE YOUR MONEY IN 7 DAYS?",
+ "recap": "Bholu fell for Gulab's guaranteed return offer, but Kiko trapped the scammer using three critical questions.",
+ "cliffhanger": "Next: a proud horse takes a friendly loan, and the interest starts ticking.",
+ "disclaimer": "For education only, not financial advice. Investing involves risk, including loss of money.",
+ "credits": "3D models by Quaternius (CC0). Voice: Google Gemini text-to-speech. Animated story for education only.",
+ "story_mode": "money",
+ "made_for_kids": false,
+ "target_seconds": 163,
+ "flexible_length": true,
+ "estimated_voice_seconds": 146.7,
+ "cast": [
+  {
+   "id": "gulab",
+   "name": "Gulab",
+   "model": "Alpaca",
+   "role": "charming trader who runs the Trading Post, always smiling, everybody trusts him (hidden mastermind, never reveal before the reveal episode)",
+   "behaviour": "calm, smooth, always smiling, walks slowly, never raises his voice, filmed from a friendly eye-level angle until the reveal",
+   "voice_style": "silky, warm, slow",
+   "catchphrase": "Trust is the best currency, my friend."
+  },
+  {
+   "id": "bholu",
+   "name": "Bholu",
+   "model": "Donkey",
+   "role": "funny impulsive donkey who buys shiny useless things, loyal friend who learns the hard way",
+   "voice_style": "funny, mixes up words, cheerful",
+   "catchphrase": "Oh my whiskers... I mean, oh my ears!",
+   "behaviour": "comic: big shock, sad, celebrates too early, arrives late running",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "veer",
+   "name": "Veer",
+   "model": "Stag",
+   "role": "stag forest guard who warns about tricksters and scams, honest, speaks little",
+   "voice_style": "few words, deep and noble",
+   "catchphrase": "The forest listens.",
+   "behaviour": "stands tall and still, arrives fast to protect, serious",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "kiko",
+   "name": "Kiko",
+   "model": "ShibaInu",
+   "role": "small, sharp, cheeky shiba who notices details and loves a clever test, but sometimes bets too big",
+   "voice_style": "quick, witty, teasing",
+   "catchphrase": "Hmm, that does not add up.",
+   "behaviour": "trots, tilts his head, pounces on a clue, shows shock with wide eyes",
+   "voice_name": "Zephyr"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Sweet Promise",
+   "look": "meadow_day",
+   "narration": "Wait, before you invest: one promise cost a donkey forty sacks. \"Double your grain by Friday!\" cried Gulab.",
+   "tone": "urgent, enticing",
+   "visual": "Gulab stands beside a wooden sign reading DOUBLE 7 DAYS as Bholu arrives eagerly.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "gulab",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      0.5,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.53
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      5.34
+     ],
+     "size": 1.1,
+     "text": "DOUBLE 7 DAYS"
+    }
+   ],
+   "cue": "coin",
+   "speakers": [
+    {
+     "id": "gulab",
+     "at": 0.53
+    }
+   ],
+   "quotes": [
+    {
+     "start": 64,
+     "end": 94,
+     "id": "gulab"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Bholu's Excitement",
+   "look": "meadow_day",
+   "narration": "At the trading cart, Bholu cheered loudly. \"Oh my ears, double grain for my foal!\" said Bholu.",
+   "tone": "excited, joyful",
+   "visual": "Bholu leaps around with joyous excitement near Gulab's shiny cart.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 43,
+     "end": 82,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "All Sacks In",
+   "look": "meadow_day",
+   "narration": "Bholu brought forty heavy sacks of winter grain. \"Take everything I have saved!\" said Bholu.",
+   "tone": "impulsive, hopeful",
+   "visual": "Bholu hauls a huge pile of forty grain sacks toward the cart.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.2,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.05
+      },
+      {
+       "action": "talk",
+       "at": 0.46
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.6,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      0.2,
+      5.8
+     ],
+     "size": 1.0
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.46
+    }
+   ],
+   "quotes": [
+    {
+     "start": 49,
+     "end": 80,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Smooth Assurance",
+   "look": "meadow_day",
+   "narration": "Gulab smiled and hung a golden price sign. \"Trust is the best currency, my friend,\" said Gulab.",
+   "tone": "smooth, persuasive",
+   "visual": "Gulab smiles calmly as he adjusts the shiny price board.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "gulab",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      0.8,
+      3.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      5.24
+     ],
+     "size": 1.1,
+     "text": "DOUBLE 7 DAYS"
+    }
+   ],
+   "cue": "coin",
+   "speakers": [
+    {
+     "id": "gulab",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 43,
+     "end": 83,
+     "id": "gulab"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "Early Winners",
+   "look": "meadow_day",
+   "narration": "Gulab handed early animals double grain. \"See, I pay doubled grain already!\" cheered Gulab.",
+   "tone": "boastful, flashy",
+   "visual": "Gulab hands extra grain to early animals to showcase quick profits.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "gulab",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      0.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.39
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      -0.2,
+      5.38
+     ],
+     "size": 1.2
+    }
+   ],
+   "speakers": [
+    {
+     "id": "gulab",
+     "at": 0.39
+    }
+   ],
+   "quotes": [
+    {
+     "start": 41,
+     "end": 76,
+     "id": "gulab"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Veer's Warning",
+   "look": "meadow_day",
+   "narration": "Veer the stag stepped forward to warn him. \"Honest traders never promise double grain,\" said Veer.",
+   "tone": "serious, protective",
+   "visual": "Veer the stag steps between Bholu and Gulab with a stern look.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "veer",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -0.5,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.2,
+        3.3
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.06
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.6,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "veer",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 43,
+     "end": 87,
+     "id": "veer"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Warning Ignored",
+   "look": "meadow_day",
+   "narration": "Bholu laughed at the warning and signed. \"You worry too much, old guard!\" said Bholu.",
+   "tone": "dismissive, careless",
+   "visual": "Bholu laughs dismissively at Veer and pushes his sacks into the cart.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      -1.4,
+      6.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 41,
+     "end": 73,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Kiko Suspicious",
+   "look": "meadow_day",
+   "narration": "Kiko the shiba watched from nearby. \"Hmm, that does not add up, where is profit?\" murmured Kiko.",
+   "tone": "curious, sharp",
+   "visual": "Kiko tilts his head and squints suspiciously at Gulab's cart.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "kiko",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.33
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      1.8,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "kiko"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "kiko",
+     "at": 0.33
+    }
+   ],
+   "quotes": [
+    {
+     "start": 36,
+     "end": 81,
+     "id": "kiko"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Empty Cart",
+   "look": "misty_morning",
+   "narration": "Friday morning came under cold autumn trees. Gulab was gone, and the cart sat completely empty.",
+   "tone": "chilling, gloomy",
+   "visual": "On Friday morning, the cart stands totally empty under misty, bare trees.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.2
+      }
+     ],
+     "face": "kiko"
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      1.4,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ],
+   "fx": [
+    "mist"
+   ],
+   "cue": "boom"
+  },
+  {
+   "id": 10,
+   "title": "Bholu's Panic",
+   "look": "misty_morning",
+   "narration": "The worst was coming. Bholu fell to his knees. \"My foal will starve this winter!\" sobbed Bholu.",
+   "tone": "heartbroken, panicked",
+   "visual": "Bholu drops to his knees in total despair near the empty cart.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      0.0,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.47
+      }
+     ],
+     "face": "kiko"
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "fx": [
+    "mist"
+   ],
+   "cue": "heartbeat",
+   "thumb": true,
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.47
+    }
+   ],
+   "quotes": [
+    {
+     "start": 47,
+     "end": 81,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 11,
+   "title": "Kiko Uncovers the Lie",
+   "look": "misty_morning",
+   "narration": "Kiko examined the empty cart carefully. \"He paid early investors using grain from the last,\" said Kiko.",
+   "tone": "analytic, sharp",
+   "visual": "Kiko inspects tiny cart tracks leading away into the woods.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "kiko",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      0.3,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.38
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "kiko"
+    }
+   ],
+   "fx": [
+    "mist"
+   ],
+   "speakers": [
+    {
+     "id": "kiko",
+     "at": 0.38
+    }
+   ],
+   "quotes": [
+    {
+     "start": 40,
+     "end": 92,
+     "id": "kiko"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Rushing to Veer",
+   "look": "riverbank_dawn",
+   "narration": "Kiko ran straight to Veer at the riverbank. \"Gulab set up another stall downriver!\" shouted Kiko.",
+   "tone": "urgent, determined",
+   "visual": "Kiko sprints fast toward Veer along the foggy riverbank.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "kiko",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      -2.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -0.5,
+        3.2
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.06
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "kiko"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      0.2,
+      6.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ],
+   "cue": "whoosh",
+   "speakers": [
+    {
+     "id": "kiko",
+     "at": 0.4
+    }
+   ],
+   "quotes": [
+    {
+     "start": 44,
+     "end": 83,
+     "id": "kiko"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "The Trap at Dawn",
+   "look": "riverbank_dawn",
+   "narration": "At dawn, Gulab was pitching his cart again. \"Double your grain by Friday, hurry!\" called Gulab.",
+   "tone": "persuasive, urgent",
+   "visual": "Gulab stands by a new cart downriver, pitching to new animals.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "gulab",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "kiko"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      4.2
+     ],
+     "size": 1.1,
+     "text": "DOUBLE 7 DAYS"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "gulab",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 44,
+     "end": 81,
+     "id": "gulab"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "The Three Questions",
+   "look": "riverbank_dawn",
+   "narration": "Kiko confronted Gulab boldy. \"Who checks you, where is profit made, why the hurry?\" asked Kiko.",
+   "tone": "bold, questioning",
+   "visual": "Kiko confronts Gulab face-to-face in front of the cart.",
+   "camera": {
+    "framing": "close",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "kiko",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.3,
+        3.0
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.07
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "kiko"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "kiko",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 29,
+     "end": 83,
+     "id": "kiko"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Exposed and Caught",
+   "look": "riverbank_dawn",
+   "narration": "Gulab froze in silence. Veer's guards rushed in, and forty stolen sacks rolled out of hiding.",
+   "tone": "dramatic, triumphant",
+   "visual": "Veer and guards emerge from the trees; stolen sacks fall out of Gulab's cart.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "veer",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      -1.4,
+      6.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.2
+      }
+     ],
+     "face": "veer"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      1.8,
+      3.8
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        0.8,
+        3.5
+       ]
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      -1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "size": 1.2
+    }
+   ],
+   "cue": "alarm"
+  },
+  {
+   "id": 16,
+   "title": "Bholu Learns",
+   "look": "golden_sunset",
+   "narration": "Bholu recovered his winter grain with joy. \"I will ask three questions before every deal!\" said Bholu.",
+   "tone": "relieved, wiser",
+   "visual": "Bholu happily hugs his recovered grain sacks in the golden evening light.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bholu",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      },
+      {
+       "action": "talk",
+       "at": 0.38
+      }
+     ],
+     "face": "kiko"
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      1.4,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      2.6,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      -0.5,
+      7.0
+     ],
+     "size": 1.0
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bholu",
+     "at": 0.38
+    }
+   ],
+   "quotes": [
+    {
+     "start": 43,
+     "end": 90,
+     "id": "bholu"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Ragnar's Wisdom",
+   "look": "golden_sunset",
+   "narration": "Old Ragnar watched calmly from his high boulder. \"Patience is also a path, young ones,\" said Ragnar.",
+   "tone": "wise, calm",
+   "visual": "Ragnar stands tall on a high boulder overlooking the peaceful meadow.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.44
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.16
+    },
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -2.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "size": 1.8
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.44
+    }
+   ],
+   "quotes": [
+    {
+     "start": 49,
+     "end": 87,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "The Moral",
+   "look": "golden_sunset",
+   "narration": "The ancient fable teaches a truth: the fish that loves the sweet bait forgets the sharp hook.",
+   "tone": "reflective, solemn",
+   "visual": "Old Ragnar stands serene against the golden glowing forest canopy.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "The Money Lesson",
+   "look": "golden_sunset",
+   "narration": "The money lesson: no honest investment guarantees big returns. Ask where profits come from. Doubling weekly turns $100 into millions.",
+   "tone": "clear, instructional",
+   "visual": "Ragnar and Kiko stand together beside the valley storehouse.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      -0.5,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "kiko",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Viewer Call to Action",
+   "look": "golden_sunset",
+   "narration": "Would you invest here? Comment below! Next: a proud horse takes a friendly loan, and the interest starts ticking. Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money.",
+   "tone": "engaging, informative",
+   "visual": "Bholu, Kiko, Veer, and Ragnar stand united in the golden sunset valley.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "bholu",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bholu",
+     "model": "Donkey",
+     "pos": [
+      -1.2,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "kiko"
+    },
+    {
+     "id": "kiko",
+     "model": "ShibaInu",
+     "pos": [
+      -0.2,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bholu"
+    },
+    {
+     "id": "veer",
+     "model": "Stag",
+     "pos": [
+      1.0,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      6.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "veer",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ]
+    }
+   ]
+  }
+ ],
+ "topic": "Investment scams: guaranteed high returns are the biggest red flag (no honest investment can guarantee big returns; ask where the extra money comes from; pressure to hurry is a warning). Real-world example: a promise to double your money every week would turn $100 into an impossible number within a year.",
+ "genre": "a survival race against the weather",
+ "director_model": "gemini-3.5-flash"
+}
