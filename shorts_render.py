@@ -473,15 +473,15 @@ def build_env(look_name, extra_fx=None):
 FX = {"items": [], "light": None, "world_bg": None, "base_strength": 1.0, "storm": False}
 FX_ON = os.environ.get("WEATHER_FX", "1") != "0"
 FX_VOLUME = (-10.0, 10.0, -5.0, 16.0, 0.0, 9.0)          # x0, x1, y0, y1, z0, z1: the area the camera sees
-FX_ALLOWED = ("snow", "rain", "storm", "embers", "fireflies", "leaves", "pollen", "mist", "fire", "smoke")
-FX_OF_LOOK = {"snow_pines": "snow", "rainy_forest": "rain", "storm_dusk": "storm", "ember_sky": "embers",
-              "night_moon": "fireflies", "autumn_gold": "leaves", "misty_morning": "mist", "flower_field": "pollen"}
+FX_ALLOWED = ("snow", "rain", "storm", "embers", "fireflies", "leaves", "pollen", "mist", "fire", "smoke", "stars")
+FX_OF_LOOK = {"snow_pines": ["snow"], "rainy_forest": ["rain"], "storm_dusk": ["storm"], "ember_sky": ["embers"],
+              "night_moon": ["fireflies", "stars"], "autumn_gold": ["leaves"], "misty_morning": ["mist"], "flower_field": ["pollen"],
+              "forest_day": ["leaves"], "golden_sunset": ["pollen"], "meadow_day": ["pollen"]}
 
 
 def fx_kinds(look_name, extra):
     kinds = []
-    if FX_OF_LOOK.get(look_name):
-        kinds.append(FX_OF_LOOK[look_name])
+    kinds.extend(FX_OF_LOOK.get(look_name, []))
     for k in (extra or []):
         if k in FX_ALLOWED and k not in kinds:
             kinds.append(k)
@@ -513,8 +513,8 @@ def _fx_spawn(n, kind, shape, mat, rng, size, spots=None):
                 setattr(o, attr, False)
             except Exception:
                 pass
-        sx, sy = spots[i] if spots else (None, None)
-        _fx_item(o, kind, rng, size, x=sx, y=sy)
+        sp_ = spots[i] if spots else (None, None)
+        _fx_item(o, kind, rng, size, x=sp_[0], y=sp_[1], z=sp_[2] if len(sp_) > 2 else None)
 
 
 def _fx_fire_light():
@@ -564,16 +564,22 @@ def add_weather(look_name, look, extra=None):
                 _fx_spawn(len(spots), kind, "flame", make_emissive((1.0, 0.45, 0.06), 7.0), rng, (0.7, 1.6), spots)
                 _fx_fire_light()
             elif kind == "smoke":
-                spots = [(rng.uniform(-12, 12), rng.uniform(9, 18)) for _ in range(26)]
-                _fx_spawn(len(spots), kind, "ball", make_material((0.07, 0.07, 0.08), 1.0), rng, (0.9, 1.8), spots)
+                spots = [(rng.uniform(-12, 12), rng.uniform(10, 18)) for _ in range(22)]
+                _fx_spawn(len(spots), kind, "ball", make_material((0.07, 0.07, 0.08), 1.0), rng, (0.8, 1.5), spots)
+            elif kind == "stars":
+                spots = [(rng.uniform(-90, 90), rng.uniform(98, 106), rng.uniform(28, 85)) for _ in range(70)]
+                _fx_spawn(len(spots), kind, "ball", make_emissive((1.0, 0.98, 0.9), 12.0), rng, (0.07, 0.14), spots)
             elif kind == "fireflies":
                 _fx_spawn(36, kind, "ball", make_emissive((0.95, 1.0, 0.45), 14.0), rng, (0.03, 0.06))
             elif kind == "leaves":
-                _fx_spawn(55, kind, "ball", make_emissive((0.95, 0.55, 0.15), 1.3), rng, (0.04, 0.08))
+                autumn = look_name == "autumn_gold"
+                _fx_spawn(55 if autumn else 30, kind, "ball",
+                          make_emissive((0.95, 0.55, 0.15) if autumn else (0.45, 0.75, 0.2), 1.3), rng, (0.04, 0.08))
             elif kind == "pollen":
                 _fx_spawn(40, kind, "ball", make_emissive((1.0, 0.95, 0.6), 3.0), rng, (0.02, 0.04))
             elif kind == "mist":
-                _fx_spawn(24, kind, "ball", make_emissive((0.85, 0.9, 0.95), 0.25), rng, (0.5, 1.1))
+                spots = [(rng.uniform(-14, 14), rng.uniform(9, 16)) for _ in range(14)]     # never between the camera and the animals
+                _fx_spawn(len(spots), kind, "ball", make_emissive((0.85, 0.9, 0.95), 0.25), rng, (0.45, 0.9), spots)
         except Exception as e:
             print("weather effect skipped:", kind, e, flush=True)
 
@@ -611,12 +617,16 @@ def update_weather(t):
                 x, y, z = it["x"] + 0.12 * math.sin(t * 3.0 * sp + ph), it["y"], 2.2 * h
                 sc = (w * 1.4, w * 1.4, h * 2.2)
             elif kind == "smoke":
-                rise = (t * 0.55 * sp + ph) % 7.0
-                z = 2.0 + rise * 1.1
+                rise = (t * 0.55 * sp + ph) % 6.0
+                z = 2.0 + rise * 1.0
                 x = it["x"] + 0.35 * rise + 0.4 * math.sin(t * 0.5 * sp + ph)
                 y = it["y"]
-                s2 = sz * (0.6 + 0.35 * rise)
+                s2 = sz * (0.6 + 0.18 * rise)
                 sc = (s2, s2, s2 * 0.8)
+            elif kind == "stars":                           # fixed in the sky, twinkling
+                x, y, z = it["x"], it["y"], it["z"]
+                s2 = sz * (0.55 + 0.45 * math.sin(t * 2.4 * sp + ph) ** 2)
+                sc = (s2, s2, s2)
             elif kind == "fireflies":
                 x = it["x"] + 1.2 * math.sin(t * 0.5 * sp + ph)
                 y = it["y"] + 1.0 * math.cos(t * 0.4 * sp + ph * 1.7)
@@ -637,8 +647,8 @@ def update_weather(t):
             else:                                         # mist: slow drifting soft blobs
                 x = ((it["x"] - x0 + t * 0.35 * sp) % (x1 - x0)) + x0
                 y = it["y"]
-                z = 0.5 + 0.4 * math.sin(ph)
-                sc = (sz * 3.0, sz * 1.6, sz * 0.5)
+                z = 0.4 + 0.3 * math.sin(ph)
+                sc = (sz * 2.2, sz * 1.2, sz * 0.4)
             o.scale = sc
             if rot is not None:
                 o.rotation_euler = rot
