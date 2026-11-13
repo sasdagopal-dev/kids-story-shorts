@@ -90,6 +90,46 @@ def measure_loudnorm(path, target=-14.0, tp=-1.0, lra=11.0):
         return single
 
 
+FONT_CANDIDATES = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf",
+                   "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"]
+
+
+def banner_items(plan, tl):
+    """On-screen banners that help people stay and share: the hook in the first seconds, the moral, the money-lesson title and the subscribe line.
+    All sit between 20 percent and 30 percent of the height (clear of the Shorts buttons and of the captions)."""
+    shots = tl["shots"]
+    items = []
+    hook = " ".join(str(plan.get("on_screen_hook") or "").split())
+    if hook:
+        items.append(dict(text=hook.upper(), t0=0.2, t1=min(3.8, shots[0]["start_time"] + shots[0]["duration"] + 0.6), size=76, color="FFD54A", width=16))
+    if len(shots) >= 10:
+        mo, le, la = shots[-3], shots[-2], shots[-1]
+        moral = " ".join(str(plan.get("moral") or "").split())
+        if moral:
+            items.append(dict(text="MORAL: " + moral, t0=mo["start_time"] + 0.15, t1=mo["start_time"] + mo["duration"] - 0.1, size=54, color="FFFFFF", width=23))
+        items.append(dict(text="THE MONEY LESSON", t0=le["start_time"] + 0.1, t1=le["start_time"] + le["duration"] - 0.1, size=72, color="FFD54A", width=18))
+        items.append(dict(text="SUBSCRIBE FOR THE NEXT MONEY LESSON", t0=la["start_time"] + 0.3, t1=la["start_time"] + la["duration"] - 0.1, size=56, color="FFFFFF", width=20))
+    return [i for i in items if i["t1"] - i["t0"] > 0.8]
+
+
+def banner_filters(items, work):
+    """drawtext filters (one per banner) with the text read from small files, so no character needs escaping."""
+    font = next((f for f in FONT_CANDIDATES if os.path.exists(f)), "")
+    if not font or not items:
+        return []
+    out = []
+    for k, it in enumerate(items):
+        name = f"banner{k}.txt"
+        with open(os.path.join(work, name), "w", encoding="utf-8") as f:
+            f.write(textwrap.fill(it["text"], width=it["width"]))
+        t0, t1 = it["t0"], it["t1"]
+        alpha = f"if(lt(t,{t0 + 0.25:.2f}),(t-{t0:.2f})/0.25,if(lt(t,{t1 - 0.25:.2f}),1,({t1:.2f}-t)/0.25))"
+        out.append(f"drawtext=fontfile={font}:textfile={name}:fontsize={it['size']}:fontcolor=0x{it['color']}:borderw=4:bordercolor=black:"
+                   f"box=1:boxcolor=black@0.45:boxborderw=26:line_spacing=14:x=(w-text_w)/2:y=h*0.20:"
+                   f"alpha='{alpha}':enable='between(t,{t0:.2f},{t1:.2f})'")
+    return out
+
+
 def build_description(plan, money):
     """Search-friendly first line, the story, a question for comments (engagement), a teaser for the next episode
     (people come back), then the disclaimer, credits and hashtags. #Shorts comes first (YouTube shows the first 3 above the title)."""
@@ -102,6 +142,8 @@ def build_description(plan, money):
     if not first and topic:
         first = f"Learn this investing and money lesson in a short animated story: {topic}."
     parts = [first, plan.get("description", "")]
+    if plan.get("moral"):
+        parts.append("\U0001F9E0 Moral: " + str(plan["moral"]).strip())
     if plan.get("viewer_question"):
         parts.append("\U0001F4AC " + str(plan["viewer_question"]).strip())
     if plan.get("cliffhanger"):
@@ -123,6 +165,7 @@ def main():
     ap.add_argument("--out-fps", type=int, default=30)
     ap.add_argument("--music-level", type=float, default=0.22, help="music volume while nobody speaks (it ducks under the voice)")
     ap.add_argument("--fades", action="store_true", help="fade in/out of the picture (off = clean loop)")
+    ap.add_argument("--no-banners", action="store_true", help="no hook / moral / subscribe banners on the picture")
     ap.add_argument("--burn-captions", action="store_true", help="burn big captions into the picture")
     ap.add_argument("--made-for-kids", choices=["yes", "no"], default="",
                     help="YouTube 'made for kids' declaration; default: plan['made_for_kids'] or yes")
@@ -180,7 +223,7 @@ def main():
             f.write(f"{srt_time(s, '.')} --> {srt_time(e, '.')}\n{c}\n\n")
 
     # ---- video + audio
-    def encode(burn):
+    def encode(burn, banners=False):
         vf = []
         if a.upscale:
             w, h = a.upscale.split("x")
@@ -190,6 +233,8 @@ def main():
             shutil.copy(srt_path, os.path.join(work, "cap.srt"))
             vf.append("subtitles=cap.srt:force_style='Alignment=2,Bold=1,FontSize=11,Outline=3,Shadow=0,MarginV=95,"
                       "PrimaryColour=&H00FFFFFF&,OutlineColour=&H00000000&'")
+        if banners:
+            vf += banner_filters(banner_list, work)
         if a.fades:
             vf += ["fade=t=in:st=0:d=0.3", f"fade=t=out:st={target - 0.5:.2f}:d=0.5"]
         inputs = ["-i", os.path.abspath(a.video), "-i", narr]
@@ -207,16 +252,25 @@ def main():
         cmd = ["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", fc, "-map", "0:v", "-map", "[a]",
                "-vf", ",".join(vf), "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-pix_fmt", "yuv420p",
                "-c:a", "aac", "-b:a", "192k", "-t", f"{target:.3f}", "-movflags", "+faststart", out_path]
-        run(cmd, cwd=work if burn else None)
+        run(cmd, cwd=work if (burn or banners) else None)
 
+    banner_list = [] if (a.no_banners or os.environ.get("BANNERS", "1") == "0") else banner_items(plan, tl)
+    tries = []
+    if banner_list:
+        tries.append((a.burn_captions, True))
+    tries.append((a.burn_captions, False))
     if a.burn_captions:
+        tries.append((False, False))
+    for burn, banners in tries:
         try:
-            encode(True)
+            encode(burn, banners)
+            if banner_list and banners:
+                print(f"banners on the picture: {len(banner_list)}", flush=True)
+            break
         except subprocess.CalledProcessError:
-            print("WARNING: burning captions failed (ffmpeg without libass or font?), making the video without them.")
-            encode(False)
+            print(f"WARNING: encoding with captions={burn} banners={banners} failed (ffmpeg without libass/drawtext or font?), trying a simpler one.", flush=True)
     else:
-        encode(False)
+        sys.exit("FAIL: the final video could not be encoded")
     fd = probe(out_path)
     if abs(fd - target) > 0.6:
         sys.exit(f"FAIL: final video is {fd:.2f} s but must be {target:.2f} s")
