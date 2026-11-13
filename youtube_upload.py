@@ -168,10 +168,25 @@ def first_comment(token, vid, text):
     print("  first comment:", "ok (pin it in YouTube Studio)" if status == 200 else "skipped (" + explain(status, rb)[:140] + ")", flush=True)
 
 
+def next_publish_utc(hhmm, tz="America/New_York", min_minutes=20):
+    """The next time hh:mm (24 h) in the audience's time zone, as an ISO UTC string for YouTube's publishAt.
+    Used for a US audience: the Short is uploaded private and goes public by itself at the chosen evening time."""
+    import datetime as dt
+    from zoneinfo import ZoneInfo
+    h, m = [int(x) for x in hhmm.strip().split(":")[:2]]
+    z = ZoneInfo(tz)
+    now = dt.datetime.now(z)
+    t = now.replace(hour=h, minute=m, second=0, microsecond=0)
+    if t < now + dt.timedelta(minutes=min_minutes):
+        t += dt.timedelta(days=1)
+    return t.astimezone(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dir", default="out")
     ap.add_argument("--privacy", choices=["private", "unlisted", "public"], default="private")
+    ap.add_argument("--publish-at-et", default="", help="HH:MM in US Eastern time: schedule the publish for the next such time (only with private)")
     ap.add_argument("--publish-at", default="", help="ISO time, only with private, YouTube publishes it then")
     ap.add_argument("--no-captions", action="store_true")
     ap.add_argument("--no-thumbnail", action="store_true")
@@ -185,6 +200,15 @@ def main():
     if not (os.path.exists(video) and os.path.exists(meta_path)):
         sys.exit(f"FAIL: {video} or {meta_path} is missing")
     m = json.load(open(meta_path, encoding="utf-8"))
+    if a.publish_at_et and not a.publish_at:
+        try:
+            if a.privacy == "private":
+                a.publish_at = next_publish_utc(a.publish_at_et)
+                print(f"scheduled: the video goes public by itself at {a.publish_at_et} US Eastern ({a.publish_at} UTC)", flush=True)
+            else:
+                print("publish-at-et ignored: only a private upload can be scheduled", flush=True)
+        except Exception as e:
+            print("publish-at-et ignored:", e, flush=True)
     body = clean_meta(m, a.privacy, a.publish_at)
     size = os.path.getsize(video)
     print(f"Video: {video} ({size / 1e6:.1f} MB) | title: {body['snippet']['title']} | privacy: {a.privacy} | made for kids: {body['status']['selfDeclaredMadeForKids']}", flush=True)
