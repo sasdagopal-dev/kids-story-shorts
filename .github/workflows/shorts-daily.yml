@@ -2,7 +2,8 @@ name: Shorts - daily (Gemini director, then voice and render)
 
 on:
   schedule:
-    - cron: "30 2 * * *"        # 08:00 India time, every day
+    - cron: "17 */6 * * *"      # Every 6 hours at :17 India time
+      timezone: "Asia/Kolkata"
   workflow_dispatch:
     inputs:
       topic:
