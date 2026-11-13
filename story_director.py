@@ -204,8 +204,17 @@ def free_spot(chars, near, dx):
 
 
 # ------------------------------------------------------------------ validation and repair
-FX_ALLOWED = ("fire", "smoke", "embers", "rain", "snow", "storm", "fireflies", "leaves", "pollen", "mist")
+FX_ALLOWED = ("fire", "smoke", "embers", "rain", "snow", "storm", "fireflies", "leaves", "pollen", "mist", "stars")
 CUES = ("coin", "boom", "riser", "heartbeat", "splash", "whoosh", "alarm")
+
+
+def episode_cast(cfg):
+    """The animals of this episode only (the planned cast first = the hero first); the whole roster when the episode names none."""
+    ep = cfg.get("_episode") or {}
+    ids = ep.get("cast") or []
+    by = {c["id"]: c for c in cfg["cast"]}
+    chosen = [by[i] for i in ids if i in by]
+    return chosen or list(cfg["cast"])
 
 
 def shot_cap(hi, unit, is_last):
@@ -486,7 +495,8 @@ def repair_plan(raw, cfg, strict=True):
             "description": str(raw.get("description") or "").strip(), "tags": tags,
             "twist": str(raw.get("twist") or "")[:200], "episode": (ep_cfg or {}).get("number"),
             "viewer_question": str(raw.get("viewer_question") or "")[:200],
-            "beat_sheet": {str(k)[:30]: str(v)[:300] for k, v in (raw.get("beat_sheet") or {}).items()} if isinstance(raw.get("beat_sheet"), dict) else {}, "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
+            "beat_sheet": {str(k)[:30]: str(v)[:300] for k, v in (raw.get("beat_sheet") or {}).items()} if isinstance(raw.get("beat_sheet"), dict) else {}, "moral": str(raw.get("moral") or (raw.get("beat_sheet") or {}).get("moral") or "")[:200],
+            "on_screen_hook": " ".join(str(raw.get("on_screen_hook") or "").upper().split())[:40], "recap": str(raw.get("recap") or "")[:300], "cliffhanger": str(raw.get("cliffhanger") or "")[:300],
             "disclaimer": disc, "credits": cfg.get("credits", ""), "story_mode": cfg.get("story_mode", "adventure"),
             "made_for_kids": bool(cfg.get("made_for_kids", True)),
             "target_seconds": target, "flexible_length": True, "estimated_voice_seconds": round(est, 1),
@@ -700,7 +710,7 @@ def build_prompt(cfg, topic, genre, history, feedback, story=None):
     dmap = cfg.get("disclaimer") or {}
     disc = dmap.get(language, "") if isinstance(dmap, dict) else ""
     cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} (model {c['model']}{', black fur' if c.get('tint') and c['tint'][0] < 1 else (', white fur' if c.get('tint') else '')}): {c['role']}. On screen: {c.get('behaviour', '-')}"
-                     for c in cfg["cast"])
+                     for c in episode_cast(cfg))
     past = "\n".join(f"- {h.get('title', '')}" + (f" | what happened: {h['recap']}" if h.get("recap") else "") +
                      (f" | ended with: {h['cliffhanger']}" if h.get("cliffhanger") else "") for h in history[-6:]) or "- (this is episode 1)"
     n = cfg.get("shots", 20)
@@ -752,6 +762,7 @@ DIRECTION RULES (the renderer follows them exactly)
 - PURPOSEFUL MOVEMENT: at most 14 of the {n} shots may have a walking or running animal, and every movement must MEAN something: running to flee the fire, rushing to a place, carrying on, approaching someone to ask for help. Never wander or pace. In the other shots the animals stand still (talk, listen, shock, sad ...).
 - Each animal has 1 to 3 "beats" in time order. "at" = when the beat starts as a fraction of the shot (0 = when the narration starts, 0.5 = half way). Start every action when the narration mentions it. An animal that walks in must arrive BEFORE it talks.
 - The frame is VERTICAL and narrow. Keep every animal at x from -2.4 to 2.4 and y from 0 to 5.5 (y = distance from the camera). Animals are BIG: a horse is 2.4 m long. Place animals ACROSS the picture (left and right of each other, depth difference at most 1.5 m) so that nobody stands directly behind another animal: the camera must see every animal fully. VARY the number of animals: 1 animal alone for strong emotion (at least 2 shots), 2 for a conversation, 3 for group moments (at least 4 shots), 4 only for a pack or crowd scene. An animal may start off-screen (x up to +-7) only if its first beat is a walk or run to a point inside.
+- DIALOGUE SCENES CARRY THE DRAMA (like a fable): the speaker uses talk while the listener shows the reaction (shock when a lie is exposed, sad at a loss, celebrate at the win). Put two animals face to face for a bargain or a warning, and the cunning one slightly higher or closer to the camera. Use a close-up on the strongest line.
 - VISUAL STORYTELLING: every shot is ONE clear picture of what the narration says. Use the environment to tell the story:
   * "fx": a list (0 to 3) from fire, smoke, embers, rain, snow, storm, fireflies, leaves, pollen, mist. Use ["fire","smoke"] for a wildfire or disaster in the distance, ["rain"] or ["storm"] for trouble, ["snow"] for a cold winter, and no fx for calm scenes. Keep the same fx across the shots of one scene and change it when the situation changes.
   * "cue": one optional sound cue per shot, only where it matters: coin (money is paid or counted), boom (a shock), riser (tension before a twist), heartbeat (fear), splash, whoosh, alarm. At most 7 cues in the whole story.
@@ -806,7 +817,7 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
     ep = cfg.get("_episode")
     n = cfg.get("shots", 20)
     cast = "\n".join(f"- id \"{c['id']}\" = {c['name']} ({c['model']}): {c['role']}. Speaks: {c.get('voice_style', 'natural')}. Catchphrase: {c.get('catchphrase', '-')}. Behaves: {c.get('behaviour', '-')}"
-                     for c in cfg["cast"])
+                     for c in episode_cast(cfg))
     past = "\n".join(f"- Ep {h.get('episode', '?')}: {h.get('title', '')}" + (f" | happened: {h['recap']}" if h.get("recap") else "") +
                      (f" | ended on: {h['cliffhanger']}" if h.get("cliffhanger") else "") + (f" | clue planted: {h['clue']}" if h.get("clue") else "")
                      for h in history[-4:]) or "- (nothing yet: this is the very first episode)"
@@ -823,6 +834,7 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
                          f"- Money idea of this episode: {ep['concept']}\n"
                          f"- The dramatic situation you must deliver (keep its stakes, its clock and its set-pieces): {ep['beat']}\n"
                          f"- Cold open (the first picture and line): {ep.get('hook', 'open in the middle of the crisis')}\n"
+                         f"- The moral (a short Panchatantra-style proverb; you may sharpen its words but keep its meaning): {ep.get('moral', 'invent one short proverb for this story')}\n"
                          f"- Teaser for the next episode (one short line at the very end): {ep['cliffhanger']}")
     else:
         episode_block = (f"Story idea of today: {topic}\nMake it a STANDALONE mini movie with a real emotional crisis where this money idea decides the outcome. "
@@ -833,8 +845,9 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
               "Show the wrong way costing something real, then the right way with a clear, CORRECT calculation.\n"
               "- Accuracy matters more than drama. Use only well-established ideas (compound growth, diversification, index funds in general, 401(k) employer match, IRA in general, emergency fund, inflation, fees, risk and market ups and downs, dollar-cost averaging, credit card interest, scams). "
               "Never name real banks, brokers, apps, brands, tickers or specific funds. Never promise or guarantee returns, never say 'buy this', always keep the idea that investing can lose money. Do not give tax or legal specifics beyond general ideas.\n"
-              "- The wrong money habit must cost the hero something REAL and visible twice; the right habit (shown by a mentor or a neighbour) must visibly save the day later; a time-skip shot proves it with numbers.\n"
-              "- Shot 19: starts with 'Today we learned' and gives exactly three short points in plain words; "
+              "- The wrong money habit must cost the hero something REAL and visible; the right habit must save the day through the wit of a clever or wise animal, and the story proves it.\n"
+              "- Shot 18 is the MORAL: one short proverb-like sentence in the Panchatantra spirit, said by the wise animal or the storyteller, never a lecture. "
+              "Shot 19 is the MONEY LESSON: it starts with 'The money lesson:' and explains in plain words exactly what the story taught, in three short points, each tied to something that happened in the story; "
               "at least one point must translate the idea into real US dollars using the real-world example given in the money idea above, said as a clearly hypothetical example ('for example', 'if'), never as a promise.\n") if money else (
               "LESSON: one gentle life lesson, shown by events and one short wise line, never a speech.")
     lang_note = ("Write natural spoken Hindi in Devanagari, short sentences, simple words a child knows, no heavy Sanskrit words. Write the animal names exactly as in the cast list, in Latin letters (Milo, Drakon, Gulab)."
@@ -843,7 +856,7 @@ def build_story_prompt(cfg, topic, genre, history, feedback):
     gx = cfg.get("gold_example") or []
     gold = ("\nEXAMPLE OF THE LEVEL AND THE RHYTHM EXPECTED (a different story, its narration only; never copy its events, names or sentences):\n"
             + "\n".join(f"{i}. {t}" for i, t in enumerate(gx, 1)) + "\n" + (cfg.get("gold_example_note") or "") + "\n") if gx else ""
-    return f"""You are the head writer of a hit animated series for US adults (ages 20 to 45) who are beginners in personal finance and investing. Every episode is a MINI MOVIE: a real emotional crisis told with animals, where one money decision decides what happens. Think of a film trailer, not a nature walk. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
+    return f"""You are the head writer of a hit animated series for US adults (ages 20 to 45) who are beginners in personal finance and investing. Every episode is a FABLE in the spirit of the Panchatantra, told as a mini movie: clever and foolish animals, a temptation or a trick, a hard consequence, a wise turn, a short moral, and then a plain explanation of what the story teaches about money. Write ONLY the story (no camera, no positions) of one episode: a vertical YouTube Short of {n} shots, language {language}. {lang_note}
 SERIES "{series.get('name', '')}". World: {series.get('bible', '')}
 {episode_block}
 Style flavour: {genre}
@@ -857,34 +870,40 @@ Twists already used (invent a DIFFERENT one):
 CAST (use only these ids; each animal speaks in its own style; a catchphrase at most once; 2 to 5 animals in an episode):
 {cast}
 
-HOW TO MAKE IT A MOVIE (follow all of these):
-1. COLD OPEN: shot 1 starts with someone we care about in danger, or a clock already running. No scene setting, no 'once upon a time'. The first 3 seconds must raise a question.
-2. ONE HERO, ONE URGENT WANT with an emotional reason (save his mother, keep the den, feed the little ones). Say what is lost if he fails.
-3. ONE TICKING CLOCK with a number ('three sunrises', 'before the river freezes'); remind us of it at least twice.
-4. MONEY IS THE OBSTACLE, SHOWN IN NUMBERS: a price on a sign, an empty pouch, a bill, a debt. The viewer must be able to do the maths: 'yesterday 2 nuts, today 10 nuts'.
-5. EVERY SHOT CHANGES SOMETHING: the stakes rise, a door closes, a choice is made, a price is paid. Forbidden: shots where animals only travel, look around, or are described. If a shot could be deleted and the story would not change, rewrite it.
-6. THE WRONG MONEY HABIT COSTS SOMETHING REAL TWICE (two failed attempts), then the LOWEST POINT: the loved one in real danger and the hero has nothing left.
-7. THE TURN: a mentor or neighbour who did it right shows the right habit by ACTION and one short rule; the hero decides and pays the price of the change.
-8. PAYOFF AND PROOF: a TIME-SKIP shot ('Ten years later', 'Next winter') shows the same kind of crisis coming back and the hero calm and safe, with numbers that compare then and now.
-9. FEELINGS: fear, guilt, relief, pride. One touching moment (a hug, a whispered promise) and one funny moment (specific and visual, never silly).
-10. DIALOGUE: at least 8 shots with a spoken line in double quotes and the speaker named next to it ("said Ragnar"). Lines are short (4 to 12 words), urgent, in each animal's own voice. The narrator never explains what a line already shows.
-11. SPECIFIC: concrete numbers and objects (3 buckets, 30 nuts, the silver bell), never vague words.
-12. NEVER USE: 'little did he know', 'suddenly', 'everything changed', 'and they lived happily ever after', vague morals, a lecture.
+HOW TO WRITE THE FABLE (follow all of these):
+1. SPOKEN HOOK + COLD OPEN: shot 1 talks straight to the viewer with a short attention phrase and a promise of the payoff, then drops into the first dramatic line, all inside the first 3 seconds. Vary the phrase from episode to episode: 'Guys, listen:', 'Stop scrolling:', 'Wait, before you invest a single dollar:', 'This animal lost everything because of one money mistake:'. No scene setting, no 'once upon a time'.
+2. EACH ANIMAL IS A TRAIT: the greedy one, the clever one, the proud one, the patient one, the fearful one, the flatterer. The plot is a trait colliding with a money situation. Use the cast's natures.
+3. THE DRAMA LIVES IN WORDS AND CHOICES, like the Panchatantra: animals persuade, flatter, bargain, warn, bluff, bet and expose each other in short sharp lines. Animals cannot act out complicated things, so make us SEE the money problem (a price sign, an empty pouch, an empty cart, the fire, the rain) and HEAR the argument.
+4. A TRICK AND A COUNTER-TRICK: someone cunning (or a foolish habit) takes advantage of the hero's weakness; the clever or wise animal wins by WIT (a question, a riddle, a test, a trap), never by force.
+5. MONEY IS SHOWN IN NUMBERS: a price, a balance, a debt, a promise ('double in 7 days'). The viewer must be able to do the maths.
+6. ONE CLOCK AND ONE LOSS: a deadline with a number, said at least twice, and something precious at stake (the foal's winter grain, mother's health, the roof).
+7. EVERY SHOT CHANGES SOMETHING: a choice is made, a warning is ignored, a price is paid, a lie is exposed. Forbidden: shots where animals only travel, look around, or are described. If a shot could be deleted without the story changing, rewrite it.
+8. THE WRONG MONEY MOVE COSTS SOMETHING REAL, someone warns, the warning is ignored, the LOWEST POINT arrives; then the wise turn.
+9. FEELINGS: fear, shame, relief, pride. One touching moment and one funny moment (specific, never silly).
+10. DIALOGUE: at least 10 shots with a spoken line in double quotes and the speaker named next to it ("said Ragnar"). Lines are short (4 to 12 words), in each animal's own voice, with subtext. The narrator never explains what a line already shows.
+11. SPECIFIC: concrete numbers and objects (40 sacks, 3 questions, the silver bell), never vague words.
+12. NEVER USE: 'little did he know', 'suddenly', 'everything changed', 'and they lived happily ever after', a lecture.
 13. Keep it clean: no blood, no real brands; tension and heart, not horror.
+
+HOLD THE VIEWER (this is how Shorts get watched to the end):
+- OPEN LOOP: shot 1 promises something the viewer can only get by staying (a mistake, a trick, a number). Pay it off at the end.
+- RE-HOOK around shot 10: one line that raises the stakes again ('But the worst was still coming.', 'And then the sign changed again.'). Vary it.
+- SUSPENSE: a ticking clock, a warning that is ignored, a sound or a shadow before the danger, a silence before the reveal, a near miss, a reveal that changes the meaning of an earlier line. Thriller and a little horror (a foggy night, thunder, eerie eyes in the dark) are welcome; never gore.
+- LOOP: the last line (the teaser) should echo the first line so the Short flows back into the start.
 
 {lesson}
 {gold}
 STRUCTURE OF THE {n} SHOTS:
-1-2 cold open: the crisis and the clock | 3-4 the want and the money obstacle in numbers | 5-7 first wrong attempt, it fails and costs something |
-8-10 second failure, pressure grows, the clock is repeated | 11-12 lowest point | 13-15 the turn: the right habit is shown and chosen | 16-17 the hero acts, the cost of the change and the first result |
-18 time-skip proof with numbers | 19 'Today we learned' with three short points | {n} one question for the viewers (a choice about today's money idea, to answer in the comments), then the teaser for the next episode as one short line.{end_extra}
+1-2 cold open: the temptation or danger and the clock | 3-4 who wants what, and the money detail in numbers | 5-7 the trick or the wrong money move works | 8-10 a warning is ignored, the cost appears, the clock is repeated |
+11-12 lowest point | 13-15 the clever or wise animal turns it with wit | 16-17 the result (and, if it fits, a short time-skip that proves it with numbers) |
+18 THE MORAL as one proverb-like sentence | 19 'The money lesson:' three short points tied to the story | {n} one question for the viewers (to answer in the comments), then the teaser for the next episode as one short line.{end_extra}
 
 LENGTH: exactly {n} shots, each {tg['shot'][0]} to {tg['shot'][1]} {unit}; the whole narration {tg['total'][0]} to {tg['total'][1]} {unit}. The last shot may be longer. Count carefully.
 
 PLAN FIRST: fill in "beat_sheet" before you write the shots, then make the shots follow it exactly.
 
-Return ONLY JSON: {{"beat_sheet": {{"hook": "<the first-3-seconds hook>", "want": "<what the hero wants and why it matters>", "clock": "<the deadline with a number>", "obstacle": "<the money obstacle in numbers>", "wrong_habit_cost": "<what the wrong habit costs, twice>", "lowest_point": "<the low point>", "the_turn": "<who shows the right habit and how>", "time_skip_proof": "<the later crisis and the numbers that prove it>", "clue": "<one detail planted early that pays off in the time-skip>", "cliffhanger": "<the teaser line>"}},
-"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "logline": "<one sentence>", "twist": "<the turning point in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the teaser in one sentence>", "viewer_question": "<the question for the comments>",
+Return ONLY JSON: {{"beat_sheet": {{"hook": "<the first-3-seconds hook>", "trait_conflict": "<which animal trait meets which money situation>", "want_and_stake": "<what is wanted and what is lost if it fails>", "clock": "<the deadline with a number>", "money_in_numbers": "<the money problem in numbers>", "the_trick": "<the trick or wrong money move>", "warning_ignored": "<who warns and why it is ignored>", "lowest_point": "<the low point>", "wit_turn": "<how the clever or wise animal turns it by wit>", "moral": "<the proverb-like moral>", "money_lesson": "<what the story teaches about money, in one sentence>", "clue": "<one detail planted early that pays off>", "cliffhanger": "<the teaser line>"}},
+"title": "<curiosity title in {language}, max 55 characters, without the series name or an episode number>", "description": "<2-3 sentences>", "tags": ["<10 short tags about investing and personal finance for US adults, no kids tags>"], "logline": "<one sentence>", "twist": "<the turning point in one sentence>", "recap": "<one sentence: what happened>", "cliffhanger": "<the teaser in one sentence>", "viewer_question": "<the question for the comments>", "moral": "<the moral in one sentence>", "on_screen_hook": "<3 to 6 words in CAPITAL LETTERS for a banner in the first 3 seconds, e.g. ONE PROMISE COST EVERYTHING>",
 "shots": [{{"id": 1, "narration": "...", "quote_speakers": ["<id of each quoted line in order>"], "speaker": "<id or null>", "tone": "<2-4 words for the voice actor>"}}, ... {n} shots ...]}}
 """
 
@@ -964,7 +983,7 @@ def build_unified_prompt(cfg, topic, genre, history, feedback):
             "quote_speakers matches the quotes one by one; every named animal is in that shot's characters; every walk/run has \"to\"; at most 14 moving shots; "
             "at most 4 close-ups; at least 4 different looks; some shots with 1 animal, some with 3; nobody stands behind another animal; fx used for fire, rain or snow scenes; at least 2 shots with a price sign in a money story; no more than 7 sound cues.\n\n"
             + ret.replace('{"title":', story_part[story_part.index('{"beat_sheet"'):story_part.index('"title":')] + '"title":', 1)
-            .replace('"recap":', '"logline": "<one sentence>", "twist": "<the twist in one sentence>", "viewer_question": "<question for the comments>", "recap":', 1))
+            .replace('"recap":', '"logline": "<one sentence>", "twist": "<the twist in one sentence>", "viewer_question": "<question for the comments>", "moral": "<the moral in one sentence>", "on_screen_hook": "<3 to 6 words in CAPITAL LETTERS for a banner in the first 3 seconds>", "recap":', 1))
 
 
 # ------------------------------------------------------------------ continuity pass
