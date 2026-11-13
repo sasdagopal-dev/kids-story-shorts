@@ -1,0 +1,1337 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "Why High Yield Can Ruin You: The Emergency Cash Trap #shorts",
+ "description": "When Milo locks all his winter nuts into a high-yielding vault, a sudden freezing storm leaves his mother in danger. Learn why keeping a liquid emergency fund is the most critical personal finance step before investing.",
+ "tags": [
+  "personal finance",
+  "investing for beginners",
+  "emergency fund",
+  "liquidity",
+  "money management",
+  "financial literacy",
+  "wealth building",
+  "asset allocation",
+  "budgeting tips",
+  "smart investing"
+ ],
+ "twist": "Milo avoids an 80% fire-sale loss by bargaining future labor instead of selling his locked assets in panic.",
+ "episode": null,
+ "viewer_question": "Do you keep 3 to 6 months of expenses in plain liquid cash, or is all your money invested?",
+ "beat_sheet": {
+  "hook": "Stop scrolling: one greedy lockup almost cost Milo his mother's life.",
+  "trait_conflict": "Milo's eagerness for high yield locks away all his savings, leaving him zero liquid cash when a family emergency strikes.",
+  "want_and_stake": "Mira needs 20 emergency heat-roots tonight or she will freeze; Milo has 100 nuts locked away in a 1-year illiquid vault.",
+  "clock": "Moonrise in 2 hours.",
+  "money_in_numbers": "100 nuts locked at 50% yield vs 20 liquid nuts needed tonight; Drakon offers a fire-sale exchange of 100 locked nuts for 20 roots.",
+  "the_trick": "Gulab convinces Milo to lock 100% of his savings for high returns without keeping an emergency reserve.",
+  "warning_ignored": "Milo ignored the rule to keep liquid emergency cash before locking money in long-term investments.",
+  "lowest_point": "Milo sits broke in the snow with 100 locked nuts on paper while his mother freezes.",
+  "wit_turn": "Milo negotiates a labor contract with Drakon using his strength instead of liquidating his illiquid assets at an 80% loss.",
+  "moral": "High yield is useless if an unexpected storm leaves you without cash to survive today.",
+  "money_lesson": "Always build a liquid emergency fund of 3 to 6 months of living expenses before investing in locked or illiquid assets.",
+  "clue": "Drakon was desperate for log haulers because his primary transport wolves suddenly deserted him.",
+  "cliffhanger": "A dark hooded figure approached Gulab's vault carrying a stolen master key."
+ },
+ "moral": "Cash reserves buy freedom when life brings an unexpected storm.",
+ "on_screen_hook": "NEVER INVEST YOUR EMERGENCY CASH",
+ "recap": "Milo learned why liquid cash reserves matter when his locked vault wealth couldn't buy immediate winter shelter for his sick mother.",
+ "cliffhanger": "A dark hooded figure approached Gulab's vault carrying a stolen master key.",
+ "disclaimer": "For education only, not financial advice. Investing involves risk, including loss of money.",
+ "credits": "3D models by Quaternius (CC0). Voice: Google Gemini text-to-speech. Animated story for education only.",
+ "story_mode": "adventure",
+ "made_for_kids": false,
+ "target_seconds": 178,
+ "flexible_length": true,
+ "estimated_voice_seconds": 170.0,
+ "cast": [
+  {
+   "id": "gulab",
+   "name": "Gulab",
+   "model": "Alpaca",
+   "role": "charming trader who runs the Trading Post, always smiling, everybody trusts him (hidden mastermind, never reveal before the reveal episode)",
+   "behaviour": "calm, smooth, always smiling, walks slowly, never raises his voice, filmed from a friendly eye-level angle until the reveal",
+   "voice_style": "silky, warm, slow",
+   "catchphrase": "Trust is the best currency, my friend."
+  },
+  {
+   "id": "milo",
+   "name": "Milo",
+   "model": "Fox",
+   "role": "hero, young fox who just started earning, clever and brave but impatient with money",
+   "voice_style": "quick, eager, a little cheeky",
+   "catchphrase": "But I have a plan!",
+   "behaviour": "runs fast, jumps with joy, shows shock or sadness when he makes a mistake; filmed from a high angle when scared",
+   "voice_name": "Puck"
+  },
+  {
+   "id": "mira",
+   "name": "Mira",
+   "model": "Fox",
+   "tint": [
+    1.35,
+    1.15,
+    0.95
+   ],
+   "role": "Milo's mother, a gentle older fox, strong and loving, the person Milo most wants to protect",
+   "voice_style": "warm, soft, calm even in danger",
+   "catchphrase": "Look after yourself first, my son",
+   "behaviour": "stays close to Milo, comforts him, never complains"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  },
+  {
+   "id": "ragnar",
+   "name": "Ragnar",
+   "model": "Wolf",
+   "tint": [
+    2.3,
+    2.3,
+    2.5
+   ],
+   "role": "old white wolf, the money mentor of the valley, speaks rules in one short sentence",
+   "voice_style": "slow, calm, one short wise sentence",
+   "catchphrase": "Patience is also a path.",
+   "behaviour": "stands on a boulder, hardly moves, never runs, filmed from a low angle",
+   "voice_name": "Gacrux"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Tempting Vault",
+   "look": "autumn_gold",
+   "narration": "Stop scrolling: one greedy lockup almost cost Milo his mother's life. \"Lock your nuts for fifty percent yield!\" smiled Gulab.",
+   "tone": "intense, engaging",
+   "visual": "Gulab stands proudly next to a wooden lockbox and a price board reading YIELD +50%; Milo listens with shiny eyes.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "gulab",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      0.8,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.49
+      }
+     ],
+     "face": "milo"
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.9,
+      5.34
+     ],
+     "size": 1.1,
+     "text": "YIELD +50%"
+    }
+   ],
+   "cue": "riser",
+   "speakers": [
+    {
+     "id": "gulab",
+     "at": 0.49
+    }
+   ],
+   "quotes": [
+    {
+     "start": 70,
+     "end": 111,
+     "id": "gulab"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "All In",
+   "look": "autumn_gold",
+   "narration": "Milo locked all one hundred nuts in Gulab's vault for one full year. He kept zero nuts in liquid cash.",
+   "tone": "serious, warning",
+   "visual": "Milo pours his entire sack of one hundred nuts into Gulab's vault, leaving his small pouch completely empty.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        0.0,
+        3.0
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      2.2,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      0.2,
+      6.2
+     ],
+     "size": 1.0
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "The Sudden Storm",
+   "look": "storm_dusk",
+   "narration": "That night, a sudden icy storm struck the valley. Mira shuddered with terrible winter frost in their freezing den.",
+   "tone": "fearful, atmospheric",
+   "visual": "Dark snow clouds roll over the fox den; gentle Mira shudders in the freezing howling wind.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "mira",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.2
+      }
+     ],
+     "face": "mira"
+    }
+   ],
+   "fx": [
+    "snow",
+    "storm"
+   ]
+  },
+  {
+   "id": 4,
+   "title": "The High Price",
+   "look": "storm_dusk",
+   "narration": "Milo saw the price sign outside the storehouse: heat-roots cost twenty nuts tonight. Mira needed them before moonrise.",
+   "tone": "urgent, alarmed",
+   "visual": "Milo stands shocked in front of the storehouse sign reading ROOTS 20 as snow thickens around him.",
+   "camera": {
+    "framing": "medium",
+    "angle": "high",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.7,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.0
+      }
+     ],
+     "face": "ragnar"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      5.04
+     ],
+     "size": 1.1,
+     "text": "ROOTS 20"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "alarm"
+  },
+  {
+   "id": 5,
+   "title": "Locked Tight",
+   "look": "snow_pines",
+   "narration": "Milo ran to Gulab's vault. \"Give me twenty nuts back!\" begged Milo. \"Vault is locked tight!\" replied Gulab.",
+   "tone": "panicked, desperate",
+   "visual": "Milo frantically begs Gulab outside the vault; Gulab calmly shakes his head with a locked sign visible.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -6.1,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -1.1,
+        2.8
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.16
+      },
+      {
+       "action": "listen",
+       "at": 0.58
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      1.4,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.58
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      2.0,
+      4.2
+     ],
+     "size": 1.0,
+     "text": "VAULT LOCKED"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.24
+    },
+    {
+     "id": "gulab",
+     "at": 0.58
+    }
+   ],
+   "quotes": [
+    {
+     "start": 27,
+     "end": 54,
+     "id": "milo"
+    },
+    {
+     "start": 68,
+     "end": 92,
+     "id": "gulab"
+    }
+   ],
+   "cuts": true
+  },
+  {
+   "id": 6,
+   "title": "Wealthy Yet Broke",
+   "look": "snow_pines",
+   "narration": "Milo had one hundred nuts locked in yield, but zero nuts available to buy medicine. He was completely broke today.",
+   "tone": "grim, practical",
+   "visual": "Milo holding a paper receipt for 100 nuts while realizing he has zero physical nuts in his empty hands.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "fx": [
+    "snow"
+   ]
+  },
+  {
+   "id": 7,
+   "title": "The Predator's Offer",
+   "look": "snow_pines",
+   "narration": "Drakon sneered from the dark shadows. \"I will give you twenty heat-roots if you hand over your vault voucher.\"",
+   "tone": "sneering, predatory",
+   "visual": "Drakon steps out from behind a snowy tree, sneering down at Milo with a small bundle of heat-roots.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.8,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.35
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "boom",
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.35
+    }
+   ],
+   "quotes": [
+    {
+     "start": 38,
+     "end": 110,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Fire-Sale Trap",
+   "look": "snow_pines",
+   "narration": "That meant trading a hundred-nut fortune for twenty emergency roots. Drakon's fire-sale trap was set for desperate animals.",
+   "tone": "tense, dramatic",
+   "visual": "Drakon holds his claw out while Milo stares at his paper voucher, calculating the giant 80% loss.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock",
+       "at": 0.0
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "fx": [
+    "snow"
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Mother's Plea",
+   "look": "snow_pines",
+   "narration": "Mira coughed weakly in the snow. \"Do not give away your future for me, my son,\" whispered gentle Mira.",
+   "tone": "touching, emotional",
+   "visual": "Mira rests her head against Milo's shoulder in the snow, speaking softly despite shivering uncontrollably.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "mira",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      -0.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      1.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "mira"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "mira",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 33,
+     "end": 79,
+     "id": "mira"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Ticking Clock",
+   "look": "snow_pines",
+   "narration": "The worst was still coming: temperature dropped further, and moonrise was only two short hours away from freezing the den.",
+   "tone": "high stakes, thriller",
+   "visual": "The dark night sky turns icy blue as the moon rises above the frosted pine trees; time is running out.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      3.4
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ],
+   "fx": [
+    "snow",
+    "storm"
+   ],
+   "cue": "heartbeat"
+  },
+  {
+   "id": 11,
+   "title": "Lowest Point",
+   "look": "snow_pines",
+   "narration": "Milo fell to his knees in the cold snow, staring at his useless locked paper voucher worth one hundred nuts.",
+   "tone": "heartbroken, desperate",
+   "visual": "Milo slumps onto his knees in the heavy snow, clutching the useless paper voucher with tears in his eyes.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "sad",
+       "at": 0.0
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "thumb": true
+  },
+  {
+   "id": 12,
+   "title": "Ragnar's Riddle",
+   "look": "misty_morning",
+   "narration": "Old Ragnar stepped out of the mist. \"High yield is worthless if you cannot survive today's emergency,\" said Ragnar.",
+   "tone": "wise, solemn",
+   "visual": "Old white wolf Ragnar stands majestic on a high boulder, gazing down at Milo with wise calm eyes.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      1.0,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.29
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      1.0,
+      3.6
+     ],
+     "size": 2.0
+    }
+   ],
+   "fx": [
+    "mist"
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 36,
+     "end": 102,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "The Counter Offer",
+   "look": "misty_morning",
+   "narration": "Milo wiped his eyes and thought fast. \"Drakon, you need winter transport! I will haul your heavy logs all spring!\"",
+   "tone": "clever, confident",
+   "visual": "Milo snaps his eyes up, stands tall before Drakon, and proposes a deal without giving up his voucher.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.32
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      1.4,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "milo",
+     "at": 0.32
+    }
+   ],
+   "quotes": [
+    {
+     "start": 38,
+     "end": 114,
+     "id": "milo"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "The Bargain Struck",
+   "look": "misty_morning",
+   "narration": "Drakon paused, needing spring haulers. \"Deal! Twenty roots for your labor contract, keep your vault voucher!\" barked Drakon.",
+   "tone": "surprised, decisive",
+   "visual": "Drakon hands over the heat-roots in exchange for Milo signing a written labor scroll, keeping his vault voucher.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.7,
+      3.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.4,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "cue": "coin",
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.3
+    }
+   ],
+   "quotes": [
+    {
+     "start": 39,
+     "end": 109,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Warmth Restored",
+   "look": "golden_sunset",
+   "narration": "Milo rushed back with heat-roots just before moonrise. Mira warmed by the fire as her strength quickly returned.",
+   "tone": "relieved, heartwarming",
+   "visual": "Milo feeds the glowing heat-roots to Mira in their warm cozy den as sunset light illuminates her glowing fur.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "mira",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "at": 0.0,
+       "to": [
+        -0.6,
+        3.2
+       ]
+      },
+      {
+       "action": "celebrate",
+       "at": 0.4
+      }
+     ],
+     "face": "mira"
+    },
+    {
+     "id": "mira",
+     "model": "Fox",
+     "pos": [
+      1.4,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "eat",
+       "at": 0.2
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      1.35,
+      1.15,
+      0.95
+     ]
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Spring Liquidity",
+   "look": "golden_sunset",
+   "narration": "When spring arrived, Milo unlocked his vault, paid off his labor contract, and built a dedicated liquid emergency basket.",
+   "tone": "triumphant, organized",
+   "visual": "In spring, Milo collects 150 nuts from Gulab's matured vault and divides them into two separate wooden baskets.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -5.9,
+      3.4
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.9,
+        3.4
+       ],
+       "at": 0.0
+      },
+      {
+       "action": "idle"
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      1.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "milo"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "size": 1.2
+    }
+   ],
+   "cue": "coin"
+  },
+  {
+   "id": 17,
+   "title": "The Emergency Rule",
+   "look": "golden_sunset",
+   "narration": "From that day on, Milo kept three months of living expenses in cash before investing a single nut elsewhere.",
+   "tone": "proud, educational",
+   "visual": "Milo places a clear wooden sign reading CASH FIRST next to his full emergency basket.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.5,
+      3.1
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "size": 1.1,
+     "text": "CASH FIRST"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "The Mentor's Lesson",
+   "look": "golden_sunset",
+   "narration": "Old Ragnar nodded from his high rock. \"Cash reserves buy freedom when life brings an unexpected storm,\" said Ragnar.",
+   "tone": "philosophical, warm",
+   "visual": "Ragnar stands on his high stone boulder against the golden sky, nodding in agreement with Milo.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "ragnar",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "ragnar",
+     "model": "Wolf",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.33
+      }
+     ],
+     "face": "milo",
+     "tint": [
+      2.3,
+      2.3,
+      2.5
+     ],
+     "z": 1.42
+    }
+   ],
+   "props": [
+    {
+     "type": "rock",
+     "pos": [
+      0.0,
+      3.5
+     ],
+     "size": 2.2
+    }
+   ],
+   "speakers": [
+    {
+     "id": "ragnar",
+     "at": 0.33
+    }
+   ],
+   "quotes": [
+    {
+     "start": 38,
+     "end": 103,
+     "id": "ragnar"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "Money Lesson Direct",
+   "look": "golden_sunset",
+   "narration": "The money lesson: high yields lock money tight. Always build a liquid emergency fund of three to six months first.",
+   "tone": "authoritative, clear",
+   "visual": "Milo stands beside a price sign displaying 3-6 MO CASH, pointing directly forward to the viewer.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -0.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "ragnar"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.7,
+      4.0
+     ],
+     "size": 1.1,
+     "text": "3-6 MO CASH"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Outro & Teaser",
+   "look": "golden_sunset",
+   "narration": "Would you sell assets in a panic, or build emergency cash? Tell us below! A dark hooded figure approached Gulab's vault carrying a stolen master key. Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money.",
+   "tone": "engaging, mystery",
+   "visual": "Milo smiles directly at the camera in front of the sunlit valley, as a shadowy hooded creature watches from the trees.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "milo",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "milo",
+     "model": "Fox",
+     "pos": [
+      -1.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "gulab"
+    },
+    {
+     "id": "gulab",
+     "model": "Alpaca",
+     "pos": [
+      6.7,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        1.7,
+        3.0
+       ],
+       "at": 0.0
+      },
+      {
+       "action": "idle"
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "topic": "Invent a NEW animal adventure that is different from the earlier stories list",
+ "genre": "a family in danger and a hard choice",
+ "director_model": "gemini-3.6-flash"
+}
