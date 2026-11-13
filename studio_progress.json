@@ -1,5 +1,5 @@
 {
- "next_topic": 16,
+ "next_topic": 17,
  "history": [
   {
    "date": "2026-11-07",
@@ -200,6 +200,17 @@
    "twist": "The early winners were not paid from investment growth, but directly from new victims' deposits.",
    "episode": 4,
    "clue": "Gulab paid early winners using new deposits instead of real earnings."
+  },
+  {
+   "date": "2026-11-13",
+   "title": "The Friendly Card Trap: How Minimum Payments Destroy Sav | Jungle Money Tales Ep 5 #shorts",
+   "topic": "Credit card interest and the minimum-payment trap: borrowed money costs extra every month, and paying only the minimum keeps you stuck. Real-world example: a $1,000 card balance at 24% APR paid at $40 a month takes about 3 years and costs roughly $400 in interest.",
+   "file": "plans/episode_2026-11-13_3.json",
+   "recap": "Tej the stallion outsmarted Drakon's credit trap by stopping new spending, doubling payments, and clearing his debt.",
+   "cliffhanger": "Next: a patient husky and a boastful bull race to the full moon.",
+   "twist": "Tej discovers that almost his entire monthly payment goes directly toward Drakon's interest fees rather than reducing his loan balance.",
+   "episode": 5,
+   "clue": "Drakon's ledger card charges 1.5 nuts of interest per month on a 2-nut minimum payment."
   }
  ]
 }

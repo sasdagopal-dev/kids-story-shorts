@@ -1,0 +1,1299 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "The Friendly Card Trap: How Minimum Payments Destroy Sav | Jungle Money Tales Ep 5 #shorts",
+ "description": "When proud Tej the stallion takes a convenient loan card from Drakon to fix his barn roof, he thinks small minimum payments will save him. But when winter arrives, he discovers high interest fees have blown up his debt. Learn how credit card minimum payment traps work and how to escape them.",
+ "tags": [
+  "personal finance",
+  "credit cards",
+  "interest rates",
+  "debt payoff",
+  "minimum payments",
+  "financial literacy",
+  "investing for beginners",
+  "money management",
+  "budgeting",
+  "jungle money tales"
+ ],
+ "twist": "Tej discovers that almost his entire monthly payment goes directly toward Drakon's interest fees rather than reducing his loan balance.",
+ "episode": 5,
+ "viewer_question": "Have you ever fallen into a minimum payment trap on a credit card?",
+ "beat_sheet": {
+  "hook": "Guys, listen: one friendly card trapped a proud horse.",
+  "trait_conflict": "Tej's pride makes him accept Drakon's easy minimum-payment loan instead of asking for help.",
+  "want_and_stake": "Tej wants to fix his cracked stable roof before snow hits, but risks losing his home to compounding debt.",
+  "clock": "Snow is ten days away.",
+  "money_in_numbers": "20 nuts roof repair cost; 3 nuts held; minimum 2 nuts/month payment on card.",
+  "the_trick": "Drakon offers a credit ledger card requiring only tiny minimum payments while interest inflates the total debt.",
+  "warning_ignored": "Tinku warns about the growing balance, but Tej ignores it and buys a shiny golden saddle on credit.",
+  "lowest_point": "Snowfall arrives, the roof cracks again, and Tej owes 25 nuts despite making every minimum payment.",
+  "wit_turn": "Shweta asks where the minimum payments go, revealing high interest, prompting Tej to halt borrowing and pay double.",
+  "moral": "A loan eaten today is repaid with a bigger plate tomorrow.",
+  "money_lesson": "Paying only credit minimums keeps you trapped in high-interest debt.",
+  "clue": "Drakon's ledger card charges 1.5 nuts of interest per month on a 2-nut minimum payment.",
+  "cliffhanger": "Next: a patient husky and a boastful bull race to the full moon."
+ },
+ "moral": "A loan eaten today is repaid with a bigger plate tomorrow.",
+ "on_screen_hook": "THE MINIMUM PAYMENT TRAP EXPOSED",
+ "recap": "Tej the stallion outsmarted Drakon's credit trap by stopping new spending, doubling payments, and clearing his debt.",
+ "cliffhanger": "Next: a patient husky and a boastful bull race to the full moon.",
+ "disclaimer": "For education only, not financial advice. Investing involves risk, including loss of money.",
+ "credits": "3D models by Quaternius (CC0). Voice: Google Gemini text-to-speech. Animated story for education only.",
+ "story_mode": "money",
+ "made_for_kids": false,
+ "target_seconds": 178,
+ "flexible_length": true,
+ "estimated_voice_seconds": 170.0,
+ "cast": [
+  {
+   "id": "tej",
+   "name": "Tej",
+   "model": "Horse",
+   "role": "proud young stallion, fast and fearless but too proud to ask for help or admit a money mistake",
+   "voice_style": "loud, confident, a little boastful",
+   "catchphrase": "Nobody out-runs me!",
+   "behaviour": "gallops, rears up when excited, hangs his head when ashamed",
+   "voice_name": "Fenrir"
+  },
+  {
+   "id": "shweta",
+   "name": "Shweta",
+   "model": "Horse_White",
+   "role": "wise white mare, calm judge and storyteller of the valley, asks the one question that reveals the truth",
+   "voice_style": "warm, measured, thoughtful",
+   "catchphrase": "Ask the question first.",
+   "behaviour": "stands tall and still, turns slowly, never panics",
+   "voice_name": "Sulafat"
+  },
+  {
+   "id": "tinku",
+   "name": "Tinku",
+   "model": "Husky",
+   "role": "Milo's loyal best friend, young husky, scared of everything but surprisingly brave, comic relief",
+   "behaviour": "jumps at every noise, hides behind Milo, big shock and relief reactions, runs in late",
+   "voice_style": "nervous, fast, squeaky",
+   "catchphrase": "I am not scared. My legs are just excited!"
+  },
+  {
+   "id": "drakon",
+   "name": "Drakon",
+   "model": "Wolf",
+   "tint": [
+    0.15,
+    0.14,
+    0.16
+   ],
+   "role": "proud black wolf who runs the Fang Lending Den, lends nuts at huge interest and tricks the young; scary but can be beaten",
+   "voice_style": "loud, proud, sneering, hides fear",
+   "catchphrase": "Nobody beats Drakon!",
+   "behaviour": "walks slowly and menacingly, stands over others, filmed from a low angle, fights only at the climax",
+   "voice_name": "Algenib"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Crack in the Roof",
+   "look": "snow_pines",
+   "narration": "\"Guys, listen: one friendly card trapped a proud horse,\" said Shweta. A beam cracked, and snow was ten days away.",
+   "tone": "dramatic, urgent",
+   "visual": "A wooden beam cracks inside Tej's dark stable as light snow begins falling outside.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "tej"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "boom",
+   "speakers": [
+    {
+     "id": "shweta",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 56,
+     "id": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Proud Stallion",
+   "look": "misty_morning",
+   "narration": "Tej needed twenty nuts for repairs, but held only three. \"I will never ask for help!\" Tej declared proudly.",
+   "tone": "proud, stubborn",
+   "visual": "Tej stands proudly in the meadow looking at three tiny nuts in his wooden bowl.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "tej",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.47
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej"
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      -0.5,
+      4.52
+     ],
+     "size": 0.8
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tej",
+     "at": 0.47
+    }
+   ],
+   "quotes": [
+    {
+     "start": 57,
+     "end": 85,
+     "id": "tej"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Drakon's Offer",
+   "look": "misty_morning",
+   "narration": "Drakon sneered and offered a stone card ledger. \"Pay just two nuts a month, fast and easy,\" promised Drakon.",
+   "tone": "sneering, sly",
+   "visual": "Drakon steps out from the shadows holding a stone slab ledger marked MIN PAY 2 NUTS.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -1.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.41
+      }
+     ],
+     "face": "tej",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      4.8
+     ],
+     "size": 1.0,
+     "text": "MIN PAY: 2 NUT"
+    }
+   ],
+   "cue": "whoosh",
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.41
+    }
+   ],
+   "quotes": [
+    {
+     "start": 48,
+     "end": 91,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "Signing the Card",
+   "look": "forest_day",
+   "narration": "\"That sounds simple!\" cheered Tej, signing the ledger immediately. He fixed the roof beam and kept his head high.",
+   "tone": "confident, cheerful",
+   "visual": "Tej nods excitedly and stamps his hoof on Drakon's ledger card.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tej",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.5,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "cue": "coin",
+   "speakers": [
+    {
+     "id": "tej",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 21,
+     "id": "tej"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "title": "The Golden Saddle",
+   "look": "autumn_gold",
+   "narration": "Next week, Tej saw a shiny golden saddle at the trading post. \"Put it on my card!\" Tej shouted happily.",
+   "tone": "boastful, excited",
+   "visual": "Tej admires a bright yellow golden saddle cart, raising his hoof to order it.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tej",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -1.1,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.52
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "tej"
+    }
+   ],
+   "fx": [
+    "leaves"
+   ],
+   "speakers": [
+    {
+     "id": "tej",
+     "at": 0.52
+    }
+   ],
+   "quotes": [
+    {
+     "start": 62,
+     "end": 82,
+     "id": "tej"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "The Growing Debt",
+   "look": "autumn_gold",
+   "narration": "Tej paid two nuts every month as promised. Yet his debt board still read twenty-five nuts after three months.",
+   "tone": "confused, serious",
+   "visual": "Tej hands two small nuts to Drakon beside a ledger sign that reads DEBT 25 NUTS.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "tej",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.9,
+      5.44
+     ],
+     "size": 1.1,
+     "text": "DEBT: 25 NUTS"
+    }
+   ]
+  },
+  {
+   "id": 7,
+   "title": "First Snowfall",
+   "look": "snow_pines",
+   "narration": "The first snowfall arrived, and the repaired roof beam cracked again. Tej had no nuts left to fix it.",
+   "tone": "tense, grim",
+   "visual": "Snow heavy on the barn roof causes the fixed timber beam to snap again.",
+   "camera": {
+    "framing": "wide",
+    "angle": "high",
+    "move": "pull_out",
+    "focus": "tej",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.5,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.2,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "tej"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "cue": "boom"
+  },
+  {
+   "id": 8,
+   "title": "Tinku's Panic",
+   "look": "snow_pines",
+   "narration": "Tinku shivered in the cold snow. \"Why is your debt still growing if you keep paying?\" screamed Tinku nervously.",
+   "tone": "squeaky, panicked",
+   "visual": "Tinku jumps backwards in terror pointing frantically at Drakon's ledger balance.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tinku",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      0.5,
+      2.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.3
+      }
+     ],
+     "face": "tej"
+    },
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -2.2,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.3
+    }
+   ],
+   "quotes": [
+    {
+     "start": 33,
+     "end": 85,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Drakon's Sneer",
+   "look": "storm_dusk",
+   "narration": "Drakon walked over with a scary grin. \"Minimum payments barely touch the principle balance, foolish horse!\" sneered Drakon darkly.",
+   "tone": "scary, mocking",
+   "visual": "Drakon steps closer under storm clouds, looming over the shivering horse.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "drakon",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.2,
+      2.4
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        0.2,
+        2.4
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.02
+      },
+      {
+       "action": "talk",
+       "at": 0.29
+      }
+     ],
+     "face": "tej",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -2.6,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "fx": [
+    "snow",
+    "storm"
+   ],
+   "cue": "riser",
+   "speakers": [
+    {
+     "id": "drakon",
+     "at": 0.29
+    }
+   ],
+   "quotes": [
+    {
+     "start": 38,
+     "end": 107,
+     "id": "drakon"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Lowest Point",
+   "look": "storm_dusk",
+   "narration": "Tej hung his head in bitter shame. But the worst was still coming: heavy ice threatened to collapse the barn.",
+   "tone": "ashamed, desperate",
+   "visual": "Tej bows his head to the snowy ground as heavy blue ice hangs over his barn roof.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "static",
+    "focus": "tej",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "fx": [
+    "snow",
+    "storm"
+   ],
+   "cue": "heartbeat",
+   "thumb": true
+  },
+  {
+   "id": 11,
+   "title": "Shweta's Wise Question",
+   "look": "misty_morning",
+   "narration": "Shweta stepped forward calmly beside the shivering stallion. \"Ask the question first: where do your two nuts go?\" asked Shweta.",
+   "tone": "warm, measured",
+   "visual": "Shweta walks in next to Tej, standing tall and calm against the winter wind.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "shweta",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "to": [
+        -0.8,
+        2.8
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.02
+      },
+      {
+       "action": "talk",
+       "at": 0.42
+      }
+     ],
+     "face": "tej"
+    },
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    }
+   ],
+   "fx": [
+    "snow"
+   ],
+   "speakers": [
+    {
+     "id": "shweta",
+     "at": 0.42
+    }
+   ],
+   "quotes": [
+    {
+     "start": 61,
+     "end": 113,
+     "id": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "The Lightbulb Moment",
+   "look": "misty_morning",
+   "narration": "\"Most of your monthly payment is just interest fees!\" Shweta explained. Tej finally realized his huge, foolish mistake.",
+   "tone": "reassuring, clear",
+   "visual": "Shweta points to Drakon's ledger revealing large interest fees subtracted each month.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      -0.6,
+      2.9
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "tej"
+    },
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "shweta"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "shweta",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 53,
+     "id": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Tej's Decision",
+   "look": "riverbank_dawn",
+   "narration": "Tej made a sharp decision. \"No more borrowing! I will cut spending and pay four nuts every month,\" vowed Tej.",
+   "tone": "determined, brave",
+   "visual": "Tej rears up with glowing determination under the golden morning light.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "tej",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.5,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.26
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tej",
+     "at": 0.26
+    }
+   ],
+   "quotes": [
+    {
+     "start": 27,
+     "end": 98,
+     "id": "tej"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "Working Extra",
+   "look": "meadow_day",
+   "narration": "Tej worked extra guard shifts and sold the golden saddle. He threw extra nuts directly at his smallest balance.",
+   "tone": "energetic, focused",
+   "visual": "Tej carries timber logs on his back and dumps a large stack of nuts onto Drakon's counter.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "tej",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        -0.8,
+        2.8
+       ]
+      },
+      {
+       "action": "talk",
+       "at": 0.4
+      }
+     ],
+     "face": "drakon"
+    },
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "tej",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    }
+   ],
+   "props": [
+    {
+     "type": "coins",
+     "pos": [
+      0.5,
+      5.08
+     ],
+     "size": 1.2
+    }
+   ],
+   "cue": "coin"
+  },
+  {
+   "id": 15,
+   "title": "Paying Double",
+   "look": "meadow_day",
+   "narration": "Month after month, Tej paid double his minimum. Drakon watched angrily as the ledger balance steadily dropped to zero.",
+   "tone": "triumphant, steady",
+   "visual": "Drakon watches sullenly as the numbers on his stone board drop rapidly down to zero.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "drakon",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "drakon",
+     "model": "Wolf",
+     "pos": [
+      0.7,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      }
+     ],
+     "face": "tej",
+     "tint": [
+      0.15,
+      0.14,
+      0.16
+     ]
+    },
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -2.2,
+      2.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "drakon"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      -1.8,
+      3.6
+     ],
+     "size": 1.1,
+     "text": "DEBT: 0 NUTS"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "Warm Winter Barn",
+   "look": "flower_field",
+   "narration": "By next winter, Tej sat in a warm, sturdy barn. His ledger board read zero nuts, completely free of debt.",
+   "tone": "warm, relieved",
+   "visual": "Tej stands proudly inside a fully restored, sturdy barn with a strong wooden roof.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "tej",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "shweta"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.9,
+      3.8
+     ],
+     "size": 1.0,
+     "text": "DEBT: 0 NUTS"
+    }
+   ]
+  },
+  {
+   "id": 17,
+   "title": "Out-Running Debt",
+   "look": "golden_sunset",
+   "narration": "\"Nobody out-runs debt by paying minimums!\" Tej neighed proudly, standing tall beside Shweta in the bright meadow.",
+   "tone": "boastful, joyful",
+   "visual": "Tej gallops joyously across the golden meadow beside Shweta and Tinku.",
+   "camera": {
+    "framing": "wide",
+    "angle": "low",
+    "move": "static",
+    "focus": "tej",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tej",
+     "model": "Horse",
+     "pos": [
+      -5.6,
+      3.1
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        -0.6,
+        3.1
+       ]
+      },
+      {
+       "action": "listen",
+       "at": 0.16
+      },
+      {
+       "action": "talk",
+       "at": 0.16
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      2.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.8,
+      6.0
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "tej"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tej",
+     "at": 0.16
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 42,
+     "id": "tej"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "The Moral",
+   "look": "golden_sunset",
+   "narration": "Old Shweta smiled gently at the valley animals. A loan eaten today is repaid with a bigger plate tomorrow.",
+   "tone": "wise, calm",
+   "visual": "Shweta turns slowly toward the camera under the warm sunset light.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "The Money Lesson",
+   "look": "golden_sunset",
+   "narration": "The money lesson: minimum payments trap you in interest. Always pay extra. For example, a $1,000 balance costs $400 extra in fees.",
+   "tone": "authoritative, clear",
+   "visual": "An educational slate shows credit card minimum payment calculations.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Viewer Call to Action & Teaser",
+   "look": "night_moon",
+   "narration": "How do you handle debt? Tell us below! Next: a patient husky and a boastful bull race to the full moon. Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money.",
+   "tone": "engaging, fast",
+   "visual": "Tinku looks up nervous and excited under the glowing full moon as clouds pass.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tinku",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      0.0,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tej"
+    }
+   ]
+  }
+ ],
+ "topic": "Credit card interest and the minimum-payment trap: borrowed money costs extra every month, and paying only the minimum keeps you stuck. Real-world example: a $1,000 card balance at 24% APR paid at $40 a month takes about 3 years and costs roughly $400 in interest.",
+ "genre": "a rival who ends up teaching the hero",
+ "director_model": "gemini-3.6-flash"
+}
