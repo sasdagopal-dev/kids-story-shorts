@@ -1,0 +1,1296 @@
+{
+ "version": 4,
+ "language": "English",
+ "title": "Why Starting 10 Years Late Costs You $140,000 | Jungle M | Jungle Money Tales Ep 6 #shorts",
+ "description": "Patient Tinku started early with just one acorn a week, while Bheem the bull rushed to catch up ten years late. Learn how compound growth and time beat raw effort in investing.",
+ "tags": [
+  "personal finance",
+  "compound interest",
+  "investing for beginners",
+  "compound growth",
+  "wealth building",
+  "starting early",
+  "financial freedom",
+  "money tips",
+  "investing 101",
+  "retirement planning"
+ ],
+ "twist": "Tinku planted fewer acorns overall than Bheem, but early roots generated thousands of self-sown seeds over ten years.",
+ "episode": 6,
+ "viewer_question": "Which grove strategy do you follow? Tell us below!",
+ "beat_sheet": {
+  "hook": "Stop scrolling: after the great flood, two groves stood side by side, a giant forest and tiny twigs.",
+  "trait_conflict": "Impatient Bheem wants huge returns immediately while patient Tinku saves tiny amounts consistently over time.",
+  "want_and_stake": "Bheem wants to win the winter food contest, but rushing risks losing his entire harvest.",
+  "clock": "The contest judged at the full moon.",
+  "money_in_numbers": "Tinku planted 1 acorn weekly for 10 years; Bheem planted 10 acorns daily for a few weeks to catch up.",
+  "the_trick": "Bheem digs up his unsprouted seeds during a dry spell to check them, destroying his entire grove.",
+  "warning_ignored": "Tinku warns Bheem not to disturb growing seeds, but Bheem ignores him in panic.",
+  "lowest_point": "Bheem stands over ruined, uprooted twigs on the night of the full moon.",
+  "wit_turn": "Shweta counts the total yields, showing how early compound growth allowed Tinku's trees to multiply on their own.",
+  "moral": "A little every day beats a lot someday.",
+  "money_lesson": "Starting early allows compound growth to do the heavy lifting, beating late panic deposits.",
+  "clue": "Tinku's mature trees drop new seeds that sprout automatically without extra planting.",
+  "cliffhanger": "Next: a small shiba bets everything on one miracle tree."
+ },
+ "moral": "A little every day beats a lot someday.",
+ "on_screen_hook": "TIME BEATS SIZE IN INVESTING",
+ "recap": "Tinku and Bheem raced to build a winter grove, showing that early consistency multiplies growth.",
+ "cliffhanger": "Next: a small shiba bets everything on one miracle tree.",
+ "disclaimer": "For education only, not financial advice. Investing involves risk, including loss of money.",
+ "credits": "3D models by Quaternius (CC0). Voice: Google Gemini text-to-speech. Animated story for education only.",
+ "story_mode": "money",
+ "made_for_kids": false,
+ "target_seconds": 170,
+ "flexible_length": true,
+ "estimated_voice_seconds": 154.2,
+ "cast": [
+  {
+   "id": "tinku",
+   "name": "Tinku",
+   "model": "Husky",
+   "role": "Milo's loyal best friend, young husky, scared of everything but surprisingly brave, comic relief",
+   "behaviour": "jumps at every noise, hides behind Milo, big shock and relief reactions, runs in late",
+   "voice_style": "nervous, fast, squeaky",
+   "catchphrase": "I am not scared. My legs are just excited!"
+  },
+  {
+   "id": "bheem",
+   "name": "Bheem",
+   "model": "Bull",
+   "role": "strong, hot-tempered bull who acts first and thinks later, boasts about big plans, hates waiting",
+   "voice_style": "booming, impatient, proud",
+   "catchphrase": "Why wait? I want it now!",
+   "behaviour": "stamps, snorts, charges when angry, slumps when he loses",
+   "voice_name": "Orus"
+  },
+  {
+   "id": "shweta",
+   "name": "Shweta",
+   "model": "Horse_White",
+   "role": "wise white mare, calm judge and storyteller of the valley, asks the one question that reveals the truth",
+   "voice_style": "warm, measured, thoughtful",
+   "catchphrase": "Ask the question first.",
+   "behaviour": "stands tall and still, turns slowly, never panics",
+   "voice_name": "Sulafat"
+  }
+ ],
+ "shots": [
+  {
+   "id": 1,
+   "title": "The Two Groves",
+   "look": "meadow_day",
+   "narration": "Stop scrolling: after the great flood, two groves stood side by side, a giant forest and tiny twigs.",
+   "tone": "mysterious, urgent",
+   "visual": "A wide meadow showing a tall lush oak forest on the left and a barren brown dirt patch on the right.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tinku",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.2,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      -0.6,
+      6.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "title": "Tinku's Habit",
+   "look": "autumn_gold",
+   "narration": "Ten years ago, patient Tinku began planting one single acorn every week inside the dry valley meadow.",
+   "tone": "calm, rhythmic",
+   "visual": "Young Tinku carefully pats dirt around a single small green oak acorn in a quiet meadow.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "push_in",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "title": "Bheem's Boast",
+   "look": "meadow_day",
+   "narration": "\"Why wait for tiny trees? I want it now!\" boasted Bheem, spending his extra nuts on fancy berries.",
+   "tone": "boasting, proud",
+   "visual": "Bheem the bull laughs loudly, holding a bowl of sweet red berries while Tinku digs silently nearby.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bheem",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.8,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bheem",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 41,
+     "id": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "title": "The Contest Sign",
+   "look": "autumn_gold",
+   "narration": "Ten years later, Bheem panicked and rushed to catch up when a sign read: CONTEST AT FULL MOON.",
+   "tone": "panicked, fast",
+   "visual": "Bheem stops in front of a sign that reads CONTEST: MOON, realizing the deadline is approaching.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bheem",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      5.3,
+      3.5
+     ],
+     "beats": [
+      {
+       "action": "run",
+       "to": [
+        0.3,
+        3.5
+       ],
+       "at": 0.0
+      },
+      {
+       "action": "idle"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      -1.4,
+      6.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "size": 1.1,
+     "text": "CONTEST: MOON"
+    }
+   ],
+   "cue": "alarm"
+  },
+  {
+   "id": 5,
+   "title": "Bheem Digs Fast",
+   "look": "autumn_gold",
+   "narration": "\"I will plant ten acorns every day!\" shouted Bheem, digging furiously while Tinku calmly watered his oak trees.",
+   "tone": "shouting, aggressive",
+   "visual": "Bheem kicks dirt frantically, dumping nuts into holes while Tinku waters a huge oak trunk.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bheem",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.5,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "kick"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "bheem",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 36,
+     "id": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 6,
+   "title": "Mounds of Dirt",
+   "look": "storm_dusk",
+   "narration": "Bheem worked day and night, dumping huge mounds of nuts into dry dirt as the moon grew fuller.",
+   "tone": "exhausted, strained",
+   "visual": "Bheem works under dark clouds, piling high dirt mounds while sweat drops from his head.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "pull_out",
+    "focus": "bheem",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "kick"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "fx": [
+    "mist"
+   ]
+  },
+  {
+   "id": 7,
+   "title": "Excited Legs",
+   "look": "storm_dusk",
+   "narration": "\"I am not scared, my legs are just excited!\" squeaked Tinku, watching Bheem boast about his huge dirt pile.",
+   "tone": "squeaky, comic",
+   "visual": "Tinku shakes nervously near his tall tree, looking back at Bheem's enormous dirt piles.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "static",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      1.8,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "fx": [
+    "mist"
+   ],
+   "cue": "whoosh",
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 44,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 8,
+   "title": "Dry Spell Hits",
+   "look": "storm_dusk",
+   "narration": "\"Where are my giant sprouts?\" roared Bheem, as a harsh dry spell hit the hot valley field.",
+   "tone": "angry, frustrated",
+   "visual": "Bheem glares at his empty muddy field where no green shoots are rising from the cracked soil.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bheem",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.6,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "fx": [
+    "mist"
+   ],
+   "speakers": [
+    {
+     "id": "bheem",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 29,
+     "id": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 9,
+   "title": "Moon Rises",
+   "look": "night_moon",
+   "narration": "\"The full moon rise is tonight!\" cried Tinku, pointing at the glowing sky above the dry valley meadow.",
+   "tone": "alarmed, urgent",
+   "visual": "Tinku points up at the bright glowing full moon rising above his towering acorn trees.",
+   "camera": {
+    "framing": "medium",
+    "angle": "low",
+    "move": "static",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.8,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      1.8,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "tinku",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 32,
+     "id": "tinku"
+    }
+   ]
+  },
+  {
+   "id": 10,
+   "title": "Re-Hook",
+   "look": "night_moon",
+   "narration": "But the worst was still coming: Bheem made a disastrous mistake that threatened to destroy everything.",
+   "tone": "tense, dramatic",
+   "visual": "Bheem's eyes go wide with panic as he stares at his empty field under moonlight.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "bheem",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "shock"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      3.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      2.6,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "cue": "riser"
+  },
+  {
+   "id": 11,
+   "title": "Bheem Digs Up Roots",
+   "look": "night_moon",
+   "narration": "\"I must check if their roots are growing!\" panicked Bheem, digging up all his sprouts in terror.",
+   "tone": "fantic, desperate",
+   "visual": "Bheem frantically digs up his dirt with his hooves, tearing tiny fragile white root sprouts out of the ground.",
+   "camera": {
+    "framing": "close",
+    "angle": "high",
+    "move": "static",
+    "focus": "bheem",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.0,
+      2.6
+     ],
+     "beats": [
+      {
+       "action": "kick"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "tinku"
+    }
+   ],
+   "cue": "boom",
+   "thumb": true,
+   "speakers": [
+    {
+     "id": "bheem",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 42,
+     "id": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 12,
+   "title": "Ruined Grove",
+   "look": "night_moon",
+   "narration": "\"My entire grove is completely ruined!\" wept Bheem, slumping into the dirt under the bright full moon.",
+   "tone": "heartbroken, defeated",
+   "visual": "Bheem slumps down on his knees among torn twigs, weeping beside Tinku who watches sadly.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "bheem",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.6,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "talk",
+       "at": 0.18
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.2,
+      2.8
+     ],
+     "beats": [
+      {
+       "action": "sad"
+      },
+      {
+       "action": "listen",
+       "at": 0.18
+      }
+     ],
+     "face": "bheem"
+    }
+   ],
+   "cue": "heartbeat",
+   "speakers": [
+    {
+     "id": "bheem",
+     "at": 0.0
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 39,
+     "id": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 13,
+   "title": "Shweta Arrives",
+   "look": "night_moon",
+   "narration": "Wise Shweta stepped into the clearing and examined both groves under the glowing night sky.",
+   "tone": "calm, majestic",
+   "visual": "Shweta the white horse walks calmly between Tinku's giant forest and Bheem's ruined soil patch.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "follow",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      4.0
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.0,
+        3.2
+       ]
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      1.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      2.6,
+      0.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 14,
+   "title": "The Question",
+   "look": "night_moon",
+   "narration": "\"Ask the question first,\" said Shweta. \"Why did Tinku win with far fewer total planted nuts?\"",
+   "tone": "wise, measured",
+   "visual": "Shweta turns slowly toward the gathered animals, raising one hoof to make her key point.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      2.6,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "shweta",
+     "at": 0.0
+    },
+    {
+     "id": "shweta",
+     "at": 0.43
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 25,
+     "id": "shweta"
+    },
+    {
+     "start": 39,
+     "end": 93,
+     "id": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 15,
+   "title": "Growth Earns Growth",
+   "look": "golden_sunset",
+   "narration": "\"Time did Tinku's work,\" said Shweta. \"Growth earns more growth when you start early.\"",
+   "tone": "warm, enlightening",
+   "visual": "Shweta points at tiny new oak saplings growing naturally from old fallen acorns around Tinku.",
+   "camera": {
+    "framing": "close",
+    "angle": "eye",
+    "move": "static",
+    "focus": "shweta",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      -0.4,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "talk"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      2.6,
+      1.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      2.4,
+      4.8
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ]
+    }
+   ],
+   "speakers": [
+    {
+     "id": "shweta",
+     "at": 0.0
+    },
+    {
+     "id": "shweta",
+     "at": 0.45
+    }
+   ],
+   "quotes": [
+    {
+     "start": 0,
+     "end": 24,
+     "id": "shweta"
+    },
+    {
+     "start": 38,
+     "end": 86,
+     "id": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 16,
+   "title": "The Count",
+   "look": "golden_sunset",
+   "narration": "Shweta counted both groves: Tinku's older trees yielded thousands of nuts, while Bheem had only bare twigs.",
+   "tone": "triumphant, clear",
+   "visual": "A board displays Tinku's total yield of 244,000 nuts beside a basket overflowing with golden nuts.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "tinku",
+    "side": "left"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -1.0,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      1.8,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      -2.2,
+      5.6
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    }
+   ],
+   "props": [
+    {
+     "type": "sign",
+     "pos": [
+      1.9,
+      7.44
+     ],
+     "size": 1.1,
+     "text": "HARVEST 244K"
+    },
+    {
+     "type": "coins",
+     "pos": [
+      -0.5,
+      7.4
+     ],
+     "size": 1.0
+    }
+   ],
+   "cue": "coin"
+  },
+  {
+   "id": 17,
+   "title": "Both Groves Flourish",
+   "look": "golden_sunset",
+   "narration": "Bheem learned his lesson, kept planting without digging up seeds, and years later both groves fed the valley.",
+   "tone": "inspiring, hopeful",
+   "visual": "Years later, Bheem patiently waters small sprouts beside Tinku in a huge lush forest.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "static",
+    "focus": "bheem",
+    "side": "right"
+   },
+   "characters": [
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      0.8,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "walk",
+       "at": 0.0,
+       "to": [
+        0.5,
+        3.2
+       ]
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "bheem"
+    }
+   ]
+  },
+  {
+   "id": 18,
+   "title": "The Moral",
+   "look": "golden_sunset",
+   "narration": "Old Shweta smiled gently at the valley animals. \"A little every day beats a lot someday,\" said Shweta.",
+   "tone": "warm, authoritative",
+   "visual": "Wise Shweta stands tall in the warm sunset glow, addressing the valley audience.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "push_in",
+    "focus": "shweta",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "shweta",
+     "model": "Horse_White",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      },
+      {
+       "action": "talk",
+       "at": 0.44
+      }
+     ],
+     "face": "tinku"
+    },
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -2.6,
+      4.4
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      2.6,
+      5.2
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    }
+   ],
+   "speakers": [
+    {
+     "id": "shweta",
+     "at": 0.44
+    }
+   ],
+   "quotes": [
+    {
+     "start": 48,
+     "end": 89,
+     "id": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 19,
+   "title": "The Money Lesson",
+   "look": "golden_sunset",
+   "narration": "The money lesson: time beats size. Hypothetically, $200 monthly at 7% for 30 years becomes $244,000, but starting late yields $104,000.",
+   "tone": "direct, educational",
+   "visual": "A clean shot of Tinku standing beside a flourishing oak tree laden with nuts.",
+   "camera": {
+    "framing": "medium",
+    "angle": "eye",
+    "move": "static",
+    "focus": "tinku",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      0.0,
+      3.0
+     ],
+     "beats": [
+      {
+       "action": "listen"
+      }
+     ],
+     "face": "shweta"
+    }
+   ]
+  },
+  {
+   "id": 20,
+   "title": "Viewer Question & Outro",
+   "look": "golden_sunset",
+   "narration": "Which grove strategy do you follow? Tell us below! Next: a small shiba bets everything on one miracle tree. Subscribe for the next money lesson! For education only, not financial advice. Investing involves risk, including loss of money.",
+   "tone": "engaging, clear",
+   "visual": "Tinku and Bheem wave together under the Great Oak as the sunset fades.",
+   "camera": {
+    "framing": "wide",
+    "angle": "eye",
+    "move": "pull_out",
+    "focus": "tinku",
+    "side": "center"
+   },
+   "characters": [
+    {
+     "id": "tinku",
+     "model": "Husky",
+     "pos": [
+      -0.6,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "bheem"
+    },
+    {
+     "id": "bheem",
+     "model": "Bull",
+     "pos": [
+      2.2,
+      3.2
+     ],
+     "beats": [
+      {
+       "action": "celebrate"
+      }
+     ],
+     "face": "tinku"
+    }
+   ]
+  }
+ ],
+ "topic": "Compound growth and starting early: growth earns growth, so time beats size. Real-world example (hypothetical, not a promise, real returns vary and can be negative): $200 a month at an assumed 7% a year for 30 years could grow to about $244,000; waiting 10 years to start leaves about $104,000.",
+ "genre": "a funny mistake that turns heroic",
+ "director_model": "gemini-3.5-flash"
+}

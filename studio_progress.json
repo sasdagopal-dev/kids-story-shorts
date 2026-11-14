@@ -1,5 +1,5 @@
 {
- "next_topic": 17,
+ "next_topic": 18,
  "history": [
   {
    "date": "2026-11-07",
@@ -211,6 +211,17 @@
    "twist": "Tej discovers that almost his entire monthly payment goes directly toward Drakon's interest fees rather than reducing his loan balance.",
    "episode": 5,
    "clue": "Drakon's ledger card charges 1.5 nuts of interest per month on a 2-nut minimum payment."
+  },
+  {
+   "date": "2026-11-14",
+   "title": "Why Starting 10 Years Late Costs You $140,000 | Jungle M | Jungle Money Tales Ep 6 #shorts",
+   "topic": "Compound growth and starting early: growth earns growth, so time beats size. Real-world example (hypothetical, not a promise, real returns vary and can be negative): $200 a month at an assumed 7% a year for 30 years could grow to about $244,000; waiting 10 years to start leaves about $104,000.",
+   "file": "plans/episode_2026-11-14.json",
+   "recap": "Tinku and Bheem raced to build a winter grove, showing that early consistency multiplies growth.",
+   "cliffhanger": "Next: a small shiba bets everything on one miracle tree.",
+   "twist": "Tinku planted fewer acorns overall than Bheem, but early roots generated thousands of self-sown seeds over ten years.",
+   "episode": 6,
+   "clue": "Tinku's mature trees drop new seeds that sprout automatically without extra planting."
   }
  ]
 }
