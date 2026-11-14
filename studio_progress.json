@@ -1,5 +1,5 @@
 {
- "next_topic": 18,
+ "next_topic": 19,
  "history": [
   {
    "date": "2026-11-07",
@@ -222,6 +222,17 @@
    "twist": "Tinku planted fewer acorns overall than Bheem, but early roots generated thousands of self-sown seeds over ten years.",
    "episode": 6,
    "clue": "Tinku's mature trees drop new seeds that sprout automatically without extra planting."
+  },
+  {
+   "date": "2026-11-14",
+   "title": "Why Betting Everything on One Stock Will Ruin You | Jungle Money Tales Ep 7 #shorts",
+   "topic": "Index funds and diversification: own a tiny slice of the whole forest instead of betting everything on one tree (broad, low-cost, no stock-picking, still not risk-free).",
+   "file": "plans/episode_2026-11-14_2.json",
+   "recap": "Kiko lost all his winter nuts on a single tree until Lakshmi showed him how index funds spread risk safely.",
+   "cliffhanger": "Next: a freezing night strips the whole forest of leaves.",
+   "twist": "Lakshmi's fund lost several trees to the blight, but generated more total nuts than ever because the surviving trees thrived.",
+   "episode": 7,
+   "clue": "Lakshmi's Forest Fund sign shows steady green growth across hundreds of tiny tree slices."
   }
  ]
 }
